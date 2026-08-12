@@ -2336,6 +2336,8 @@ function initAuthModule() {
           if (regModal) regModal.classList.add('active');
         };
       }
+
+      initPatientReportUploadSystem();
     }
   }
 
@@ -2953,6 +2955,273 @@ function initAuthModule() {
       });
     }
   }
+}
+
+// =========================================================================
+// 📷 PATIENT MEDICAL REPORTS & X-RAYS UPLOAD SYSTEM
+// =========================================================================
+function initPatientReportUploadSystem() {
+  const fileInput = document.getElementById('report-file-input');
+  const dropzone = document.getElementById('report-upload-dropzone');
+  const triggerBtn = document.getElementById('trigger-upload-btn');
+  const categorySelect = document.getElementById('upload-report-category');
+  const titleInput = document.getElementById('upload-report-title');
+  const gallery = document.getElementById('uploaded-reports-gallery');
+  const countBadge = document.getElementById('uploaded-reports-count');
+  const clearBtn = document.getElementById('clear-all-reports-btn');
+
+  if (!gallery) return;
+
+  // Initial Sample Reports if empty
+  const defaultSamples = [
+    {
+      id: 'rep_sample_xray_1',
+      title: 'Digital Chest X-Ray (PA View)',
+      category: 'xray',
+      categoryLabel: '🩻 Diagnostic X-Ray',
+      fileName: 'Chest_XRay_Digital_PA.png',
+      fileSize: '1.8 MB',
+      fileType: 'image/png',
+      dataUrl: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=600&q=80',
+      uploadDate: '12 Aug 2026',
+      timestamp: Date.now() - 3600000
+    },
+    {
+      id: 'rep_sample_lab_2',
+      title: 'Complete Blood Count (CBC) Panel',
+      category: 'pathology',
+      categoryLabel: '🩸 Blood Test',
+      fileName: 'CBC_Blood_Panel_Report.pdf',
+      fileSize: '640 KB',
+      fileType: 'application/pdf',
+      dataUrl: '',
+      uploadDate: '10 Aug 2026',
+      timestamp: Date.now() - 86400000
+    }
+  ];
+
+  function getStoredReports() {
+    try {
+      const data = localStorage.getItem('swasthya_uploaded_reports');
+      if (!data) {
+        localStorage.setItem('swasthya_uploaded_reports', JSON.stringify(defaultSamples));
+        return defaultSamples;
+      }
+      return JSON.parse(data);
+    } catch (e) {
+      return defaultSamples;
+    }
+  }
+
+  function saveStoredReports(reports) {
+    localStorage.setItem('swasthya_uploaded_reports', JSON.stringify(reports));
+    renderGallery();
+  }
+
+  function renderGallery() {
+    const reports = getStoredReports();
+    if (countBadge) countBadge.textContent = reports.length;
+
+    if (!gallery) return;
+    gallery.innerHTML = '';
+
+    if (reports.length === 0) {
+      gallery.innerHTML = `
+        <div style="grid-column: 1 / -1; padding: 30px; text-align: center; background: white; border-radius: 8px; border: 1px dashed var(--border-light);">
+          <span class="material-icons-outlined" style="font-size: 36px; color: var(--text-muted);">folder_off</span>
+          <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: #64748b;">No medical reports or X-rays uploaded yet. Use the upload box above to attach your documents.</p>
+        </div>
+      `;
+      return;
+    }
+
+    reports.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'uploaded-report-card';
+      card.style.cssText = `
+        background: white;
+        border-radius: 10px;
+        border: 1px solid var(--border-light);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      `;
+      card.onmouseenter = () => { card.style.transform = 'translateY(-3px)'; card.style.boxShadow = '0 6px 16px rgba(0,0,0,0.12)'; };
+      card.onmouseleave = () => { card.style.transform = 'none'; card.style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; };
+
+      let catBadgeColor = '#10847e';
+      let catBg = 'rgba(16, 132, 126, 0.1)';
+      if (item.category === 'xray') { catBadgeColor = '#0f3b5f'; catBg = 'rgba(15, 59, 95, 0.1)'; }
+      else if (item.category === 'pathology') { catBadgeColor = '#dc3545'; catBg = 'rgba(220, 53, 69, 0.1)'; }
+      else if (item.category === 'prescription') { catBadgeColor = '#d97706'; catBg = 'rgba(217, 119, 6, 0.1)'; }
+
+      const isImage = (item.fileType && item.fileType.startsWith('image/')) || (item.dataUrl && (item.dataUrl.startsWith('data:image/') || item.dataUrl.includes('unsplash.com') || item.dataUrl.endsWith('.png') || item.dataUrl.endsWith('.jpg')));
+
+      let previewHtml = '';
+      if (isImage && item.dataUrl) {
+        previewHtml = `<div style="height: 130px; background: #0f172a; display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer;" onclick="openReportLightbox('${item.title}', '${item.dataUrl}')">
+          <img src="${item.dataUrl}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover;">
+        </div>`;
+      } else {
+        previewHtml = `<div style="height: 130px; background: linear-gradient(135deg, #f8fafc, #e2e8f0); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--primary-navy); cursor: pointer;" onclick="alert('Viewing document: ${item.fileName}')">
+          <span class="material-icons-outlined" style="font-size: 42px; color: ${catBadgeColor};">picture_as_pdf</span>
+          <span style="font-size: 0.75rem; font-weight: 700; color: #475569;">PDF Report Document</span>
+        </div>`;
+      }
+
+      card.innerHTML = `
+        ${previewHtml}
+        <div style="padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 0.68rem; font-weight: 800; color: ${catBadgeColor}; background: ${catBg}; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">
+                ${item.categoryLabel || item.category}
+              </span>
+              <span style="font-size: 0.7rem; color: #94a3b8;">${item.uploadDate}</span>
+            </div>
+            <div style="font-weight: 700; font-size: 0.88rem; color: var(--primary-navy); margin-bottom: 4px; line-height: 1.3;">${item.title}</div>
+            <div style="font-size: 0.75rem; color: #64748b; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.fileName} • ${item.fileSize || ''}</div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px; margin-top: 12px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+            ${isImage && item.dataUrl ? `<button class="profile-btn primary" style="flex: 1; padding: 4px 8px; font-size: 0.74rem;" onclick="openReportLightbox('${item.title}', '${item.dataUrl}')">
+              <span class="material-icons-outlined" style="font-size: 14px;">visibility</span> View Scan
+            </button>` : `<button class="profile-btn primary" style="flex: 1; padding: 4px 8px; font-size: 0.74rem;" onclick="alert('Viewing document: ${item.fileName}')">
+              <span class="material-icons-outlined" style="font-size: 14px;">description</span> View Doc
+            </button>`}
+            <button style="background: rgba(220,53,69,0.1); color: #dc3545; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.74rem; font-weight: 700;" onclick="deleteReportRecord('${item.id}')" title="Delete file">
+              <span class="material-icons-outlined" style="font-size: 14px;">delete</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      gallery.appendChild(card);
+    });
+  }
+
+  // Handle File Process & Upload
+  function handleFiles(files) {
+    if (!files || files.length === 0) return;
+    const category = categorySelect ? categorySelect.value : 'xray';
+    const categoryText = categorySelect ? categorySelect.options[categorySelect.selectedIndex].text : '🩻 Diagnostic Scan';
+    const customTitle = titleInput ? titleInput.value.trim() : '';
+
+    const currentReports = getStoredReports();
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const formattedSize = (file.size / 1024 < 1024) ? (file.size / 1024).toFixed(1) + ' KB' : (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+        const docTitle = customTitle || file.name.split('.')[0].replace(/[\._-]/g, ' ');
+
+        const newReport = {
+          id: 'rep_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+          title: docTitle.charAt(0).toUpperCase() + docTitle.slice(1),
+          category: category,
+          categoryLabel: categoryText,
+          fileName: file.name,
+          fileSize: formattedSize,
+          fileType: file.type || 'image/png',
+          dataUrl: e.target.result,
+          uploadDate: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+          timestamp: Date.now()
+        };
+
+        currentReports.unshift(newReport);
+        saveStoredReports(currentReports);
+        showToast(`✓ Uploaded ${file.name} to Patient Medical Archive!`);
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+    if (titleInput) titleInput.value = '';
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+    });
+  }
+
+  if (triggerBtn && fileInput) {
+    triggerBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all uploaded reports from gallery?')) {
+        localStorage.removeItem('swasthya_uploaded_reports');
+        renderGallery();
+        showToast('Cleared report gallery.');
+      }
+    });
+  }
+
+  // Drag & Drop event handlers
+  if (dropzone) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, false);
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, () => {
+        dropzone.style.borderColor = 'var(--health-teal)';
+        dropzone.style.background = 'rgba(16, 132, 126, 0.08)';
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, () => {
+        dropzone.style.borderColor = 'rgba(16, 132, 126, 0.4)';
+        dropzone.style.background = 'rgba(16, 132, 126, 0.03)';
+      }, false);
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    }, false);
+  }
+
+  // Window Global Helpers
+  window.openReportLightbox = function(title, dataUrl) {
+    const lightboxModal = document.getElementById('image-lightbox-modal');
+    const lightboxImg = document.getElementById('lightbox-full-img');
+    const lightboxTitle = document.getElementById('lightbox-title');
+
+    if (lightboxModal && lightboxImg) {
+      if (lightboxTitle) lightboxTitle.textContent = `🩻 Clinical Inspection: ${title}`;
+      lightboxImg.src = dataUrl;
+      lightboxModal.classList.add('active');
+    } else {
+      alert(`Opening ${title}`);
+    }
+  };
+
+  window.deleteReportRecord = function(id) {
+    let reports = getStoredReports();
+    reports = reports.filter(r => r.id !== id);
+    saveStoredReports(reports);
+    showToast('Removed report document.');
+  };
+
+  renderGallery();
+}
+
+// Auto Init on DOM Load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPatientReportUploadSystem);
+} else {
+  initPatientReportUploadSystem();
 }
 
 
