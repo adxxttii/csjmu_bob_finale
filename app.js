@@ -1,7 +1,173 @@
-/**
- * SwasthyaSetu Portal Interactive Logic Engine
- * Handles accessibility, counters, slider, FAQ, and Patient Teleconsultation Simulation.
- */
+// Multilingual Speech Prompts for Voice Accessibility Engine
+const VOICE_PROMPTS = {
+  'en-IN': {
+    welcome: 'Welcome to SwasthyaSetu Medical Intake. Please provide your health details or speak your answers to connect with a specialist doctor.',
+    section1: 'Section 1. Patient Profile and Contact Info. Please tell us your full name, age, gender, and contact details.',
+    section2: 'Section 2. Disease Details and Symptoms. Please select your specialist department, primary complaint, and describe your illness in detail.',
+    section3: 'Section 3. Current Vitals and Medical History. Tell us your body temperature, blood pressure, oxygen level, and any pre-existing diseases.',
+    section4: 'Section 4. Attach Diagnostic Reports or Wound Photos. Select any report from your library or upload an image.',
+    listeningName: 'Listening for full name... Please speak now.',
+    listeningCity: 'Listening for city or village... Please speak now.',
+    listeningSymptoms: 'Listening for disease symptoms... Please describe your illness in your language now.',
+    recordingFinished: 'Voice recorded successfully!'
+  },
+  'hi-IN': {
+    welcome: 'स्वास्थ्यसेतु मेडिकल फॉर्म में आपका स्वागत है। कृपया डॉक्टर से परामर्श के लिए अपने लक्षण और जानकारी बताएं या बोलकर भरें।',
+    section1: 'भाग 1: मरीज का प्रोफाइल और संपर्क जानकारी। कृपया अपना पूरा नाम, आयु, लिंग और मोबाइल नंबर दर्ज करें।',
+    section2: 'भाग 2: बीमारी का विवरण और लक्षण। कृपया अपनी बीमारी के लक्षण, अवधि और दर्द का स्तर विस्तार से बताएं।',
+    section3: 'भाग 3: वर्तमान वाइटल्स और पुरानी बीमारी। अपना तापमान, बीपी, ऑक्सीजन स्तर और पुरानी बीमारियाँ बताएं।',
+    section4: 'भाग 4: मेडिकल रिपोर्ट और ज़ख्म की फोटो संलग्न करें।',
+    listeningName: 'नाम सुना जा रहा है... कृपया अब अपना पूरा नाम बोलें।',
+    listeningCity: 'शहर या गांव सुना जा रहा है... कृपया बोलें।',
+    listeningSymptoms: 'लक्षण सुने जा रहे हैं... कृपया अपनी बीमारी के बारे में विस्तार से अपनी भाषा में बोलें।',
+    recordingFinished: 'आपकी आवाज़ रिकॉर्ड हो गई है!'
+  },
+  'bn-IN': {
+    welcome: 'স্বাস্থ্যসেতু মেডিকেল ফর্মে আপনাকে স্বাগতম। ডাক্তার দেখানোর জন্য আপনার উপসর্গ ও তথ্য বলুন।',
+    section1: 'অংশ ১: রোগীর তথ্য ও যোগাযোগের নম্বর।',
+    section2: 'অংশ ২: রোগের বিবরণ ও উপসর্গ। আপনার শারীরিক সমস্যার কথা বিশদে বলুন।',
+    section3: 'অংশ ৩: ভাইটালস এবং পূর্বের অসুস্থতা।',
+    section4: 'অংশ ৪: মেডিকেল রিপোর্ট এবং ক্ষত ছবি যুক্ত করুন।',
+    listeningName: 'নাম শোনা হচ্ছে... আপনার পুরো নাম বলুন।',
+    listeningCity: 'শহর শোনা হচ্ছে... বলুন।',
+    listeningSymptoms: 'উপসর্গ শোনা হচ্ছে... আপনার রোগের কথা বলুন।',
+    recordingFinished: 'আপনার কণ্ঠ রেকর্ড করা হয়েছে!'
+  },
+  'mr-IN': {
+    welcome: 'स्वास्थ्यसेतु वैद्यकीय फॉर्ममध्ये आपले स्वागत आहे. डॉक्टरांच्या सल्ल्यासाठी तुमची लक्षणे आणि माहिती सांगा.',
+    section1: 'भाग १: रुग्णाची माहिती आणि संपर्क क्रमांक.',
+    section2: 'भाग २: आजाराचा तपशील आणि लक्षणे. तुमच्या त्रासाबद्दल सविस्तर सांगा.',
+    section3: 'भाग ३: सध्याचे व्हायटल्स आणि पूर्वीचे आजार.',
+    section4: 'भाग ४: वैद्यकीय अहवाल आणि जखमेचा फोटो जोडा.',
+    listeningName: 'नाव ऐकले जात आहे... कृपया तुमचे पूर्ण नाव सांगा.',
+    listeningCity: 'शहर ऐकले जात आहे... सांगा.',
+    listeningSymptoms: 'लक्षणे ऐकली जात आहेत... कृपया तुमच्या आजाराबद्दल सांगा.',
+    recordingFinished: 'तुमचा आवाज रेकॉर्ड झाला आहे!'
+  },
+  'ta-IN': {
+    welcome: 'சுவாஸ்தியசேது மருத்துவ படிவத்திற்கு வரவேற்கிறோம். உங்கள் உடல்நல விவரங்களை கூறவும்.',
+    section1: 'பகுதி 1: நோயாளி சுயவிவரம் மற்றும் தொடர்பு எண்.',
+    section2: 'பகுதி 2: நோய் விவரங்கள் மற்றும் அறிகுறிகள்.',
+    section3: 'பகுதி 3: தற்போதைய முக்கிய அறிகுறிகள் மற்றும் முந்தைய நோய்கள்.',
+    section4: 'பகுதி 4: மருத்துவ அறிக்கைகள் மற்றும் காயத்தின் புகைப்படத்தை இணைக்கவும்.',
+    listeningName: 'பெயரைக் கேட்கிறது... உங்கள் முழுப் பெயரைக் கூறவும்.',
+    listeningCity: 'நகரத்தைக் கேட்கிறது...',
+    listeningSymptoms: 'அறிகுறிகளைக் கேட்கிறது... உங்கள் நோயைப் பற்றி கூறவும்.',
+    recordingFinished: 'உங்கள் குரல் பதிவு செய்யப்பட்டது!'
+  },
+  'te-IN': {
+    welcome: 'స్వాస్థ్యసేతు మెడికల్ ఫారమ్‌కు స్వాగతం. మీ వైద్య వివరాలు మరియు లక్షణాలను తెలియజేయండి.',
+    section1: 'విభాగం 1: రోగి ప్రొఫైల్ మరియు సంప్రదింపు వివరాలు.',
+    section2: 'విభాగం 2: వ్యాధి వివరాలు మరియు ప్రాథమిక ఫిర్యాదు.',
+    section3: 'విభాగం 3: ప్రస్తుత వైటల్స్ మరియు పాత వ్యాధులు.',
+    section4: 'విభాగం 4: వైద్య నివేదికలు మరియు గాయం ఫోటోను జత చేయండి.',
+    listeningName: 'పేరు వింటోంది... దయచేసి మీ పూర్తి పేరు చెప్పండి.',
+    listeningCity: 'నగరం వింటోంది...',
+    listeningSymptoms: 'లక్షణాలు వింటోంది... మీ వ్యాధి గురించి వివరించండి.',
+    recordingFinished: 'మీ వాయిస్ రికార్డ్ చేయబడింది!'
+  },
+  'gu-IN': {
+    welcome: 'સ્વાસ્થ્યસેતુ મેડિકલ ફોર્મમાં આપનું સ્વાગત છે. તમારા લક્ષણો અને વિગતો બોલીને ભરો.',
+    section1: 'વિભાગ ૧: દર્દીની પ્રોફાઇલ અને સંપર્ક નંબર.',
+    section2: 'વિભાગ ૨: રોગની વિગતો અને પ્રાથમિક લક્ષણો.',
+    section3: 'વિભાગ ૩: વર્તમાન વાઇટલ્સ અને જૂની બીમારીઓ.',
+    section4: 'વિભાગ ૪: મેડિકલ રિપોર્ટ અને ઘા નો ફોટો ઉમેરો.',
+    listeningName: 'નામ સાંભળવામાં આવી રહ્યું છે... કૃપા કરીને તમારું પૂરું નામ બોલો.',
+    listeningCity: 'શહેર સાંભળવામાં આવી રહ્યું છે...',
+    listeningSymptoms: 'લક્ષણો સાંભળવામાં આવી રહ્યા છે... તમારી બીમારી વિશે વિગતે બોલો.',
+    recordingFinished: 'તમારો અવાજ રેકોર્ડ થઈ ગયો છે!'
+  }
+};
+
+// Text-to-Speech Audio Reader Function
+function speakTextPrompt(textKeyOrRawText, forcedLang) {
+  if (!('speechSynthesis' in window)) {
+    if (typeof showToast === 'function') showToast('⚠️ Audio speech synthesis is not supported on this browser.');
+    return;
+  }
+  
+  window.speechSynthesis.cancel();
+
+  const selectedLang = forcedLang || document.getElementById('voice-lang-selector')?.value || 'hi-IN';
+  const dict = VOICE_PROMPTS[selectedLang] || VOICE_PROMPTS['hi-IN'];
+  const textToSpeak = dict[textKeyOrRawText] || textKeyOrRawText;
+
+  const utterance = new SpeechSynthesisUtterance(textToSpeak);
+  utterance.lang = selectedLang;
+  utterance.rate = 0.9;
+  utterance.pitch = 1.0;
+
+  if (typeof showToast === 'function') {
+    showToast(`🔊 Audio Guidance: Speaking in ${selectedLang.split('-')[0].toUpperCase()}...`);
+  }
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// Speech-to-Text Voice Recording Dictation Function
+function startVoiceDictation(targetInputId) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    if (typeof showToast === 'function') showToast('⚠️ Voice speech recognition is not supported on this browser. Try Google Chrome.');
+    return;
+  }
+
+  const selectedLang = document.getElementById('voice-lang-selector')?.value || 'hi-IN';
+  const targetInput = document.getElementById(targetInputId);
+  const btnElem = document.getElementById(`btn-mic-${targetInputId}`);
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = selectedLang;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  if (btnElem) {
+    btnElem.style.background = '#ef4444';
+    btnElem.style.color = 'white';
+    btnElem.innerHTML = '<span class="material-icons-outlined" style="font-size:16px; animation: pulse 1s infinite;">mic</span> 🎙️ Listening...';
+  }
+
+  const promptKey = targetInputId.includes('name') ? 'listeningName' : (targetInputId.includes('city') ? 'listeningCity' : 'listeningSymptoms');
+  speakTextPrompt(promptKey, selectedLang);
+
+  setTimeout(() => {
+    try {
+      recognition.start();
+    } catch (err) {}
+  }, 1000);
+
+  recognition.onresult = (event) => {
+    let transcript = '';
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    if (targetInput) {
+      targetInput.value = transcript;
+    }
+  };
+
+  recognition.onend = () => {
+    if (btnElem) {
+      btnElem.style.background = 'rgba(16, 132, 126, 0.08)';
+      btnElem.style.color = 'var(--health-teal)';
+      btnElem.innerHTML = '<span class="material-icons-outlined" style="font-size:16px;">mic</span> Speak Answer';
+    }
+    speakTextPrompt('recordingFinished', selectedLang);
+    if (typeof showToast === 'function') showToast('✅ Voice response transcribed successfully!');
+  };
+
+  recognition.onerror = (event) => {
+    if (btnElem) {
+      btnElem.style.background = 'rgba(16, 132, 126, 0.08)';
+      btnElem.style.color = 'var(--health-teal)';
+      btnElem.innerHTML = '<span class="material-icons-outlined" style="font-size:16px;">mic</span> Speak Answer';
+    }
+    if (typeof showToast === 'function') showToast(`⚠️ Voice recording status: ${event.error}`);
+  };
+}
+
+window.speakTextPrompt = speakTextPrompt;
+window.startVoiceDictation = startVoiceDictation;
 
 // Top-Level Global Open Unified Modal Helper
 window.openUnifiedModal = function(targetRole = 'patient') {

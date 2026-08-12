@@ -1414,20 +1414,62 @@
         </div>
       </div>
 
+      <!-- Multilingual Voice Accessibility & Dictation Assistant Banner -->
+      <div class="voice-assistant-bar" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 16px 22px; border-radius: 12px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; border: 1px solid rgba(16, 132, 126, 0.4); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(16, 132, 126, 0.25); display: flex; align-items: center; justify-content: center; color: #4ade80;">
+            <span class="material-icons-outlined" style="font-size: 26px;">record_voice_over</span>
+          </div>
+          <div>
+            <div style="font-weight: 800; font-size: 0.98rem; color: #f8fafc; display: flex; align-items: center; gap: 6px;">
+              🔊 Multilingual Voice Assistant & Dictation
+              <span style="font-size: 0.7rem; background: var(--health-teal); color: white; padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">Accessible</span>
+            </div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 2px;">Cannot read or type? Listen to questions in your language or speak your answers to fill out form!</div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <select id="voice-lang-selector" style="background: #334155; color: white; border: 1px solid #475569; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 0.85rem; cursor: pointer;">
+            <option value="en-IN">🌐 English (India)</option>
+            <option value="hi-IN" selected>🇮🇳 हिन्दी (Hindi)</option>
+            <option value="bn-IN">🇮🇳 বাংলা (Bengali)</option>
+            <option value="mr-IN">🇮🇳 मराठी (Marathi)</option>
+            <option value="ta-IN">🇮🇳 தமிழ் (Tamil)</option>
+            <option value="te-IN">🇮🇳 తెలుగు (Telugu)</option>
+            <option value="gu-IN">🇮🇳 ગુજરાતી (Gujarati)</option>
+          </select>
+
+          <button type="button" id="read-entire-form-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('welcome');" style="background: var(--health-teal); color: white; border: none; padding: 8px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16, 132, 126, 0.4);">
+            <span class="material-icons-outlined" style="font-size: 18px;">volume_up</span> Read Instructions Aloud
+          </button>
+        </div>
+      </div>
+
       <!-- Disease Intake Form Form Container -->
       <form id="patient-disease-intake-form" style="background: white; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #cbd5e1; padding: 30px;">
         
         <!-- SECTION 1: Personal & Contact Information -->
         <div style="margin-bottom: 28px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
-          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
-            <span class="material-icons-outlined text-teal">person</span>
-            1. Patient Profile & Contact Info
-          </h3>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons-outlined text-teal">person</span>
+              1. Patient Profile & Contact Info
+            </h3>
+            <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section1');">
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 1
+            </button>
+          </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Full Name *</label>
-              <input type="text" id="intake-patient-name" class="form-input" required placeholder="Enter full name">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Full Name *</label>
+                <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-name" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-name');">
+                  <span class="material-icons-outlined" style="font-size: 16px;">mic</span> Speak Name
+                </button>
+              </div>
+              <input type="text" id="intake-patient-name" class="form-input" required placeholder="Enter or speak full name">
             </div>
 
             <div class="form-group">
@@ -1455,7 +1497,12 @@
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">City / District</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">City / District</label>
+                <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-city" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-city');">
+                  <span class="material-icons-outlined" style="font-size: 16px;">mic</span> Speak City
+                </button>
+              </div>
               <input type="text" id="intake-patient-city" class="form-input" value="Kanpur Dehat">
             </div>
           </div>
@@ -1463,10 +1510,15 @@
 
         <!-- SECTION 2: Disease Complaint & Symptom Details -->
         <div style="margin-bottom: 28px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
-          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
-            <span class="material-icons-outlined text-teal">sick</span>
-            2. Disease Details & Primary Medical Complaint
-          </h3>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons-outlined text-teal">sick</span>
+              2. Disease Details & Primary Medical Complaint
+            </h3>
+            <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section2');">
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 2
+            </button>
+          </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 16px;">
             <div class="form-group">
@@ -1497,8 +1549,13 @@
           </div>
 
           <div class="form-group" style="margin-bottom: 16px;">
-            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Detailed Disease Symptoms Description *</label>
-            <textarea id="intake-symptoms-detail" class="form-input" rows="4" required placeholder="Describe your illness in detail (e.g., 'Experiencing continuous high fever (101°F) for 3 days accompanied by dry cough, body pain, and fatigue. No breathing difficulty yet.')..." style="line-height: 1.5; background: white;"></textarea>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Detailed Disease Symptoms Description *</label>
+              <button type="button" class="voice-mic-btn" id="btn-mic-intake-symptoms-detail" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-symptoms-detail');">
+                <span class="material-icons-outlined" style="font-size: 16px;">mic</span> 🎙️ Speak Symptoms in your Language
+              </button>
+            </div>
+            <textarea id="intake-symptoms-detail" class="form-input" rows="4" required placeholder="Describe your illness or click 'Speak Symptoms' to dictate in your language (e.g. '3 दिन से तेज बुखार और खांसी है...')..." style="line-height: 1.5; background: white;"></textarea>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
@@ -1527,10 +1584,15 @@
 
         <!-- SECTION 3: Vital Signs & Pre-existing Conditions -->
         <div style="margin-bottom: 28px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
-          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
-            <span class="material-icons-outlined text-teal">monitor_heart</span>
-            3. Current Vitals & Medical History
-          </h3>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons-outlined text-teal">monitor_heart</span>
+              3. Current Vitals & Medical History
+            </h3>
+            <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section3');">
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 3
+            </button>
+          </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px;">
             <div class="form-group">
@@ -1568,10 +1630,15 @@
 
         <!-- SECTION 4: Attach Diagnostic Reports & X-Rays -->
         <div style="margin-bottom: 28px;">
-          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
-            <span class="material-icons-outlined text-teal">attachment</span>
-            4. Attach Diagnostic Reports & X-Rays to Consultation
-          </h3>
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons-outlined text-teal">attachment</span>
+              4. Attach Diagnostic Reports & X-Rays to Consultation
+            </h3>
+            <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section4');">
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 4
+            </button>
+          </div>
 
           <div style="background: #f8fafc; border-radius: 10px; border: 1px solid #cbd5e1; padding: 18px;">
             <p style="margin: 0 0 12px 0; font-size: 0.85rem; color: #475569;">

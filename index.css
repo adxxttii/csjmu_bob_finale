@@ -2776,4 +2776,52 @@ body.high-contrast .faq-question {
   }
 }
 
+/* Voice Accessibility & Dictation Styling */
+.voice-listen-section-btn {
+  background: rgba(16, 132, 126, 0.12);
+  color: var(--health-teal, #10847e);
+  border: 1px solid rgba(16, 132, 126, 0.3);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.voice-listen-section-btn:hover {
+  background: var(--health-teal, #10847e);
+  color: white;
+}
+
+.voice-mic-btn {
+  background: rgba(16, 132, 126, 0.08);
+  color: var(--health-teal, #10847e);
+  border: 1px solid rgba(16, 132, 126, 0.25);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.voice-mic-btn:hover {
+  background: var(--health-teal, #10847e);
+  color: white;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
 
