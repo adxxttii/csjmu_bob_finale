@@ -2416,6 +2416,11 @@ function initAuthModule() {
     });
   }
 
+  // Helper to handle Firebase login & role routing
+  async function handleFirebaseLogin(email, pass = '', role = 'patient', defaultName = '') {
+    return await loginAsRole(role, email, pass, defaultName);
+  }
+
   // Common Login Router
   async function loginAsRole(role, email, pass = '', defaultName = '') {
     const cleanName = defaultName || (email ? email.split('@')[0].replace(/[\._-]/g, ' ') : 'User');
