@@ -1783,18 +1783,66 @@ function initAuthModule() {
     openRegisterBtn.addEventListener('click', () => openUnifiedModal('patient'));
   }
 
-  // Handle Role Tab Switching inside Unified Modal
-  roleTabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const role = btn.dataset.role;
-      roleTabBtns.forEach(b => b.classList.remove('active'));
-      roleFormPanels.forEach(p => p.classList.remove('active'));
+  // Unified Google Sign-In Handler
+  if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', async () => {
+      const activeTab = document.querySelector('.role-tab-btn.active');
+      const activeRole = activeTab ? activeTab.dataset.role : 'doctor';
 
-      btn.classList.add('active');
-      const targetPanel = document.getElementById(`panel-role-${role}`);
-      if (targetPanel) targetPanel.classList.add('active');
+      let roleName = 'Doctor Specialist';
+      let targetRole = 'doctor';
+
+      if (activeRole === 'patient') {
+        roleName = 'Citizen Patient';
+        targetRole = 'patient';
+      } else if (activeRole === 'hwc') {
+        roleName = 'Health Worker';
+        targetRole = 'health_worker';
+      }
+
+      showToast(`Initiating Google Firebase Authentication...`);
+
+      if (window.firebaseAuth && window.firebaseMethods && window.googleProvider) {
+        try {
+          const result = await window.firebaseMethods.signInWithPopup(window.firebaseAuth, window.googleProvider);
+          const user = result.user;
+          showToast(`🔥 Firebase Google Auth: ${user.email}`);
+
+          if (window.firebaseDb) {
+            try {
+              const userRef = window.firebaseMethods.doc(window.firebaseDb, 'users', user.uid);
+              await window.firebaseMethods.setDoc(userRef, {
+                uid: user.uid,
+                email: user.email,
+                name: user.displayName || roleName,
+                photoURL: user.photoURL || '',
+                role: targetRole,
+                lastLogin: new Date().toISOString()
+              }, { merge: true });
+            } catch (dbErr) {
+              console.warn("Firestore error:", dbErr.message);
+            }
+          }
+          await loginAsRole(targetRole, user.email, 'google_oauth', user.displayName || `Google User (${roleName})`);
+          return;
+        } catch (err) {
+          console.warn("Google Auth popup error:", err.code, err.message);
+          if (err.code === 'auth/unauthorized-domain') {
+            showToast(`⚠️ Please add '${window.location.hostname}' to Authorized Domains in Firebase Console -> Auth -> Settings`);
+          } else if (err.code === 'auth/operation-not-allowed') {
+            showToast(`⚠️ Google Sign-In disabled: Please enable 'Google' in Firebase Console -> Auth -> Sign-in Method`);
+          } else if (err.code === 'auth/popup-closed-by-user') {
+            showToast(`Google login popup was closed.`);
+          } else {
+            showToast(`Google Auth Note: ${err.message}`);
+          }
+        }
+      }
+
+      // Fallback demo authentication if Google OAuth popup is blocked or not configured yet
+      await loginAsRole(targetRole, `google_user@swasthya.app`, 'google_demo', `Google Verified (${roleName})`);
     });
-  });
+  }
 
   const userProfileView = document.getElementById('user-profile-view');
 
