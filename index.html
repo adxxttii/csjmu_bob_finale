@@ -1716,13 +1716,42 @@
             </button>
           </div>
 
-          <div style="background: #f8fafc; border-radius: 10px; border: 1px solid #cbd5e1; padding: 18px;">
-            <p style="margin: 0 0 12px 0; font-size: 0.85rem; color: #475569;">
-              Select from your uploaded library to share directly with consulting doctor:
-            </p>
+          <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1; padding: 20px;">
             
-            <div id="intake-reports-selection-container" style="display: flex; flex-direction: column; gap: 10px;">
-              <!-- Dynamic Report Checkboxes Injected via JS -->
+            <!-- Option 1: Direct File Upload Browse Box -->
+            <div style="margin-bottom: 20px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 18px;">
+              <label style="display: block; font-size: 0.88rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 8px;">
+                📁 Browse & Upload New Diagnostic Report, X-Ray or Wound Image:
+              </label>
+              
+              <div id="intake-file-dropzone" onclick="document.getElementById('intake-file-input').click();" style="border: 2px dashed var(--health-teal); background: rgba(16, 132, 126, 0.04); border-radius: 12px; padding: 22px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative;">
+                <input type="file" id="intake-file-input" multiple accept="image/*,.pdf,.doc,.docx" style="display: none;" onchange="if(typeof handleIntakeFileUpload==='function') handleIntakeFileUpload(this.files);">
+                <span class="material-icons-outlined" style="font-size: 42px; color: var(--health-teal); margin-bottom: 6px;">cloud_upload</span>
+                <div style="font-size: 0.95rem; font-weight: 800; color: var(--primary-navy);">
+                  Click to Browse Files or Drag & Drop Here
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; margin: 4px 0 10px 0;">
+                  Upload X-Rays, Lab Reports, Prescriptions or Photos (PNG, JPG, PDF up to 10MB)
+                </div>
+                <button type="button" class="action-btn primary" style="font-size: 0.85rem; padding: 8px 22px; width: auto; display: inline-flex; align-items: center; gap: 6px;" onclick="event.stopPropagation(); document.getElementById('intake-file-input').click();">
+                  <span class="material-icons-outlined" style="font-size: 18px;">folder_open</span> Browse Files from Device
+                </button>
+              </div>
+
+              <!-- List of Newly Uploaded Files for this Consultation -->
+              <div id="intake-newly-uploaded-list" style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+                <!-- Dynamically populated via JS when user browses files -->
+              </div>
+            </div>
+
+            <!-- Option 2: Select from Saved Medical Library -->
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 8px;">
+                📋 Or Select from your Saved Medical Library:
+              </label>
+              <div id="intake-reports-selection-container" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Dynamic Report Checkboxes Injected via JS -->
+              </div>
             </div>
           </div>
         </div>

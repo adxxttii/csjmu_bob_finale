@@ -4027,6 +4027,55 @@ function openPatientDiseaseIntakeView() {
   showView('intake');
 }
 
+// Intake Form Direct File Upload Handler
+window.handleIntakeFileUpload = function(files) {
+  if (!files || files.length === 0) return;
+  const listContainer = document.getElementById('intake-newly-uploaded-list');
+  const stored = JSON.parse(localStorage.getItem('swasthya_uploaded_reports') || '[]');
+
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      const reportItem = {
+        id: 'REP-' + Math.floor(100000 + Math.random() * 900000),
+        title: file.name,
+        fileName: file.name,
+        fileType: file.type.includes('pdf') ? 'PDF Document' : 'Image Scan',
+        category: file.type.includes('image') ? 'xray' : 'pathology',
+        categoryLabel: file.type.includes('image') ? 'Radiology X-Ray / Image' : 'Lab Test Report',
+        dataUrl: dataUrl,
+        uploadDate: 'Just Now',
+        timestamp: Date.now()
+      };
+      stored.unshift(reportItem);
+      localStorage.setItem('swasthya_uploaded_reports', JSON.stringify(stored));
+
+      if (listContainer) {
+        const div = document.createElement('div');
+        div.style.cssText = `display: flex; align-items: center; justify-content: space-between; background: white; padding: 10px 14px; border-radius: 8px; border: 1.5px solid var(--health-teal); font-size: 0.88rem; box-shadow: 0 2px 6px rgba(16, 132, 126, 0.15);`;
+        div.innerHTML = `
+          <label style="display: flex; align-items: center; gap: 10px; font-weight: 700; cursor: pointer; color: var(--primary-navy);">
+            <input type="checkbox" class="intake-attached-report-cb" value="${reportItem.title} (${reportItem.fileName})" checked style="width: 18px; height: 18px; accent-color: var(--health-teal);">
+            <span class="material-icons-outlined" style="font-size: 22px; color: var(--health-teal);">task_alt</span>
+            <div>
+              <div>${reportItem.title}</div>
+              <div style="font-size: 0.74rem; color: #10847e; font-weight: 700;">✅ Uploaded & Attached to Consultation</div>
+            </div>
+          </label>
+          <span style="font-size: 0.74rem; color: white; font-weight: 700; background: var(--health-teal); padding: 2px 10px; border-radius: 10px;">New Upload</span>
+        `;
+        listContainer.prepend(div);
+      }
+
+      if (typeof showToast === 'function') {
+        showToast(`📁 File uploaded & attached: ${file.name}`);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
 function initPatientIntakeFormHandlers() {
   // Attach Start Consultation click handlers across all Hero Slide buttons & Services Tab buttons
   const slideAndServiceButtons = document.querySelectorAll('.slide-btn, .service-card .action-btn, #open-register-btn, .service-actions button, .profile-btn.primary');
