@@ -1771,17 +1771,98 @@ function initAuthModule() {
     });
   }
 
-  if (openDoctorLoginBtn) {
-    openDoctorLoginBtn.addEventListener('click', () => openUnifiedModal('doctor'));
+  // Helper to format Doctor's name accurately
+  function formatDoctorName(inputEmail, fallbackName) {
+    if (inputEmail === 'doctor@medisetu.demo' || inputEmail === 'doc101') return 'Dr. Rajesh Kumar (MD)';
+    if (fallbackName && fallbackName.startsWith('Dr.')) return fallbackName;
+    
+    let raw = inputEmail ? inputEmail.split('@')[0] : (fallbackName || 'Specialist Doctor');
+    raw = raw.replace(/[._-]/g, ' ').trim();
+    raw = raw.replace(/^(dr|doctor)\b\.?\s*/i, '');
+    const capitalized = raw.charAt(0).toUpperCase() + raw.slice(1);
+    return `Dr. ${capitalized} (MD)`;
   }
 
-  if (openHwcLoginBtn) {
-    openHwcLoginBtn.addEventListener('click', () => openUnifiedModal('hwc'));
+  // Update all Doctor UI name occurrences across workstation & modals
+  function updateDoctorNameDisplays(doctorName) {
+    const docSidebarName = document.getElementById('doc-sidebar-name');
+    if (docSidebarName) docSidebarName.textContent = doctorName;
+
+    const overlayNames = document.querySelectorAll('.video-overlay-name');
+    overlayNames.forEach(el => {
+      el.textContent = `${doctorName} (Specialist Feed)`;
+    });
+
+    const confirmCheckLabel = document.querySelector('label[for="doc-explicit-confirm-check"]');
+    if (confirmCheckLabel) {
+      confirmCheckLabel.textContent = `I, ${doctorName} (National Medical Board Reg No: NMB-82741-A), hereby explicitly review, verify, and approve this clinical decision.`;
+    }
   }
 
-  if (openRegisterBtn) {
-    openRegisterBtn.addEventListener('click', () => openUnifiedModal('patient'));
-  }
+  // Direct Click Handlers & Form Submit Handlers for All Login Modals
+  const submitUniDocBtn = document.getElementById('submit-uni-doc-btn');
+  const submitUniPatBtn = document.getElementById('submit-uni-pat-btn');
+  const submitUniHwcBtn = document.getElementById('submit-uni-hwc-btn');
+  const submitHwcLoginBtn = document.getElementById('submit-hwc-login-btn');
+  const submitDoctorLoginBtn = document.getElementById('submit-doctor-login-btn');
+
+  const doDoctorLogin = async () => {
+    const uniEmail = document.getElementById('uni-doc-email');
+    const docEmail = document.getElementById('doctor-email');
+    const uniPass = document.getElementById('uni-doc-pass');
+    const docPass = document.getElementById('doctor-password');
+
+    const email = (uniEmail && uniEmail.value) ? uniEmail.value : ((docEmail && docEmail.value) ? docEmail.value : 'doctor@medisetu.demo');
+    const pass = (uniPass && uniPass.value) ? uniPass.value : ((docPass && docPass.value) ? docPass.value : 'Demo@123');
+    
+    const docName = formatDoctorName(email, 'Dr. Rajesh Kumar (MD)');
+    updateDoctorNameDisplays(docName);
+    await handleFirebaseLogin(email, pass, 'doctor', docName);
+  };
+
+  const doPatientLogin = async () => {
+    const patInput = document.getElementById('uni-pat-input');
+    const patPass = document.getElementById('uni-pat-pass');
+    const email = (patInput && patInput.value) ? patInput.value : 'patient@medisetu.demo';
+    const pass = (patPass && patPass.value) ? patPass.value : 'Demo@123';
+    await handleFirebaseLogin(email, pass, 'patient', 'Citizen Patient');
+  };
+
+  const doHwcLogin = async () => {
+    const uniEmail = document.getElementById('uni-hwc-email');
+    const staffEmail = document.getElementById('hwc-staff-id');
+    const uniPass = document.getElementById('uni-hwc-pass');
+    const staffPass = document.getElementById('hwc-password');
+
+    const email = (uniEmail && uniEmail.value) ? uniEmail.value : ((staffEmail && staffEmail.value) ? staffEmail.value : 'healthworker@medisetu.demo');
+    const pass = (uniPass && uniPass.value) ? uniPass.value : ((staffPass && staffPass.value) ? staffPass.value : 'Demo@123');
+    await handleFirebaseLogin(email, pass, 'health_worker', 'Health Worker (HW101)');
+  };
+
+  // Attach button click listeners across all modals
+  if (submitUniDocBtn) submitUniDocBtn.addEventListener('click', doDoctorLogin);
+  if (submitDoctorLoginBtn) submitDoctorLoginBtn.addEventListener('click', doDoctorLogin);
+
+  if (submitUniPatBtn) submitUniPatBtn.addEventListener('click', doPatientLogin);
+
+  if (submitUniHwcBtn) submitUniHwcBtn.addEventListener('click', doHwcLogin);
+  if (submitHwcLoginBtn) submitHwcLoginBtn.addEventListener('click', doHwcLogin);
+
+  // Attach form submit listeners
+  const uniDoctorForm = document.getElementById('unified-doctor-form');
+  if (uniDoctorForm) uniDoctorForm.addEventListener('submit', (e) => { e.preventDefault(); doDoctorLogin(); });
+
+  const doctorLoginForm = document.getElementById('doctor-login-form');
+  if (doctorLoginForm) doctorLoginForm.addEventListener('submit', (e) => { e.preventDefault(); doDoctorLogin(); });
+
+  const uniPatientForm = document.getElementById('unified-patient-form');
+  if (uniPatientForm) uniPatientForm.addEventListener('submit', (e) => { e.preventDefault(); doPatientLogin(); });
+
+  const uniHwcForm = document.getElementById('unified-hwc-form');
+  if (uniHwcForm) uniHwcForm.addEventListener('submit', (e) => { e.preventDefault(); doHwcLogin(); });
+
+  const hwcLoginForm = document.getElementById('hwc-login-form');
+  if (hwcLoginForm) hwcLoginForm.addEventListener('submit', (e) => { e.preventDefault(); doHwcLogin(); });
 
   // Unified Google Sign-In Handler
   if (googleLoginBtn) {
@@ -1789,7 +1870,7 @@ function initAuthModule() {
       const activeTab = document.querySelector('.role-tab-btn.active');
       const activeRole = activeTab ? activeTab.dataset.role : 'doctor';
 
-      let roleName = 'Doctor Specialist';
+      let roleName = 'Dr. Google Specialist (MD)';
       let targetRole = 'doctor';
 
       if (activeRole === 'patient') {
@@ -1808,13 +1889,22 @@ function initAuthModule() {
           const user = result.user;
           showToast(`🔥 Firebase Google Auth: ${user.email}`);
 
+          let finalName = user.displayName || roleName;
+          if (targetRole === 'doctor' && !finalName.startsWith('Dr.')) {
+            finalName = `Dr. ${finalName} (MD)`;
+          }
+
+          if (targetRole === 'doctor') {
+            updateDoctorNameDisplays(finalName);
+          }
+
           if (window.firebaseDb) {
             try {
               const userRef = window.firebaseMethods.doc(window.firebaseDb, 'users', user.uid);
               await window.firebaseMethods.setDoc(userRef, {
                 uid: user.uid,
                 email: user.email,
-                name: user.displayName || roleName,
+                name: finalName,
                 photoURL: user.photoURL || '',
                 role: targetRole,
                 lastLogin: new Date().toISOString()
@@ -1823,7 +1913,7 @@ function initAuthModule() {
               console.warn("Firestore error:", dbErr.message);
             }
           }
-          await loginAsRole(targetRole, user.email, 'google_oauth', user.displayName || `Google User (${roleName})`);
+          await loginAsRole(targetRole, user.email, 'google_oauth', finalName);
           return;
         } catch (err) {
           console.warn("Google Auth popup error:", err.code, err.message);
@@ -1839,8 +1929,9 @@ function initAuthModule() {
         }
       }
 
-      // Fallback demo authentication if Google OAuth popup is blocked or not configured yet
-      await loginAsRole(targetRole, `google_user@swasthya.app`, 'google_demo', `Google Verified (${roleName})`);
+      const defaultGoogleDocName = targetRole === 'doctor' ? 'Dr. Google Specialist (MD)' : `Google Verified (${roleName})`;
+      if (targetRole === 'doctor') updateDoctorNameDisplays(defaultGoogleDocName);
+      await loginAsRole(targetRole, `google_user@swasthya.app`, 'google_demo', defaultGoogleDocName);
     });
   }
 
