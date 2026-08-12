@@ -1796,6 +1796,74 @@ function initAuthModule() {
     });
   });
 
+  const userProfileView = document.getElementById('user-profile-view');
+
+  // Master View Switcher
+  function showView(viewName) {
+    if (landingView) landingView.style.display = (viewName === 'landing') ? 'block' : 'none';
+    if (userProfileView) userProfileView.style.display = (viewName === 'profile') ? 'block' : 'none';
+    if (doctorDashboardView) doctorDashboardView.style.display = (viewName === 'doctor') ? 'flex' : 'none';
+    if (hwcDashboardView) hwcDashboardView.style.display = (viewName === 'hwc') ? 'flex' : 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Render User Profile Page Content
+  function renderProfilePage(user) {
+    if (!user) return;
+    const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'User');
+    const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+    const role = (user.role || 'patient').toLowerCase();
+
+    const welcomeName = document.getElementById('profile-welcome-name');
+    const userEmail = document.getElementById('profile-user-email');
+    const roleBadge = document.getElementById('profile-role-badge');
+    const uidText = document.getElementById('profile-uid-text');
+    
+    const profName = document.getElementById('prof-detail-name');
+    const profEmail = document.getElementById('prof-detail-email');
+    const profRole = document.getElementById('prof-detail-role');
+    const profUid = document.getElementById('prof-detail-uid');
+    const launchBtnTxt = document.getElementById('profile-launch-btn-txt');
+    const launchBtn = document.getElementById('profile-launch-portal-btn');
+
+    if (welcomeName) welcomeName.textContent = `Welcome back, ${cleanName}!`;
+    if (userEmail) userEmail.textContent = user.email || 'user@swasthya.app';
+    if (profName) profName.textContent = cleanName;
+    if (profEmail) profEmail.textContent = user.email || 'user@swasthya.app';
+    
+    const uidDisplay = user.uid ? user.uid : 'usr_' + Date.now().toString().slice(-6);
+    if (profUid) profUid.textContent = uidDisplay;
+    if (uidText) uidText.textContent = `UID: ${uidDisplay.slice(0, 14)}`;
+
+    let roleDisplay = 'CITIZEN PATIENT';
+    if (role === 'doctor') roleDisplay = 'DOCTOR SPECIALIST';
+    else if (role === 'health_worker' || role === 'hwc') roleDisplay = 'HEALTH WORKER';
+
+    if (roleBadge) roleBadge.textContent = roleDisplay;
+    if (profRole) profRole.textContent = roleDisplay;
+
+    if (launchBtnTxt) {
+      if (role === 'doctor') launchBtnTxt.textContent = 'Launch Doctor Workstation';
+      else if (role === 'health_worker' || role === 'hwc') launchBtnTxt.textContent = 'Open Health Worker Portal';
+      else launchBtnTxt.textContent = 'Join OPD Teleconsultation';
+    }
+
+    if (launchBtn) {
+      launchBtn.onclick = () => {
+        if (role === 'doctor') {
+          showView('doctor');
+          initDoctorDashboardLogic();
+        } else if (role === 'health_worker' || role === 'hwc') {
+          showView('hwc');
+        } else {
+          showView('landing');
+          const regModal = document.getElementById('register-modal');
+          if (regModal) regModal.classList.add('active');
+        }
+      };
+    }
+  }
+
   // Helper to update Top Header Auth Badge
   function updateHeaderAuthBadge(user) {
     const openUnifiedLoginBtn = document.getElementById('open-unified-login-btn');
@@ -1805,7 +1873,15 @@ function initAuthModule() {
 
     if (user) {
       if (openUnifiedLoginBtn) openUnifiedLoginBtn.style.display = 'none';
-      if (userProfileDisplay) userProfileDisplay.style.display = 'flex';
+      if (userProfileDisplay) {
+        userProfileDisplay.style.display = 'flex';
+        userProfileDisplay.style.cursor = 'pointer';
+        userProfileDisplay.title = 'Click to open User Profile Page';
+        userProfileDisplay.onclick = () => {
+          renderProfilePage(currentUser || user);
+          showView('profile');
+        };
+      }
       
       const cleanName = user.displayName || (user.name ? user.name : (user.email ? user.email.split('@')[0].replace(/[\._-]/g, ' ') : 'User'));
       const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
@@ -1817,186 +1893,47 @@ function initAuthModule() {
     }
   }
 
-  // Firebase Authentication & Database Helper Function
-  async function handleFirebaseLogin(rawEmail, password, role, defaultName) {
-    // Sanitize input: If user entered phone number or username without '@', format as email for Firebase Auth
-    let email = rawEmail ? rawEmail.trim() : '';
-    if (email && !email.includes('@')) {
-      email = `${email.replace(/[^a-zA-Z0-9]/g, '')}@swasthya.app`;
-    }
-    
-    // Ensure password meets Firebase min 6 char length requirement
-    let pass = password && password.length >= 6 ? password : `${password || '123456'}Demo123!`;
-
-    if (window.firebaseAuth && window.firebaseMethods) {
-      const { signInWithEmailAndPassword, createUserWithEmailAndPassword, doc, setDoc } = window.firebaseMethods;
-      try {
-        let userCred = null;
-        try {
-          userCred = await signInWithEmailAndPassword(window.firebaseAuth, email, pass);
-          showToast(`🔥 Firebase Auth: Signed in as ${email}`);
-        } catch (authErr) {
-          console.warn("Firebase SignIn code:", authErr.code, authErr.message);
-          
-          if (authErr.code === 'auth/unauthorized-domain') {
-            showToast(`⚠️ Firebase Domain Warning: Please add '${window.location.hostname}' to Firebase Console -> Auth -> Settings -> Authorized Domains`);
-          } else if (
-            authErr.code === 'auth/invalid-credential' || 
-            authErr.code === 'auth/user-not-found' || 
-            authErr.code === 'auth/wrong-password' ||
-            authErr.code === 'auth/invalid-email'
-          ) {
-            try {
-              // Attempt to auto-create user on first sign-in
-              userCred = await createUserWithEmailAndPassword(window.firebaseAuth, email, pass);
-              showToast(`🔥 Firebase Auth: Created new user for ${email}`);
-            } catch (createErr) {
-              console.warn("Firebase CreateUser Error:", createErr.code, createErr.message);
-              if (createErr.code === 'auth/unauthorized-domain') {
-                showToast(`⚠️ Firebase Warning: Please add '${window.location.hostname}' to Authorized Domains in Firebase Console`);
-              } else if (createErr.code === 'auth/email-already-in-use') {
-                showToast(`⚠️ Password mismatch for email ${email}`);
-              } else {
-                showToast(`Auth Info: ${createErr.message}`);
-              }
-            }
-          } else {
-            showToast(`Auth Note: ${authErr.message}`);
-          }
-        }
-
-        if (userCred && userCred.user && window.firebaseDb) {
-          try {
-            const userRef = doc(window.firebaseDb, 'users', userCred.user.uid);
-            await setDoc(userRef, {
-              uid: userCred.user.uid,
-              email: email,
-              role: role,
-              name: defaultName,
-              lastLogin: new Date().toISOString()
-            }, { merge: true });
-            console.log("🔥 Firestore updated for user UID:", userCred.user.uid);
-          } catch (dbErr) {
-            console.warn("Firestore save note:", dbErr.message);
-          }
-        }
-      } catch (err) {
-        console.warn("Firebase Login Error:", err.message);
-      }
-    }
-    
-    await loginAsRole(role, email, pass, defaultName);
+  // Profile Logout Button Listener
+  const profileLogoutBtn = document.getElementById('profile-logout-btn');
+  if (profileLogoutBtn) {
+    profileLogoutBtn.addEventListener('click', async () => {
+      if (typeof signOutUser === 'function') await signOutUser();
+      localStorage.removeItem('swasthya_current_user');
+      currentUser = null;
+      updateHeaderAuthBadge(null);
+      showView('landing');
+      showToast('Logged out of SwasthyaSetu.');
+    });
   }
 
-  // Direct Click Handlers & Form Submit Handlers for All Login Modals
-  const submitUniDocBtn = document.getElementById('submit-uni-doc-btn');
-  const submitUniPatBtn = document.getElementById('submit-uni-pat-btn');
-  const submitUniHwcBtn = document.getElementById('submit-uni-hwc-btn');
-  const submitHwcLoginBtn = document.getElementById('submit-hwc-login-btn');
-  const submitDoctorLoginBtn = document.getElementById('submit-doctor-login-btn');
-
-  const doDoctorLogin = async () => {
-    const uniEmail = document.getElementById('uni-doc-email');
-    const docEmail = document.getElementById('doctor-email');
-    const uniPass = document.getElementById('uni-doc-pass');
-    const docPass = document.getElementById('doctor-password');
-
-    const email = (uniEmail && uniEmail.value) ? uniEmail.value : ((docEmail && docEmail.value) ? docEmail.value : 'doctor@medisetu.demo');
-    const pass = (uniPass && uniPass.value) ? uniPass.value : ((docPass && docPass.value) ? docPass.value : 'Demo@123');
-    await handleFirebaseLogin(email, pass, 'doctor', 'Dr. Rajesh Kumar (MD)');
-  };
-
-  const doPatientLogin = async () => {
-    const patInput = document.getElementById('uni-pat-input');
-    const patPass = document.getElementById('uni-pat-pass');
-    const email = (patInput && patInput.value) ? patInput.value : 'patient@medisetu.demo';
-    const pass = (patPass && patPass.value) ? patPass.value : 'Demo@123';
-    await handleFirebaseLogin(email, pass, 'patient', 'Citizen Patient');
-  };
-
-  const doHwcLogin = async () => {
-    const uniEmail = document.getElementById('uni-hwc-email');
-    const staffEmail = document.getElementById('hwc-staff-id');
-    const uniPass = document.getElementById('uni-hwc-pass');
-    const staffPass = document.getElementById('hwc-password');
-
-    const email = (uniEmail && uniEmail.value) ? uniEmail.value : ((staffEmail && staffEmail.value) ? staffEmail.value : 'healthworker@medisetu.demo');
-    const pass = (uniPass && uniPass.value) ? uniPass.value : ((staffPass && staffPass.value) ? staffPass.value : 'Demo@123');
-    await handleFirebaseLogin(email, pass, 'health_worker', 'Health Worker (HW101)');
-  };
-
-  // Attach button click listeners across all modals
-  if (submitUniDocBtn) submitUniDocBtn.addEventListener('click', doDoctorLogin);
-  if (submitDoctorLoginBtn) submitDoctorLoginBtn.addEventListener('click', doDoctorLogin);
-
-  if (submitUniPatBtn) submitUniPatBtn.addEventListener('click', doPatientLogin);
-
-  if (submitUniHwcBtn) submitUniHwcBtn.addEventListener('click', doHwcLogin);
-  if (submitHwcLoginBtn) submitHwcLoginBtn.addEventListener('click', doHwcLogin);
-
-  // Attach form submit listeners
-  const uniDoctorForm = document.getElementById('unified-doctor-form');
-  if (uniDoctorForm) uniDoctorForm.addEventListener('submit', (e) => { e.preventDefault(); doDoctorLogin(); });
-
-  const doctorLoginForm = document.getElementById('doctor-login-form');
-  if (doctorLoginForm) doctorLoginForm.addEventListener('submit', (e) => { e.preventDefault(); doDoctorLogin(); });
-
-  const uniPatientForm = document.getElementById('unified-patient-form');
-  if (uniPatientForm) uniPatientForm.addEventListener('submit', (e) => { e.preventDefault(); doPatientLogin(); });
-
-  const uniHwcForm = document.getElementById('unified-hwc-form');
-  if (uniHwcForm) uniHwcForm.addEventListener('submit', (e) => { e.preventDefault(); doHwcLogin(); });
-
-  const hwcLoginForm = document.getElementById('hwc-login-form');
-  if (hwcLoginForm) hwcLoginForm.addEventListener('submit', (e) => { e.preventDefault(); doHwcLogin(); });
-
-  // Unified Google Login Handler
-  if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', async () => {
-      const activeTab = document.querySelector('.role-tab-btn.active');
-      const activeRole = activeTab ? activeTab.dataset.role : 'doctor';
-
-      let roleName = 'Doctor Specialist';
-      let targetRole = 'doctor';
-
-      if (activeRole === 'patient') {
-        roleName = 'Citizen Patient';
-        targetRole = 'patient';
-      } else if (activeRole === 'hwc') {
-        roleName = 'Health Worker';
-        targetRole = 'health_worker';
+  // Profile Shortcuts Listeners
+  const shortcutOpd = document.getElementById('shortcut-opd');
+  if (shortcutOpd) {
+    shortcutOpd.addEventListener('click', () => {
+      if (currentUser && currentUser.role === 'doctor') {
+        showView('doctor');
+        initDoctorDashboardLogic();
+      } else if (currentUser && (currentUser.role === 'health_worker' || currentUser.role === 'hwc')) {
+        showView('hwc');
+      } else {
+        showView('landing');
+        const regModal = document.getElementById('register-modal');
+        if (regModal) regModal.classList.add('active');
       }
+    });
+  }
 
-      showToast(`Initiating Google Firebase Authentication...`);
+  const shortcutDhr = document.getElementById('shortcut-dhr');
+  if (shortcutDhr) {
+    shortcutDhr.addEventListener('click', () => {
+      showToast('📄 Digital Health Records (DHR) synced to cloud.');
+    });
+  }
 
-      if (window.firebaseAuth && window.firebaseMethods && window.googleProvider) {
-        try {
-          const result = await window.firebaseMethods.signInWithPopup(window.firebaseAuth, window.googleProvider);
-          const user = result.user;
-          showToast(`🔥 Firebase Google Auth: ${user.email}`);
-
-          if (window.firebaseDb) {
-            const userRef = window.firebaseMethods.doc(window.firebaseDb, 'users', user.uid);
-            await window.firebaseMethods.setDoc(userRef, {
-              uid: user.uid,
-              email: user.email,
-              name: user.displayName || roleName,
-              photoURL: user.photoURL || '',
-              role: targetRole,
-              lastLogin: new Date().toISOString()
-            }, { merge: true });
-          }
-          await loginAsRole(targetRole, user.email, 'google_oauth', user.displayName || `Google User (${roleName})`);
-          return;
-        } catch (err) {
-          console.warn("Google Auth popup note:", err.message);
-          if (err.code === 'auth/unauthorized-domain') {
-            showToast(`⚠️ Firebase Warning: Please add '${window.location.hostname}' to Authorized Domains in Firebase Console`);
-          }
-        }
-      }
-
-      await loginAsRole(targetRole, `google_user@swasthya.app`, 'google_demo', `Google Verified (${roleName})`);
+  const shortcutHome = document.getElementById('shortcut-home');
+  if (shortcutHome) {
+    shortcutHome.addEventListener('click', () => {
+      showView('landing');
     });
   }
 
@@ -2005,14 +1942,13 @@ function initAuthModule() {
     const cleanName = defaultName || (email ? email.split('@')[0].replace(/[\._-]/g, ' ') : 'User');
     const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
     
-    // Call Firebase Auth signInUser helper if available
     let authRes = null;
     if (typeof signInUser === 'function' && email) {
       authRes = await signInUser(email, pass || 'demo123456', role);
     }
 
     const userData = (authRes && authRes.user) ? { ...authRes.user, role: role || authRes.user.role } : {
-      uid: 'user_' + Date.now(),
+      uid: 'usr_' + Date.now().toString().slice(-6),
       email: email || 'user@swasthyasetu.org',
       displayName: formattedName,
       role: role
@@ -2021,48 +1957,27 @@ function initAuthModule() {
     currentUser = userData;
     localStorage.setItem('swasthya_current_user', JSON.stringify(userData));
     updateHeaderAuthBadge(userData);
+    renderProfilePage(userData);
 
     if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
     if (hwcLoginModal) hwcLoginModal.classList.remove('active');
     if (doctorLoginModal) doctorLoginModal.classList.remove('active');
 
-    if (role === 'doctor') {
-      landingView.style.display = 'none';
-      hwcDashboardView.style.display = 'none';
-      doctorDashboardView.style.display = 'flex';
-      initDoctorDashboardLogic();
-      doctorDashboardView.scrollIntoView({ behavior: 'smooth' });
-      showToast(`✓ Logged in as Doctor: ${formattedName}`);
-    } else if (role === 'health_worker' || role === 'cho') {
-      landingView.style.display = 'none';
-      doctorDashboardView.style.display = 'none';
-      hwcDashboardView.style.display = 'flex';
-      hwcDashboardView.scrollIntoView({ behavior: 'smooth' });
-      showToast(`✓ Logged in as Health Worker: ${formattedName}`);
-    } else if (role === 'patient') {
-      doctorDashboardView.style.display = 'none';
-      hwcDashboardView.style.display = 'none';
-      landingView.style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      showToast(`✓ Welcome back, ${formattedName}! Signed in as Patient.`);
-    } else {
-      doctorDashboardView.style.display = 'none';
-      hwcDashboardView.style.display = 'none';
-      landingView.style.display = 'block';
-    }
+    // Display dedicated Profile Web Page
+    showView('profile');
+    showToast(`✓ Welcome back, ${formattedName}! Profile page updated.`);
   }
 
   // Header Logout Button Handler
   const headerLogoutBtn = document.getElementById('header-logout-btn');
   if (headerLogoutBtn) {
-    headerLogoutBtn.addEventListener('click', async () => {
+    headerLogoutBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
       if (typeof signOutUser === 'function') await signOutUser();
       localStorage.removeItem('swasthya_current_user');
       currentUser = null;
       updateHeaderAuthBadge(null);
-      landingView.style.display = 'block';
-      doctorDashboardView.style.display = 'none';
-      hwcDashboardView.style.display = 'none';
+      showView('landing');
       showToast('Logged out of SwasthyaSetu.');
     });
   }
@@ -2075,8 +1990,11 @@ function initAuthModule() {
       if (parsedUser && (parsedUser.role || parsedUser.email)) {
         currentUser = parsedUser;
         updateHeaderAuthBadge(parsedUser);
+        renderProfilePage(parsedUser);
       }
-    } catch (e) {}
+    } catch (err) {
+      console.warn("Could not restore saved user session");
+    }
   }
 
   // Firebase Auth State Listener
