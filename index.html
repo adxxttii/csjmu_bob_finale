@@ -144,6 +144,18 @@
       <button class="nav-login-btn" id="open-unified-login-btn">
         <span class="material-icons-outlined" style="font-size: 18px;">account_circle</span> Sign In
       </button>
+      <div id="user-profile-display" class="user-profile-badge" style="display: none; align-items: center; gap: 10px; background: rgba(16, 132, 126, 0.08); border: 1px solid rgba(16, 132, 126, 0.25); padding: 4px 14px 4px 6px; border-radius: 30px;">
+        <div class="user-avatar-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; display: flex; align-items: center; justify-content: center;">
+          <span class="material-icons-outlined" style="font-size: 18px;">person</span>
+        </div>
+        <div style="text-align: left;">
+          <div id="user-display-name" style="font-weight: 700; font-size: 0.84rem; color: var(--primary-navy); line-height: 1.2;">User</div>
+          <div id="user-display-role" style="font-size: 0.65rem; color: var(--health-teal); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Patient</div>
+        </div>
+        <button id="header-logout-btn" class="header-logout-btn" title="Sign Out" style="background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 4px;">
+          <span class="material-icons-outlined" style="font-size: 16px;">logout</span>
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -1109,7 +1121,7 @@
             <strong>Demo Doctor Account:</strong><br>
             Email: <code>doctor@medisetu.demo</code> | Pass: <code>Demo@123</code>
           </div>
-          <form id="unified-doctor-form" onsubmit="return false;">
+          <form id="unified-doctor-form" onsubmit="event.preventDefault();">
             <div class="form-group">
               <label for="uni-doc-email">Doctor Email / License Reg ID</label>
               <input type="text" id="uni-doc-email" class="form-input" value="doctor@medisetu.demo" required>
@@ -1118,7 +1130,7 @@
               <label for="uni-doc-pass">Password</label>
               <input type="password" id="uni-doc-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="submit" class="form-submit" style="background: var(--primary-navy);">Login as Doctor</button>
+            <button type="button" id="submit-uni-doc-btn" class="form-submit" style="background: var(--primary-navy);">Login as Doctor</button>
           </form>
         </div>
 
@@ -1128,7 +1140,7 @@
             <strong>Demo Patient Account:</strong><br>
             Mobile / Email: <code>patient@medisetu.demo</code> | Mobile: <code>9876543210</code>
           </div>
-          <form id="unified-patient-form" onsubmit="return false;">
+          <form id="unified-patient-form" onsubmit="event.preventDefault();">
             <div class="form-group">
               <label for="uni-pat-input">Mobile Number or Email</label>
               <input type="text" id="uni-pat-input" class="form-input" value="patient@medisetu.demo" required>
@@ -1137,7 +1149,7 @@
               <label for="uni-pat-pass">Password / OTP Code</label>
               <input type="password" id="uni-pat-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="submit" class="form-submit" style="background: var(--accent-saffron);">Continue as Patient</button>
+            <button type="button" id="submit-uni-pat-btn" class="form-submit" style="background: var(--accent-saffron);">Continue as Patient</button>
           </form>
         </div>
 
@@ -1147,7 +1159,7 @@
             <strong>Demo Health Worker Account:</strong><br>
             Email: <code>healthworker@medisetu.demo</code> | Pass: <code>Demo@123</code>
           </div>
-          <form id="unified-hwc-form" onsubmit="return false;">
+          <form id="unified-hwc-form" onsubmit="event.preventDefault();">
             <div class="form-group">
               <label for="uni-hwc-email">Health Worker Email / Staff ID</label>
               <input type="text" id="uni-hwc-email" class="form-input" value="healthworker@medisetu.demo" required>
@@ -1156,7 +1168,7 @@
               <label for="uni-hwc-pass">Password</label>
               <input type="password" id="uni-hwc-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="submit" class="form-submit" style="background: var(--health-teal);">Login as Health Worker</button>
+            <button type="button" id="submit-uni-hwc-btn" class="form-submit" style="background: var(--health-teal);">Login as Health Worker</button>
           </form>
         </div>
 
@@ -1520,6 +1532,12 @@
     </div>
   </div>
 
+  <!-- Firebase Web SDK v10 (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
