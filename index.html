@@ -1365,7 +1365,269 @@
           </div>
         </div>
 
+    </div>
+  </div>
+
+  <!-- 🩺 PATIENT DISEASE & CONSULTATION INTAKE FULL-PAGE VIEW -->
+  <div id="patient-disease-intake-view" style="display: none; background: #f1f5f9; min-height: 100vh; padding-bottom: 60px;">
+    
+    <!-- Top Header Bar -->
+    <div style="background: linear-gradient(135deg, var(--primary-navy-dark), var(--primary-navy)); color: white; padding: 20px 4%; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+      <div style="max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button id="intake-back-to-home-btn" type="button" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: white; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <span class="material-icons-outlined">arrow_back</span>
+          </button>
+          <div>
+            <h2 style="margin: 0; font-size: 1.35rem; color: white; display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons-outlined" style="color: var(--accent-saffron);">assignment</span>
+              Patient Disease & Tele-Consultation Form
+            </h2>
+            <div style="font-size: 0.82rem; color: rgba(255,255,255,0.8); margin-top: 2px;">Fill out your current disease symptoms & medical details to connect with specialist doctor</div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);">
+          <span class="material-icons-outlined" style="color: #4ade80; font-size: 18px;">verified_user</span>
+          <span style="font-size: 0.8rem; font-weight: 700; color: white;" id="intake-user-badge">Signed in as Patient</span>
+        </div>
       </div>
+    </div>
+
+    <!-- Main Container Card -->
+    <div style="max-width: 1000px; margin: 30px auto 0 auto; padding: 0 15px;">
+      
+      <!-- Progress Bar -->
+      <div style="background: white; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; text-align: center;">
+          <div style="flex: 1; position: relative;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--health-teal); color: white; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto;">1</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary-navy);">Patient Info</div>
+          </div>
+          <div style="height: 2px; background: var(--health-teal); flex: 1; margin: -16px 8px 0 8px;"></div>
+          <div style="flex: 1; position: relative;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--health-teal); color: white; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto;">2</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary-navy);">Disease & Symptoms</div>
+          </div>
+          <div style="height: 2px; background: var(--health-teal); flex: 1; margin: -16px 8px 0 8px;"></div>
+          <div style="flex: 1; position: relative;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--health-teal); color: white; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 6px auto;">3</div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary-navy);">Vitals & Reports</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disease Intake Form Form Container -->
+      <form id="patient-disease-intake-form" style="background: white; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #cbd5e1; padding: 30px;">
+        
+        <!-- SECTION 1: Personal & Contact Information -->
+        <div style="margin-bottom: 28px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons-outlined text-teal">person</span>
+            1. Patient Profile & Contact Info
+          </h3>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Full Name *</label>
+              <input type="text" id="intake-patient-name" class="form-input" required placeholder="Enter full name">
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Age (Years) *</label>
+              <input type="number" id="intake-patient-age" class="form-input" required placeholder="e.g. 34" min="1" max="115" value="34">
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Gender *</label>
+              <select id="intake-patient-gender" class="form-input" required style="background: white;">
+                <option value="Male">Male</option>
+                <option value="Female" selected>Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Mobile Number *</label>
+              <input type="tel" id="intake-patient-phone" class="form-input" required placeholder="+91 98765 43210" value="+91 98765 43210">
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">State *</label>
+              <input type="text" id="intake-patient-state" class="form-input" required value="Uttar Pradesh">
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">City / District</label>
+              <input type="text" id="intake-patient-city" class="form-input" value="Kanpur Dehat">
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: Disease Complaint & Symptom Details -->
+        <div style="margin-bottom: 28px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons-outlined text-teal">sick</span>
+            2. Disease Details & Primary Medical Complaint
+          </h3>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 16px;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Specialist Department Required *</label>
+              <select id="intake-department" class="form-input" required style="font-weight: 700; color: var(--primary-navy); background: white;">
+                <option value="General Medicine">👨‍⚕️ General Medicine / OPD</option>
+                <option value="Pulmonology">🫁 Pulmonology & Respiratory Care</option>
+                <option value="Pediatrics">👶 Pediatrics (Child Care)</option>
+                <option value="Cardiology">❤️ Cardiology (Heart Specialist)</option>
+                <option value="Gynecology">👩‍⚕️ Gynecology & Women's Health</option>
+                <option value="Dermatology">🩺 Dermatology (Skin & Hair)</option>
+                <option value="Orthopedics">🦴 Orthopedics (Joints & Bones)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Primary Disease Category *</label>
+              <select id="intake-disease-category" class="form-input" required style="background: white;">
+                <option value="Fever & Flu">🌡️ High Fever, Cold & Shivering</option>
+                <option value="Respiratory">🫁 Severe Cough, Asthma & Breathlessness</option>
+                <option value="Joint & Bone Pain">🦴 Fracture, Joint Pain or Back Pain</option>
+                <option value="Abdominal & Digestive">🤢 Stomach Pain, Vomiting or Acid Reflux</option>
+                <option value="Cardiovascular">💓 High BP, Chest Tightness or Dizziness</option>
+                <option value="Skin Rash">🩺 Rash, Allergy or Skin Infection</option>
+                <option value="General Checkup">📋 Routine Diabetes/Hypertension Checkup</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Detailed Disease Symptoms Description *</label>
+            <textarea id="intake-symptoms-detail" class="form-input" rows="4" required placeholder="Describe your illness in detail (e.g., 'Experiencing continuous high fever (101°F) for 3 days accompanied by dry cough, body pain, and fatigue. No breathing difficulty yet.')..." style="line-height: 1.5; background: white;"></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Symptom Duration *</label>
+              <select id="intake-symptom-duration" class="form-input" required style="background: white;">
+                <option value="1-2 Days">1 — 2 Days</option>
+                <option value="3-5 Days" selected>3 — 5 Days</option>
+                <option value="1 Week">1 Week</option>
+                <option value="2+ Weeks">More than 2 Weeks</option>
+                <option value="Chronic Condition">Chronic Long-term Condition</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Discomfort / Pain Level *</label>
+              <select id="intake-pain-scale" class="form-input" required style="background: white;">
+                <option value="Mild Discomfort">🟢 Mild (Manageable at home)</option>
+                <option value="Moderate Pain" selected>🟡 Moderate (Affecting daily routine)</option>
+                <option value="Severe Pain">🟠 Severe (Requires immediate specialist evaluation)</option>
+                <option value="Critical Emergency">🔴 Critical Emergency (Urgent doctor assistance)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: Vital Signs & Pre-existing Conditions -->
+        <div style="margin-bottom: 28px; border-bottom: 1px solid #e2e8f0; padding-bottom: 20px;">
+          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons-outlined text-teal">monitor_heart</span>
+            3. Current Vitals & Medical History
+          </h3>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Body Temp (°F)</label>
+              <input type="text" id="intake-vital-temp" class="form-input" placeholder="e.g. 101.4 °F" value="101.4 °F">
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Blood Pressure</label>
+              <input type="text" id="intake-vital-bp" class="form-input" placeholder="e.g. 120/80" value="120/80 mmHg">
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Blood Oxygen (SpO₂ %)</label>
+              <input type="text" id="intake-vital-spo2" class="form-input" placeholder="e.g. 98%" value="97%">
+            </div>
+
+            <div class="form-group">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Pulse Rate (BPM)</label>
+              <input type="text" id="intake-vital-pulse" class="form-input" placeholder="e.g. 84 bpm" value="84 bpm">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Pre-existing Conditions / Allergies</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
+              <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-diabetes" checked> Diabetes Mellitus</label>
+              <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-htn"> Hypertension (High BP)</label>
+              <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-asthma" checked> Asthma / Respiratory</label>
+              <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-heart"> Cardiac Disease</label>
+              <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-allergy"> Drug Allergies (Penicillin/NSAIDs)</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: Attach Diagnostic Reports & X-Rays -->
+        <div style="margin-bottom: 28px;">
+          <h3 style="margin: 0 0 16px 0; font-size: 1.1rem; color: var(--primary-navy); display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons-outlined text-teal">attachment</span>
+            4. Attach Diagnostic Reports & X-Rays to Consultation
+          </h3>
+
+          <div style="background: #f8fafc; border-radius: 10px; border: 1px solid #cbd5e1; padding: 18px;">
+            <p style="margin: 0 0 12px 0; font-size: 0.85rem; color: #475569;">
+              Select from your uploaded library to share directly with consulting doctor:
+            </p>
+            
+            <div id="intake-reports-selection-container" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Dynamic Report Checkboxes Injected via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button Row -->
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+          <button type="button" id="intake-cancel-btn" class="action-btn secondary" style="padding: 12px 24px;">Cancel</button>
+          
+          <button type="submit" id="submit-disease-intake-btn" class="form-submit" style="width: auto; padding: 14px 36px; background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); font-size: 1.05rem; box-shadow: 0 6px 20px rgba(15, 59, 95, 0.25);">
+            <span class="material-icons-outlined">video_call</span> Submit Disease Intake & Request Tele-Consultation
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Confirmation Token Screen (Hidden until submitted) -->
+      <div id="intake-confirmation-screen" style="display: none; background: white; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); padding: 40px 30px; text-align: center; border: 1.5px solid var(--health-teal); margin-top: 20px;">
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: rgba(16, 132, 126, 0.12); color: var(--health-teal); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+          <span class="material-icons-outlined" style="font-size: 44px;">check_circle</span>
+        </div>
+        <h2 style="color: var(--primary-navy); margin: 0 0 6px 0;">OPD Consultation Registered Successfully!</h2>
+        <p style="color: #64748b; margin: 0 0 24px 0; font-size: 0.95rem;">Your disease intake form and medical reports have been transmitted to the Doctor Workstation.</p>
+
+        <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1; max-width: 500px; margin: 0 auto 28px auto; padding: 20px;">
+          <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 800;">Your OPD Token Number</div>
+          <div style="font-size: 2.4rem; font-weight: 900; color: var(--primary-navy); letter-spacing: 1px; margin: 4px 0;" id="conf-token-no">GEN-8294</div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; text-align: left; font-size: 0.85rem; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+            <div><span style="color: #64748b;">Assigned Doctor:</span> <strong id="conf-doc-name">Dr. Rajesh Kumar (MD)</strong></div>
+            <div><span style="color: #64748b;">Department:</span> <strong id="conf-dept-name">Pulmonology & Medicine</strong></div>
+            <div><span style="color: #64748b;">Queue Position:</span> <strong id="conf-queue-pos">2 Patients Ahead</strong></div>
+            <div><span style="color: #64748b;">Est. Wait Time:</span> <strong id="conf-wait-time">~ 8 Minutes</strong></div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+          <button id="conf-launch-video-btn" type="button" class="form-submit" style="width: auto; padding: 12px 30px; background: var(--health-teal); font-size: 1rem;">
+            <span class="material-icons-outlined">videocam</span> Launch Teleconsultation Call
+          </button>
+          <button id="conf-return-profile-btn" type="button" class="action-btn secondary" style="padding: 12px 24px;">
+            Return to Patient Portal
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 

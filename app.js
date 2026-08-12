@@ -2195,10 +2195,12 @@ function initAuthModule() {
 
   // Master View Switcher
   function showView(viewName) {
+    const intakeView = document.getElementById('patient-disease-intake-view');
     if (landingView) landingView.style.display = (viewName === 'landing') ? 'block' : 'none';
     if (userProfileView) userProfileView.style.display = (viewName === 'profile') ? 'block' : 'none';
     if (doctorDashboardView) doctorDashboardView.style.display = (viewName === 'doctor') ? 'flex' : 'none';
     if (hwcDashboardView) hwcDashboardView.style.display = (viewName === 'hwc') ? 'flex' : 'none';
+    if (intakeView) intakeView.style.display = (viewName === 'intake' || viewName === 'patient-intake') ? 'block' : 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -2331,9 +2333,7 @@ function initAuthModule() {
 
       if (launchBtn) {
         launchBtn.onclick = () => {
-          showView('landing');
-          const regModal = document.getElementById('register-modal');
-          if (regModal) regModal.classList.add('active');
+          openPatientDiseaseIntakeView();
         };
       }
 
@@ -3222,6 +3222,188 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initPatientReportUploadSystem);
 } else {
   initPatientReportUploadSystem();
+}
+
+// =========================================================================
+// 🩺 PATIENT DISEASE & TELECONSULTATION INTAKE SYSTEM
+// =========================================================================
+let pendingIntakeLaunchAfterLogin = false;
+
+function openPatientDiseaseIntakeView() {
+  const user = currentUser || (typeof getCurrentUser === 'function' ? getCurrentUser() : null) || JSON.parse(localStorage.getItem('swasthya_current_user') || 'null');
+  if (!user) {
+    pendingIntakeLaunchAfterLogin = true;
+    showToast('⚠️ Please Sign In as Patient first to start your consultation.');
+    openUnifiedModal('patient');
+    return;
+  }
+
+  const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'Sunita Sharma');
+  const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+  const intakeUserBadge = document.getElementById('intake-user-badge');
+  const intakeName = document.getElementById('intake-patient-name');
+  const intakePhone = document.getElementById('intake-patient-phone');
+  const intakeReportsContainer = document.getElementById('intake-reports-selection-container');
+  const form = document.getElementById('patient-disease-intake-form');
+  const confScreen = document.getElementById('intake-confirmation-screen');
+
+  if (intakeUserBadge) intakeUserBadge.textContent = `Signed in as ${cleanName}`;
+  if (intakeName) intakeName.value = cleanName;
+  if (intakePhone && user.phone) intakePhone.value = user.phone;
+
+  if (form) form.style.display = 'block';
+  if (confScreen) confScreen.style.display = 'none';
+
+  // Populate user's uploaded X-Rays / Reports as attachable checkboxes
+  if (intakeReportsContainer) {
+    intakeReportsContainer.innerHTML = '';
+    try {
+      const stored = JSON.parse(localStorage.getItem('swasthya_uploaded_reports') || '[]');
+      if (stored.length === 0) {
+        intakeReportsContainer.innerHTML = `
+          <div style="font-size: 0.82rem; color: #64748b; font-style: italic;">No uploaded X-Rays or lab reports found. You can upload diagnostic scans anytime in your Patient Portal gallery.</div>
+        `;
+      } else {
+        stored.forEach(rep => {
+          const itemDiv = document.createElement('div');
+          itemDiv.style.cssText = `display: flex; align-items: center; justify-content: space-between; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.88rem;`;
+          itemDiv.innerHTML = `
+            <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; color: var(--primary-navy);">
+              <input type="checkbox" class="intake-attached-report-cb" value="${rep.title} (${rep.fileName})" checked style="width: 16px; height: 16px; accent-color: var(--health-teal);">
+              <span class="material-icons-outlined" style="font-size: 20px; color: var(--health-teal);">description</span>
+              <span>${rep.title}</span>
+            </label>
+            <span style="font-size: 0.74rem; color: #64748b; font-weight: 700; background: #e2e8f0; padding: 2px 8px; border-radius: 10px;">${rep.categoryLabel || rep.category}</span>
+          `;
+          intakeReportsContainer.appendChild(itemDiv);
+        });
+      }
+    } catch (e) {
+      intakeReportsContainer.innerHTML = `<div style="font-size: 0.82rem; color: #64748b;">Ready for clinical consultation intake.</div>`;
+    }
+  }
+
+  showView('intake');
+}
+
+function initPatientIntakeFormHandlers() {
+  // Attach Start Consultation click handlers across the website
+  const heroBtns = document.querySelectorAll('.slide-btn');
+  heroBtns.forEach(btn => {
+    if (btn.textContent.includes('Start Consultation')) {
+      btn.onclick = (e) => {
+        e.preventDefault();
+        openPatientDiseaseIntakeView();
+      };
+    }
+  });
+
+  const openRegisterBtn = document.getElementById('open-register-btn');
+  if (openRegisterBtn) {
+    openRegisterBtn.onclick = (e) => {
+      e.preventDefault();
+      openPatientDiseaseIntakeView();
+    };
+  }
+
+  const intakeForm = document.getElementById('patient-disease-intake-form');
+  if (intakeForm) {
+    intakeForm.onsubmit = async (e) => {
+      e.preventDefault();
+      
+      const patientName = document.getElementById('intake-patient-name').value;
+      const patientAge = document.getElementById('intake-patient-age').value;
+      const patientGender = document.getElementById('intake-patient-gender').value;
+      const patientPhone = document.getElementById('intake-patient-phone').value;
+      const patientState = document.getElementById('intake-patient-state').value;
+      const patientCity = document.getElementById('intake-patient-city').value;
+
+      const department = document.getElementById('intake-department').value;
+      const diseaseCategory = document.getElementById('intake-disease-category').value;
+      const symptomsDetail = document.getElementById('intake-symptoms-detail').value;
+      const symptomDuration = document.getElementById('intake-symptom-duration').value;
+      const painScale = document.getElementById('intake-pain-scale').value;
+
+      const temp = document.getElementById('intake-vital-temp').value;
+      const bp = document.getElementById('intake-vital-bp').value;
+      const spo2 = document.getElementById('intake-vital-spo2').value;
+      const pulse = document.getElementById('intake-vital-pulse').value;
+
+      // Collect attached reports
+      const attachedCbs = document.querySelectorAll('.intake-attached-report-cb:checked');
+      const attachedReports = Array.from(attachedCbs).map(cb => cb.value);
+
+      const opdToken = 'GEN-' + Math.floor(1000 + Math.random() * 9000);
+
+      const consultationData = {
+        name: patientName,
+        patientName: patientName,
+        age: patientAge,
+        gender: patientGender,
+        phone: patientPhone,
+        state: `${patientCity}, ${patientState}`,
+        opdClinic: `${department} Tele-Clinic`,
+        symptoms: `${diseaseCategory} (${symptomDuration}) - ${symptomsDetail}`,
+        symptomsDetail: symptomsDetail,
+        diseaseCategory: diseaseCategory,
+        department: department,
+        painScale: painScale,
+        vitals: { temp, bp, spo2, pulse },
+        attachedReports: attachedReports,
+        dhrId: 'DHR-' + Math.floor(100000 + Math.random() * 900000),
+        token: opdToken,
+        status: 'queued',
+        createdAt: new Date().toISOString()
+      };
+
+      showToast(`⌛ Submitting Disease Intake & Saving Record...`);
+
+      if (typeof saveConsultationRecord === 'function') {
+        await saveConsultationRecord(consultationData);
+      }
+
+      // Update confirmation screen fields
+      const confToken = document.getElementById('conf-token-no');
+      const confDoc = document.getElementById('conf-doc-name');
+      const confDept = document.getElementById('conf-dept-name');
+      const confScreen = document.getElementById('intake-confirmation-screen');
+
+      if (confToken) confToken.textContent = opdToken;
+      if (confDoc) confDoc.textContent = 'Dr. Rajesh Kumar (MD)';
+      if (confDept) confDept.textContent = department;
+
+      intakeForm.style.display = 'none';
+      if (confScreen) confScreen.style.display = 'block';
+
+      showToast(`✅ OPD Token ${opdToken} Assigned! Transmitted to Doctor Workstation.`);
+    };
+  }
+
+  // Cancel & Navigation buttons
+  const intakeCancelBtn = document.getElementById('intake-cancel-btn');
+  if (intakeCancelBtn) intakeCancelBtn.onclick = () => showView('landing');
+
+  const intakeBackBtn = document.getElementById('intake-back-to-home-btn');
+  if (intakeBackBtn) intakeBackBtn.onclick = () => showView('landing');
+
+  const confReturnBtn = document.getElementById('conf-return-profile-btn');
+  if (confReturnBtn) confReturnBtn.onclick = () => showView('profile');
+
+  const confLaunchVideoBtn = document.getElementById('conf-launch-video-btn');
+  if (confLaunchVideoBtn) {
+    confLaunchVideoBtn.onclick = () => {
+      showToast('🎥 Launching Video Teleconsultation Channel...');
+      const videoCallModal = document.getElementById('doctor-call-modal') || document.getElementById('info-modal');
+      if (videoCallModal) videoCallModal.classList.add('active');
+    };
+  }
+}
+
+// Auto Init on DOM Load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initPatientIntakeFormHandlers);
+} else {
+  initPatientIntakeFormHandlers();
 }
 
 
