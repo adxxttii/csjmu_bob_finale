@@ -2116,24 +2116,32 @@
     </div>
   </div>
 
-  <!-- Modal 2: Verify OTP -->
+  <!-- Modal 2: Verify Real Firebase SMS OTP -->
   <div class="modal-overlay" id="otp-modal">
     <div class="modal-container" role="dialog" aria-modal="true" aria-labelledby="otp-modal-title">
       <div class="modal-header">
-        <h3 id="otp-modal-title">One Time Password (OTP)</h3>
+        <h3 id="otp-modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined" style="color: var(--health-teal);">sms</span>
+          Firebase SMS OTP Verification
+        </h3>
         <button class="close-modal" id="close-otp-btn" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
         <form id="otp-form" onsubmit="return false;">
           <div class="form-group" style="text-align: center;">
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
-              An OTP has been simulated. Please enter it below:
-            </p>
-            <h4 style="font-size: 1.4rem; color: var(--accent-saffron); letter-spacing: 2px; margin-bottom: 20px;" id="simulated-otp-code">000000</h4>
-            <label for="otp-input" style="text-align: left; display: block;">Enter 6-Digit OTP</label>
-            <input type="text" id="otp-input" class="form-input" placeholder="Enter OTP" maxlength="6" pattern="[0-9]{6}" required style="text-align: center; letter-spacing: 4px; font-size: 1.2rem;">
+            <div style="background: rgba(16, 132, 126, 0.08); border: 1px solid var(--health-teal); padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+              <span class="material-icons-outlined" style="font-size: 28px; color: var(--health-teal); vertical-align: middle;">phonelink_ring</span>
+              <p style="font-size: 0.88rem; color: var(--primary-navy); margin: 6px 0 0; font-weight: 600;" id="otp-modal-status-text">
+                Real SMS OTP dispatched via Firebase Auth to <span id="otp-phone-display" style="color: var(--health-teal); font-weight: 700;">+91 98765 43210</span>.
+              </p>
+            </div>
+            <label for="otp-input" style="text-align: left; display: block; font-weight: 700; color: var(--primary-navy);">Enter 6-Digit SMS OTP Code *</label>
+            <input type="text" id="otp-input" class="form-input" placeholder="••••••" maxlength="6" pattern="[0-9]{6}" required style="text-align: center; letter-spacing: 6px; font-size: 1.3rem; font-weight: 800; color: var(--primary-navy);">
+            <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 6px;" id="otp-modal-subtext">
+              Check your mobile phone SMS inbox for the code sent by Firebase.
+            </small>
           </div>
-          <button type="submit" class="form-submit" id="verify-otp-btn">Verify & Proceed</button>
+          <button type="submit" class="form-submit" id="verify-otp-btn" style="background: var(--health-teal);">Verify Firebase SMS OTP</button>
         </form>
       </div>
     </div>
