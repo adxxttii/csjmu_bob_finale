@@ -1458,7 +1458,7 @@
               1. Patient Profile & Contact Info
             </h3>
             <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section1');">
-              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 1
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> 🔊 Listen Section 1
             </button>
           </div>
 
@@ -1466,20 +1466,34 @@
             <div class="form-group">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
                 <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Full Name *</label>
-                <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-name" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-name');">
-                  <span class="material-icons-outlined" style="font-size: 16px;">mic</span> Speak Name
-                </button>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_name');">🔊 Listen</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-name" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-name');">
+                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak Name
+                  </button>
+                </div>
               </div>
               <input type="text" id="intake-patient-name" class="form-input" required placeholder="Enter or speak full name">
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Age (Years) *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Age (Years) *</label>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_age');">🔊 Listen</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-age" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-age');">
+                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak Age
+                  </button>
+                </div>
+              </div>
               <input type="number" id="intake-patient-age" class="form-input" required placeholder="e.g. 34" min="1" max="115" value="34">
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Gender *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Gender *</label>
+                <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_gender');">🔊 Listen</button>
+              </div>
               <select id="intake-patient-gender" class="form-input" required style="background: white;">
                 <option value="Male">Male</option>
                 <option value="Female" selected>Female</option>
@@ -1488,21 +1502,40 @@
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Mobile Number *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Mobile Number *</label>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_phone');">🔊 Listen</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-phone" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-phone');">
+                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak Phone
+                  </button>
+                </div>
+              </div>
               <input type="tel" id="intake-patient-phone" class="form-input" required placeholder="+91 98765 43210" value="+91 98765 43210">
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">State *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">State *</label>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_state');">🔊 Listen</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-state" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-state');">
+                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak State
+                  </button>
+                </div>
+              </div>
               <input type="text" id="intake-patient-state" class="form-input" required value="Uttar Pradesh">
             </div>
 
             <div class="form-group">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
                 <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">City / District</label>
-                <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-city" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-city');">
-                  <span class="material-icons-outlined" style="font-size: 16px;">mic</span> Speak City
-                </button>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_city');">🔊 Listen</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-city" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-city');">
+                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak City
+                  </button>
+                </div>
               </div>
               <input type="text" id="intake-patient-city" class="form-input" value="Kanpur Dehat">
             </div>
@@ -1517,13 +1550,16 @@
               2. Disease Details & Primary Medical Complaint
             </h3>
             <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section2');">
-              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 2
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> 🔊 Listen Section 2
             </button>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 16px;">
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Specialist Department Required *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Specialist Department Required *</label>
+                <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_department');">🔊 Listen</button>
+              </div>
               <select id="intake-department" class="form-input" required style="font-weight: 700; color: var(--primary-navy); background: white;">
                 <option value="General Medicine">👨‍⚕️ General Medicine / OPD</option>
                 <option value="Pulmonology">🫁 Pulmonology & Respiratory Care</option>
@@ -1536,7 +1572,10 @@
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Primary Disease Category *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Primary Disease Category *</label>
+                <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_disease_cat');">🔊 Listen</button>
+              </div>
               <select id="intake-disease-category" class="form-input" required style="background: white;">
                 <option value="Fever & Flu">🌡️ High Fever, Cold & Shivering</option>
                 <option value="Respiratory">🫁 Severe Cough, Asthma & Breathlessness</option>
@@ -1552,16 +1591,22 @@
           <div class="form-group" style="margin-bottom: 16px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
               <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Detailed Disease Symptoms Description *</label>
-              <button type="button" class="voice-mic-btn" id="btn-mic-intake-symptoms-detail" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-symptoms-detail');">
-                <span class="material-icons-outlined" style="font-size: 16px;">mic</span> 🎙️ Speak Symptoms in your Language
-              </button>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_symptoms');">🔊 Listen</button>
+                <button type="button" class="voice-mic-btn" id="btn-mic-intake-symptoms-detail" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-symptoms-detail');">
+                  <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak Symptoms
+                </button>
+              </div>
             </div>
             <textarea id="intake-symptoms-detail" class="form-input" rows="4" required placeholder="Describe your illness or click 'Speak Symptoms' to dictate in your language (e.g. '3 दिन से तेज बुखार और खांसी है...')..." style="line-height: 1.5; background: white;"></textarea>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Symptom Duration *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Symptom Duration *</label>
+                <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_duration');">🔊 Listen</button>
+              </div>
               <select id="intake-symptom-duration" class="form-input" required style="background: white;">
                 <option value="1-2 Days">1 — 2 Days</option>
                 <option value="3-5 Days" selected>3 — 5 Days</option>
@@ -1572,7 +1617,10 @@
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Discomfort / Pain Level *</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Discomfort / Pain Level *</label>
+                <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_pain');">🔊 Listen</button>
+              </div>
               <select id="intake-pain-scale" class="form-input" required style="background: white;">
                 <option value="Mild Discomfort">🟢 Mild (Manageable at home)</option>
                 <option value="Moderate Pain" selected>🟡 Moderate (Affecting daily routine)</option>
@@ -1591,34 +1639,61 @@
               3. Current Vitals & Medical History
             </h3>
             <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section3');">
-              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 3
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> 🔊 Listen Section 3
             </button>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px;">
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Body Temp (°F)</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Body Temp (°F)</label>
+                <div style="display: flex; gap: 4px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_temp');">🔊</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-vital-temp" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-vital-temp');">🎙️</button>
+                </div>
+              </div>
               <input type="text" id="intake-vital-temp" class="form-input" placeholder="e.g. 101.4 °F" value="101.4 °F">
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Blood Pressure</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Blood Pressure</label>
+                <div style="display: flex; gap: 4px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_bp');">🔊</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-vital-bp" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-vital-bp');">🎙️</button>
+                </div>
+              </div>
               <input type="text" id="intake-vital-bp" class="form-input" placeholder="e.g. 120/80" value="120/80 mmHg">
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Blood Oxygen (SpO₂ %)</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Blood Oxygen (SpO₂ %)</label>
+                <div style="display: flex; gap: 4px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_spo2');">🔊</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-vital-spo2" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-vital-spo2');">🎙️</button>
+                </div>
+              </div>
               <input type="text" id="intake-vital-spo2" class="form-input" placeholder="e.g. 98%" value="97%">
             </div>
 
             <div class="form-group">
-              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Pulse Rate (BPM)</label>
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Pulse Rate (BPM)</label>
+                <div style="display: flex; gap: 4px;">
+                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_pulse');">🔊</button>
+                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-vital-pulse" style="padding: 2px 6px; font-size: 0.7rem;" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-vital-pulse');">🎙️</button>
+                </div>
+              </div>
               <input type="text" id="intake-vital-pulse" class="form-input" placeholder="e.g. 84 bpm" value="84 bpm">
             </div>
           </div>
 
           <div class="form-group" style="margin-bottom: 12px;">
-            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Pre-existing Conditions / Allergies</label>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Pre-existing Conditions / Allergies</label>
+              <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_history');">🔊 Listen</button>
+            </div>
             <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px;">
               <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-diabetes" checked> Diabetes Mellitus</label>
               <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-htn"> Hypertension (High BP)</label>
@@ -1637,7 +1712,7 @@
               4. Attach Diagnostic Reports & X-Rays to Consultation
             </h3>
             <button type="button" class="voice-listen-section-btn" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('section4');">
-              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> Listen Section 4
+              <span class="material-icons-outlined" style="font-size: 16px;">volume_up</span> 🔊 Listen Section 4
             </button>
           </div>
 
