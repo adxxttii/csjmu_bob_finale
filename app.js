@@ -1851,14 +1851,91 @@ function initAuthModule() {
     const doctorArchiveTableBody = document.getElementById('doctor-archive-table-body');
     const menuDocConsultTab = document.getElementById('menu-doc-consult-tab');
 
-    const docPrescriptionInput = document.getElementById('doc-prescription-input');
-    const docSignPrescriptionBtn = document.getElementById('doc-sign-prescription-btn');
+    const docClinicalNotes = document.getElementById('doc-clinical-notes');
+    const docAssessment = document.getElementById('doc-assessment');
+    const docDiagnosis = document.getElementById('doc-diagnosis');
+    const docTreatmentPlan = document.getElementById('doc-treatment-plan');
+
+    const typePrescriptionRadio = document.getElementById('type-prescription');
+    const typeReferralRadio = document.getElementById('type-referral');
+    const docPrescriptionSuite = document.getElementById('doc-prescription-suite');
+    const docReferralSuite = document.getElementById('doc-referral-suite');
+    const docMedicineRowsList = document.getElementById('doc-medicine-rows-list');
+    const addMedicineBtn = document.getElementById('add-medicine-btn');
+
+    const docRefHospital = document.getElementById('doc-ref-hospital');
+    const docRefSpecialist = document.getElementById('doc-ref-specialist');
+    const docRefReason = document.getElementById('doc-ref-reason');
+    const docRefUrgency = document.getElementById('doc-ref-urgency');
+
+    const docExplicitConfirmCheck = document.getElementById('doc-explicit-confirm-check');
+    const docFinalizeDecisionBtn = document.getElementById('doc-finalize-decision-btn');
+
+    const docConfirmationModal = document.getElementById('doc-confirmation-modal');
+    const docConfirmModalBody = document.getElementById('doc-confirm-modal-body');
+
     const docChatMessages = document.getElementById('doc-chat-messages');
     const docChatInput = document.getElementById('doc-chat-input');
     const docChatSendBtn = document.getElementById('doc-chat-send-btn');
     const doctorSelfVideo = document.getElementById('doctor-self-video');
 
     let doctorStream = null;
+    let doctorArchive = [
+      {
+        date: new Date().toISOString().split('T')[0],
+        token: 'HWC-9281',
+        patientName: 'Ramesh Kumar',
+        ageGender: '45 / Male',
+        type: 'prescription',
+        diagnosis: 'Acute Upper Respiratory Tract Infection (ICD-10 J06.9)',
+        summary: 'Tab. Paracetamol 650mg (1-1-1 x 3 Days)'
+      }
+    ];
+
+    // Toggle Decision Type: Prescription vs Referral
+    if (typePrescriptionRadio && typeReferralRadio) {
+      typePrescriptionRadio.addEventListener('change', () => {
+        if (typePrescriptionRadio.checked) {
+          docPrescriptionSuite.style.display = 'block';
+          docReferralSuite.style.display = 'none';
+        }
+      });
+      typeReferralRadio.addEventListener('change', () => {
+        if (typeReferralRadio.checked) {
+          docPrescriptionSuite.style.display = 'none';
+          docReferralSuite.style.display = 'block';
+        }
+      });
+    }
+
+    // Add Dynamic Medicine Row
+    if (addMedicineBtn) {
+      addMedicineBtn.addEventListener('click', () => {
+        const row = document.createElement('div');
+        row.className = 'medicine-row';
+        row.style.cssText = 'background: #f8fafc; border: 1px solid var(--border-light); padding: 10px; border-radius: 6px; margin-bottom: 8px; position: relative;';
+        row.innerHTML = `
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 8px; margin-bottom: 6px;">
+            <input type="text" class="form-input med-name" placeholder="Medicine Name (e.g. Cap. Amoxycillin 500mg)">
+            <input type="text" class="form-input med-dosage" placeholder="Dosage (e.g. 1 Capsule)">
+            <select class="form-input med-freq">
+              <option value="1-0-1 (BD)">1-0-1 (Twice Daily / BD)</option>
+              <option value="1-1-1 (TDS)">1-1-1 (Thrice Daily / TDS)</option>
+              <option value="1-0-0 (OD)">1-0-0 (Once Daily / OD)</option>
+              <option value="0-0-1 (HS)">0-0-1 (At Bedtime / HS)</option>
+              <option value="As Needed (PRN)">As Needed (PRN)</option>
+            </select>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 2fr 30px; gap: 8px; align-items: center;">
+            <input type="text" class="form-input med-duration" placeholder="Duration (e.g. 5 Days)">
+            <input type="text" class="form-input med-instructions" placeholder="Instructions (e.g. Take after food)">
+            <button type="button" class="remove-med-row" style="background: none; border: none; color: #d9534f; font-weight: bold; cursor: pointer; font-size: 1.2rem;">&times;</button>
+          </div>
+        `;
+        row.querySelector('.remove-med-row').addEventListener('click', () => row.remove());
+        docMedicineRowsList.appendChild(row);
+      });
+    }
 
     docMenuItems.forEach(item => {
       item.addEventListener('click', () => {
@@ -1868,6 +1945,8 @@ function initAuthModule() {
         docTabContents.forEach(t => t.classList.remove('active'));
         item.classList.add('active');
         document.getElementById(target).classList.add('active');
+
+        if (target === 'tab-doc-archive') renderDoctorArchive();
       });
     });
 
@@ -1914,7 +1993,11 @@ function initAuthModule() {
           document.getElementById('doc-consult-injuries').textContent = "None";
           document.getElementById('doc-consult-firstaid').textContent = "Paracetamol 650mg & cold compress given at Spoke.";
           document.getElementById('doc-consult-history').textContent = "Hypertension";
-          docPrescriptionInput.value = `Tab. Paracetamol 650mg TDS x 3 days\nSyp. Ambroxol 10ml BD x 5 days\nTab. Amoxicillin 500mg BD x 5 days\nAdvice: Warm saline gargles, bed rest.`;
+
+          docClinicalNotes.value = "Patient presents with 3-day history of fever 101.4°F and throat inflammation.";
+          docAssessment.value = "Acute bronchial respiratory infection with mild hypoxemia (SpO2 94%).";
+          docDiagnosis.value = "Acute Upper Respiratory Tract Infection (ICD-10 J06.9)";
+          docTreatmentPlan.value = "Symptomatic treatment, antipyretic therapy, saline gargles, hydration, follow-up in 48 hours.";
 
           try {
             doctorStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -1928,15 +2011,233 @@ function initAuthModule() {
 
     renderDoctorQueue();
 
-    if (docSignPrescriptionBtn) {
-      docSignPrescriptionBtn.addEventListener('click', () => {
-        const notes = docPrescriptionInput.value.trim();
-        if (!notes) {
-          alert('Please enter prescription notes before signing.');
+    // Mandatory Explicit Approval Handler
+    if (docFinalizeDecisionBtn) {
+      docFinalizeDecisionBtn.addEventListener('click', () => {
+        const isConfirmed = docExplicitConfirmCheck.checked;
+        if (!isConfirmed) {
+          alert('⚠️ MANDATORY DOCTOR APPROVAL REQUIRED:\nYou must explicitly check the confirmation box verifying that you, Dr. Rajesh Kumar (MD), have reviewed and approved this decision. AI systems cannot finalize clinical decisions.');
           return;
         }
-        showToast('Prescription digitally signed & issued with license NMB-82741-A!');
+
+        const diagnosis = docDiagnosis.value.trim();
+        if (!diagnosis) {
+          alert('Please enter Diagnosis before finalizing.');
+          return;
+        }
+
+        const decisionType = document.querySelector('input[name="doc-decision-type"]:checked').value;
+        openDoctorConfirmationModal(decisionType);
       });
+    }
+
+    function openDoctorConfirmationModal(type) {
+      const diagnosis = docDiagnosis.value.trim();
+      const notes = docClinicalNotes.value.trim() || 'Recorded during consultation';
+      const assessment = docAssessment.value.trim() || 'Clinical evaluation performed';
+      const treatmentPlan = docTreatmentPlan.value.trim() || 'Follow general healthcare advice';
+
+      let detailsHTML = '';
+      let summaryText = '';
+
+      if (type === 'prescription') {
+        const medRows = document.querySelectorAll('#doc-medicine-rows-list .medicine-row');
+        let medsList = [];
+        medRows.forEach(row => {
+          const name = row.querySelector('.med-name').value.trim();
+          const dosage = row.querySelector('.med-dosage').value.trim();
+          const freq = row.querySelector('.med-freq').value;
+          const duration = row.querySelector('.med-duration').value.trim();
+          const instructions = row.querySelector('.med-instructions').value.trim();
+          if (name) {
+            medsList.push({ name, dosage, freq, duration, instructions });
+          }
+        });
+
+        summaryText = medsList.map(m => `${m.name} (${m.freq} x ${m.duration})`).join(', ');
+
+        detailsHTML = `
+          <h4 style="color: var(--primary-navy); margin-top: 15px; margin-bottom: 8px;">Prescription Items (Rx):</h4>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem;" border="1" cellpadding="6">
+            <thead>
+              <tr style="background: #f1f5f9; color: var(--primary-navy);">
+                <th>Medicine</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+                <th>Duration</th>
+                <th>Instructions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${medsList.map(m => `
+                <tr>
+                  <td><strong>${m.name}</strong></td>
+                  <td>${m.dosage}</td>
+                  <td>${m.freq}</td>
+                  <td>${m.duration}</td>
+                  <td>${m.instructions}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } else {
+        const hospital = docRefHospital.value.trim() || 'District Hospital';
+        const specialist = docRefSpecialist.value.trim() || 'Specialist Department';
+        const reason = docRefReason.value.trim() || 'Further clinical evaluation';
+        const urgency = docRefUrgency.value;
+
+        summaryText = `Referral to ${hospital} (${specialist}) - Urgency: ${urgency}`;
+
+        detailsHTML = `
+          <div style="background: rgba(255, 153, 51, 0.08); border: 1px solid var(--accent-saffron); padding: 12px; border-radius: 6px; margin-top: 15px;">
+            <h4 style="color: var(--primary-navy); margin: 0 0 8px 0;">Referral Order Details:</h4>
+            <strong>Referred Hospital:</strong> ${hospital}<br>
+            <strong>Specialist / Department:</strong> ${specialist}<br>
+            <strong>Reason for Referral:</strong> ${reason}<br>
+            <strong>Urgency Level:</strong> <span style="color: #c05621; font-weight: bold;">${urgency}</span>
+          </div>
+        `;
+      }
+
+      docConfirmModalBody.innerHTML = `
+        <div style="background: #f8fafc; border-left: 4px solid var(--flag-green); padding: 12px; border-radius: 4px; margin-bottom: 15px;">
+          <strong style="color: var(--flag-green); font-size: 0.88rem;">✓ PHYSICIAN EXPLICIT APPROVAL CONFIRMED</strong><br>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">
+            Signer: Dr. Rajesh Kumar, MD | Reg No: NMB-82741-A | National Medical Board Accredited
+          </span>
+        </div>
+
+        <div style="font-size: 0.85rem; line-height: 1.6;">
+          <strong>Diagnosis:</strong> ${diagnosis}<br>
+          <strong>Clinical Notes:</strong> ${notes}<br>
+          <strong>Assessment:</strong> ${assessment}<br>
+          <strong>Treatment Plan:</strong> ${treatmentPlan}
+        </div>
+
+        ${detailsHTML}
+
+        <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button id="cancel-confirm-btn" class="action-btn secondary" style="padding: 8px 16px;">Edit Details</button>
+          <button id="final-issue-doc-btn" class="form-submit" style="width: auto; padding: 8px 20px; background: var(--flag-green);">
+            Confirm & Issue Digitally Signed Document
+          </button>
+        </div>
+      `;
+
+      document.getElementById('cancel-confirm-btn').addEventListener('click', () => {
+        docConfirmationModal.classList.remove('active');
+      });
+
+      document.getElementById('final-issue-doc-btn').addEventListener('click', () => {
+        docConfirmationModal.classList.remove('active');
+
+        doctorArchive.unshift({
+          date: new Date().toISOString().split('T')[0],
+          token: 'HWC-' + Math.floor(1000 + Math.random() * 9000),
+          patientName: 'Ramesh Kumar',
+          ageGender: '45 / Male',
+          type: type,
+          diagnosis: diagnosis,
+          summary: summaryText
+        });
+
+        renderDoctorArchive();
+
+        downloadDoctorSignedDocument(type, diagnosis, notes, assessment, treatmentPlan, summaryText);
+
+        showToast(`✓ Clinical decision explicitly approved & signed by Dr. Rajesh Kumar!`);
+      });
+
+      docConfirmationModal.classList.add('active');
+    }
+
+    function renderDoctorArchive() {
+      if (!doctorArchiveTableBody) return;
+      doctorArchiveTableBody.innerHTML = '';
+      doctorArchive.forEach(rec => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${rec.date}</td>
+          <td style="font-family: monospace; font-weight: 700; color: var(--health-teal);">${rec.token}</td>
+          <td><strong>${rec.patientName}</strong></td>
+          <td>${rec.ageGender}</td>
+          <td><span style="font-size: 0.8rem; color: var(--primary-navy);">${rec.diagnosis} (${rec.type.toUpperCase()})</span></td>
+          <td>
+            <button class="table-btn" style="background: var(--primary-navy);">
+              <span class="material-icons-outlined" style="font-size: 14px;">description</span> View Document
+            </button>
+          </td>
+        `;
+        doctorArchiveTableBody.appendChild(tr);
+      });
+    }
+
+    function downloadDoctorSignedDocument(type, diagnosis, notes, assessment, treatmentPlan, summaryText) {
+      const today = new Date().toLocaleDateString('en-IN');
+      const docHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SwasthyaSetu Signed Doctor ${type === 'prescription' ? 'e-Prescription' : 'Referral'}</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #222; margin: 0; padding: 30px; line-height: 1.5; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f3b5f; padding-bottom: 15px; }
+    .brand-name { font-size: 24px; font-weight: bold; color: #0f3b5f; }
+    .card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    pre { background: #f1f5f9; padding: 12px; border-radius: 6px; font-family: monospace; }
+    @media print { .no-print { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+    <button onclick="window.print()" style="background: #10847e; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Print / Download PDF</button>
+  </div>
+
+  <div class="header">
+    <div>
+      <div class="brand-name">SwasthyaSetu Specialist Hub</div>
+      <div style="font-size: 12px; color: #666;">Digitally Signed ${type === 'prescription' ? 'Medical Prescription' : 'Specialist Referral Order'}</div>
+    </div>
+    <div style="text-align: right; font-size: 11px;">
+      Date: ${today}<br>
+      Physician: Dr. Rajesh Kumar, MD<br>
+      License Reg: NMB-82741-A
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>Patient Name:</strong> Ramesh Kumar (45 Yrs / Male)<br>
+    <strong>Diagnosis:</strong> ${diagnosis}<br>
+    <strong>Clinical Notes:</strong> ${notes}<br>
+    <strong>Assessment:</strong> ${assessment}<br>
+    <strong>Treatment Plan:</strong> ${treatmentPlan}
+  </div>
+
+  <div class="card" style="border-left: 4px solid #10847e;">
+    <h4 style="margin: 0 0 10px 0; color: #0f3b5f;">${type === 'prescription' ? 'Prescription / Medication Order (Rx)' : 'Specialist Referral Order'}</h4>
+    <p style="margin: 0; font-size: 14px;">${summaryText}</p>
+  </div>
+
+  <div style="margin-top: 40px; text-align: right;">
+    <div style="border-top: 1px solid #666; display: inline-block; padding-top: 5px; width: 220px; text-align: center; font-size: 12px;">
+      Digitally Verified & Approved by<br>
+      <strong>Dr. Rajesh Kumar, MD</strong><br>
+      <span style="font-size: 10px; color: #888;">Explicit Approval Code: SWASTHYASETU-DOC-E-SIGN-99210</span>
+    </div>
+  </div>
+</body>
+</html>
+      `;
+
+      const blob = new Blob([docHTML], { type: 'text/html' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `SwasthyaSetu_DoctorSigned_${type.toUpperCase()}_HWC-9281.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     if (docChatSendBtn && docChatInput) {

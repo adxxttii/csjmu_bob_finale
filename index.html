@@ -839,17 +839,123 @@
               </div>
             </div>
 
-            <!-- Doctor Prescription Editor -->
-            <div class="consult-details-grid">
-              <div class="dashboard-card">
-                <h3>Write & Issue e-Prescription</h3>
-                <div class="form-group">
-                  <label for="doc-prescription-input">Prescription Notes, Rx & Instructions</label>
-                  <textarea id="doc-prescription-input" class="form-input" rows="5" placeholder="Enter diagnosis, medicines, dosage, and instructions..."></textarea>
+            <!-- Doctor Structured Clinical Evaluation & Decision Suite -->
+            <div class="consult-details-grid" style="grid-template-columns: 1.2fr 0.8fr;">
+              <div class="dashboard-card" style="max-height: 700px; overflow-y: auto;">
+                <h3>Specialist Clinical Evaluation & Decision</h3>
+                
+                <!-- 1. Clinical Data Entry -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                  <div class="form-group">
+                    <label for="doc-clinical-notes">Clinical Notes</label>
+                    <textarea id="doc-clinical-notes" class="form-input" rows="2" placeholder="Subjective observations & complaints..."></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label for="doc-assessment">Assessment</label>
+                    <textarea id="doc-assessment" class="form-input" rows="2" placeholder="Doctor's clinical assessment..."></textarea>
+                  </div>
                 </div>
-                <button id="doc-sign-prescription-btn" class="form-submit" style="background: var(--flag-green);">
-                  <span class="material-icons-outlined" style="vertical-align: middle;">verified</span> Sign & Issue e-Prescription
-                </button>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                  <div class="form-group">
+                    <label for="doc-diagnosis">Diagnosis *</label>
+                    <input type="text" id="doc-diagnosis" class="form-input" placeholder="e.g. Acute Upper Respiratory Tract Infection" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="doc-treatment-plan">Treatment Plan</label>
+                    <textarea id="doc-treatment-plan" class="form-input" rows="1" placeholder="Overall plan, lifestyle advice, follow-up..."></textarea>
+                  </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border-light); margin: 15px 0;">
+
+                <!-- 2. Decision Choice: Create Prescription OR Create Referral -->
+                <div class="form-group">
+                  <label style="font-weight: 700; color: var(--primary-navy);">Select Clinical Decision Type *</label>
+                  <div style="display: flex; gap: 15px; margin-top: 6px;">
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; background: #f1f5f9; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light);">
+                      <input type="radio" name="doc-decision-type" value="prescription" checked id="type-prescription">
+                      <span class="material-icons-outlined" style="color: var(--flag-green);">description</span> Create Prescription
+                    </label>
+                    <label style="cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 600; background: #f1f5f9; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--border-light);">
+                      <input type="radio" name="doc-decision-type" value="referral" id="type-referral">
+                      <span class="material-icons-outlined" style="color: var(--accent-saffron);">local_hospital</span> Create Referral
+                    </label>
+                  </div>
+                </div>
+
+                <!-- 3A. Prescription Suite Panel -->
+                <div id="doc-prescription-suite" style="margin-bottom: 15px;">
+                  <h4 style="font-size: 0.95rem; color: var(--primary-navy); margin-bottom: 10px;">Prescription Details (Rx)</h4>
+                  <div id="doc-medicine-rows-list">
+                    <div class="medicine-row" style="background: #f8fafc; border: 1px solid var(--border-light); padding: 10px; border-radius: 6px; margin-bottom: 8px;">
+                      <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 8px; margin-bottom: 6px;">
+                        <input type="text" class="form-input med-name" placeholder="Medicine Name (e.g. Tab. Paracetamol 650mg)" value="Tab. Paracetamol 650mg">
+                        <input type="text" class="form-input med-dosage" placeholder="Dosage (e.g. 1 Tablet)" value="1 Tablet">
+                        <select class="form-input med-freq">
+                          <option value="1-0-1 (BD)">1-0-1 (Twice Daily / BD)</option>
+                          <option value="1-1-1 (TDS)" selected>1-1-1 (Thrice Daily / TDS)</option>
+                          <option value="1-0-0 (OD)">1-0-0 (Once Daily / OD)</option>
+                          <option value="0-0-1 (HS)">0-0-1 (At Bedtime / HS)</option>
+                          <option value="As Needed (PRN)">As Needed (PRN)</option>
+                        </select>
+                      </div>
+                      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 8px;">
+                        <input type="text" class="form-input med-duration" placeholder="Duration (e.g. 5 Days)" value="3 Days">
+                        <input type="text" class="form-input med-instructions" placeholder="Instructions (e.g. Take after food with warm water)" value="Take after food if fever > 99°F">
+                      </div>
+                    </div>
+                  </div>
+                  <button type="button" id="add-medicine-btn" style="background: #f1f5f9; border: 1px solid var(--border-light); padding: 6px 12px; border-radius: 4px; font-size: 0.78rem; font-weight: 700; cursor: pointer; color: var(--primary-navy);">
+                    + Add Another Medicine
+                  </button>
+                </div>
+
+                <!-- 3B. Referral Suite Panel -->
+                <div id="doc-referral-suite" style="display: none; margin-bottom: 15px; background: rgba(255, 153, 51, 0.05); border: 1px dashed var(--accent-saffron); padding: 12px; border-radius: 6px;">
+                  <h4 style="font-size: 0.95rem; color: var(--primary-navy); margin-bottom: 10px;">Referral Details</h4>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+                    <div class="form-group">
+                      <label for="doc-ref-hospital">Referred Hospital *</label>
+                      <input type="text" id="doc-ref-hospital" class="form-input" placeholder="e.g. AIIMS Tertiary Tele-Hub / District Hospital" value="AIIMS Central Medical Center">
+                    </div>
+                    <div class="form-group">
+                      <label for="doc-ref-specialist">Specialist / Department *</label>
+                      <input type="text" id="doc-ref-specialist" class="form-input" placeholder="e.g. Department of Cardiology" value="Department of Pulmonology">
+                    </div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                      <label for="doc-ref-reason">Reason for Referral *</label>
+                      <input type="text" id="doc-ref-reason" class="form-input" placeholder="e.g. Urgent cardiac evaluation due to hypoxia" value="Urgent pulmonary evaluation due to persistent bronchial congestion">
+                    </div>
+                    <div class="form-group">
+                      <label for="doc-ref-urgency">Urgency Level *</label>
+                      <select id="doc-ref-urgency" class="form-input">
+                        <option value="Immediate Emergency">Emergency (Immediate)</option>
+                        <option value="Urgent (24 Hours)" selected>Urgent (Within 24 Hrs)</option>
+                        <option value="Routine Priority">Routine (Within 7 Days)</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 4. Mandatory Explicit Doctor Confirmation Section -->
+                <div style="background: rgba(15, 59, 95, 0.06); border: 1px solid var(--primary-navy); padding: 12px; border-radius: 6px; margin-top: 15px;">
+                  <div style="font-size: 0.78rem; color: #c05621; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <span class="material-icons-outlined" style="font-size: 16px;">gpp_maybe</span>
+                    MANDATORY DOCTOR APPROVAL REQUIRED (AI Cannot Finalize)
+                  </div>
+                  <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 12px;">
+                    <input type="checkbox" id="doc-explicit-confirm-check" style="margin-top: 3px;">
+                    <label for="doc-explicit-confirm-check" style="font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                      I, Dr. Rajesh Kumar (National Medical Board Reg No: NMB-82741-A), hereby explicitly review, verify, and approve this clinical decision.
+                    </label>
+                  </div>
+                  <button id="doc-finalize-decision-btn" class="form-submit" style="background: var(--flag-green);">
+                    <span class="material-icons-outlined" style="vertical-align: middle;">verified</span> Explicitly Approve & Finalize Decision
+                  </button>
+                </div>
               </div>
 
               <!-- Doctor Chat Panel -->
@@ -1295,6 +1401,22 @@
       </div>
       <div class="modal-body" style="max-height: 75vh; overflow-y: auto;" id="hwc-case-modal-body">
         <!-- Content dynamically injected -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 9: Doctor Final Decision Review & Sign Confirmation Modal -->
+  <div class="modal-overlay" id="doc-confirmation-modal">
+    <div class="modal-container" style="max-width: 600px;" role="dialog" aria-modal="true" aria-labelledby="doc-confirm-title">
+      <div class="modal-header">
+        <h3 id="doc-confirm-title" style="display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined" style="color: var(--flag-green);">verified</span>
+          Doctor Explicit Clinical Decision Approval
+        </h3>
+        <button class="close-modal" id="close-doc-confirm-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" id="doc-confirm-modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <!-- Dynamically injected summary -->
       </div>
     </div>
   </div>
