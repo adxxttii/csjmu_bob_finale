@@ -169,6 +169,49 @@ function startVoiceDictation(targetInputId) {
 window.speakTextPrompt = speakTextPrompt;
 window.startVoiceDictation = startVoiceDictation;
 
+// Top-Level View Router Helper
+window.showView = function(viewName) {
+  const landingView = document.getElementById('landing-view');
+  const userProfileView = document.getElementById('user-profile-view');
+  const doctorDashboardView = document.getElementById('doctor-dashboard-view');
+  const hwcDashboardView = document.getElementById('hwc-dashboard-view');
+  const intakeView = document.getElementById('patient-disease-intake-view');
+
+  if (landingView) landingView.style.display = (viewName === 'landing') ? 'block' : 'none';
+  if (userProfileView) userProfileView.style.display = (viewName === 'profile') ? 'block' : 'none';
+  if (doctorDashboardView) doctorDashboardView.style.display = (viewName === 'doctor') ? 'flex' : 'none';
+  if (hwcDashboardView) hwcDashboardView.style.display = (viewName === 'hwc') ? 'flex' : 'none';
+  if (intakeView) intakeView.style.display = (viewName === 'intake' || viewName === 'patient-intake') ? 'block' : 'none';
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// Top-Level Open Patient Disease Intake View Helper
+window.openPatientDiseaseIntakeView = function() {
+  const user = (typeof currentUser !== 'undefined' ? currentUser : null) || (typeof getCurrentUser === 'function' ? getCurrentUser() : null) || JSON.parse(localStorage.getItem('swasthya_current_user') || 'null');
+  
+  const intakeUserBadge = document.getElementById('intake-user-badge');
+  const intakeName = document.getElementById('intake-patient-name');
+  const intakePhone = document.getElementById('intake-patient-phone');
+  const form = document.getElementById('patient-disease-intake-form');
+  const confScreen = document.getElementById('intake-confirmation-screen');
+
+  if (user) {
+    const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'Citizen Patient');
+    const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+    if (intakeUserBadge) intakeUserBadge.textContent = `Signed in as ${cleanName}`;
+    if (intakeName && !intakeName.value) intakeName.value = cleanName;
+    if (intakePhone && user.phone && !intakePhone.value) intakePhone.value = user.phone;
+  } else {
+    if (intakeUserBadge) intakeUserBadge.textContent = `Guest Patient (OPD Intake)`;
+  }
+
+  if (form) form.style.display = 'block';
+  if (confScreen) confScreen.style.display = 'none';
+
+  window.showView('intake');
+};
+
 // Top-Level Global Open Unified Modal Helper
 window.openUnifiedModal = function(targetRole = 'patient') {
   const modal = document.getElementById('unified-login-modal');

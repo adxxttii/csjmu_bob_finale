@@ -179,7 +179,7 @@
       <div class="slide-content">
         <h2>Stay Home, Consult Doctor<br><span>SwasthyaSetu OPD</span></h2>
         <p>A leading secure patient-to-doctor teleconsultation system. Register online, verify via OTP, consult medical specialists, and download digital prescriptions from the comfort of your home.</p>
-        <a href="#services" class="slide-btn">Start Consultation</a>
+        <button type="button" class="slide-btn" onclick="if(typeof openPatientDiseaseIntakeView==='function'){ openPatientDiseaseIntakeView(); }">Start Consultation</button>
       </div>
       <div class="slide-graphic">
         <img src="assets/images/telemedicine_hero_banner.png" alt="Telemedicine patient to doctor illustration">
@@ -191,7 +191,7 @@
       <div class="slide-content">
         <h2>Integrated Spoke & Hub Network<br><span>SwasthyaSetu HWC</span></h2>
         <p>Connecting regional clinics (Spokes) to major medical center hubs. Facilitating doctor-to-doctor consultations, bringing expert diagnosis to remote areas securely.</p>
-        <a href="#services" class="slide-btn">Learn More</a>
+        <button type="button" class="slide-btn" onclick="if(typeof openPatientDiseaseIntakeView==='function'){ openPatientDiseaseIntakeView(); }">Start Consultation</button>
       </div>
       <div class="slide-graphic">
         <img src="assets/images/doctor_patient_consultation.png" alt="Doctor clinical consultation hub and spoke illustration">
@@ -227,8 +227,8 @@
         </li>
       </ul>
       <div class="service-actions">
-        <button class="action-btn primary" onclick="alert('Verification via Partner Network is required for HWC registration.')">
-          <span class="material-icons-outlined">app_registration</span> CHO Network Registration
+        <button class="action-btn primary" onclick="if(typeof openPatientDiseaseIntakeView==='function'){ openPatientDiseaseIntakeView(); }">
+          <span class="material-icons-outlined">app_registration</span> Start Consultation & Intake
         </button>
       </div>
     </section>
@@ -253,8 +253,8 @@
         </li>
       </ul>
       <div class="service-actions">
-        <button class="action-btn primary" id="open-register-btn" aria-haspopup="dialog">
-          <span class="material-icons-outlined">how_to_reg</span> Patient Registration / Book OPD
+        <button class="action-btn primary" id="open-register-btn" onclick="if(typeof openPatientDiseaseIntakeView==='function'){ openPatientDiseaseIntakeView(); }">
+          <span class="material-icons-outlined">how_to_reg</span> Start Patient Consultation
         </button>
       </div>
 
