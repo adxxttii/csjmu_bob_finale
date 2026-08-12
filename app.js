@@ -1868,20 +1868,20 @@ function initAuthModule() {
       hwcDashboardView.style.display = 'none';
       doctorDashboardView.style.display = 'flex';
       initDoctorDashboardLogic();
+      doctorDashboardView.scrollIntoView({ behavior: 'smooth' });
       showToast(`✓ Logged in as Doctor: ${formattedName}`);
     } else if (role === 'health_worker' || role === 'cho') {
       landingView.style.display = 'none';
       doctorDashboardView.style.display = 'none';
       hwcDashboardView.style.display = 'flex';
+      hwcDashboardView.scrollIntoView({ behavior: 'smooth' });
       showToast(`✓ Logged in as Health Worker: ${formattedName}`);
     } else if (role === 'patient') {
       doctorDashboardView.style.display = 'none';
       hwcDashboardView.style.display = 'none';
       landingView.style.display = 'block';
-      
-      const regModal = document.getElementById('register-modal');
-      if (regModal) regModal.classList.add('active');
-      showToast(`✓ Logged in as Patient: ${formattedName}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      showToast(`✓ Welcome back, ${formattedName}! Signed in as Patient.`);
     } else {
       doctorDashboardView.style.display = 'none';
       hwcDashboardView.style.display = 'none';
