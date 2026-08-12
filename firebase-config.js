@@ -117,18 +117,19 @@ async function signUpUser(email, password, displayName, role = 'patient', phone 
 /**
  * Sign In User with Email & Password
  */
-async function signInUser(email, password) {
+async function signInUser(email, password, preferredRole = '') {
   const isMockKey = firebaseConfig.apiKey.includes('Mock');
   if (auth && firebase.apps.length && !isMockKey) {
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const user = userCredential.user;
       
-      let userData = { uid: user.uid, email: user.email, displayName: user.displayName || email.split('@')[0] };
+      let userData = { uid: user.uid, email: user.email, displayName: user.displayName || email.split('@')[0], role: preferredRole || 'patient' };
       try {
         const doc = await db.collection('users').doc(user.uid).get();
         if (doc.exists) {
           userData = { ...userData, ...doc.data() };
+          if (preferredRole) userData.role = preferredRole;
         }
       } catch (dbErr) {
         console.warn('Firestore user doc read warning:', dbErr);
@@ -140,8 +141,8 @@ async function signInUser(email, password) {
       console.warn('Firebase Auth Cloud Sign-In info:', error.code, error.message);
       const cleanName = email ? email.split('@')[0].replace(/[\._-]/g, ' ') : 'User';
       const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-      const role = (email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && email.includes('cho') || email.includes('healthworker')) ? 'cho' : 'patient');
-      const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: role };
+      const inferredRole = preferredRole || ((email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && (email.includes('cho') || email.includes('healthworker') || email.includes('hwc'))) ? 'health_worker' : 'patient'));
+      const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: inferredRole };
       localStorage.setItem('swasthya_current_user', JSON.stringify(mockUser));
       notifyAuthListeners(mockUser);
       return { success: true, user: mockUser };
@@ -149,8 +150,8 @@ async function signInUser(email, password) {
   } else {
     const cleanName = email ? email.split('@')[0].replace(/[\._-]/g, ' ') : 'User';
     const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-    const role = (email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && email.includes('cho') || email.includes('healthworker')) ? 'cho' : 'patient');
-    const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: role };
+    const inferredRole = preferredRole || ((email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && (email.includes('cho') || email.includes('healthworker') || email.includes('hwc'))) ? 'health_worker' : 'patient'));
+    const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: inferredRole };
     localStorage.setItem('swasthya_current_user', JSON.stringify(mockUser));
     notifyAuthListeners(mockUser);
     return { success: true, user: mockUser };

@@ -1845,10 +1845,10 @@ function initAuthModule() {
     // Call Firebase Auth signInUser helper if available
     let authRes = null;
     if (typeof signInUser === 'function' && email) {
-      authRes = await signInUser(email, pass || 'demo123456');
+      authRes = await signInUser(email, pass || 'demo123456', role);
     }
 
-    const userData = (authRes && authRes.user) ? authRes.user : {
+    const userData = (authRes && authRes.user) ? { ...authRes.user, role: role || authRes.user.role } : {
       uid: 'user_' + Date.now(),
       email: email || 'user@swasthyasetu.org',
       displayName: formattedName,
