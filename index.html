@@ -18,7 +18,9 @@
       signInWithEmailAndPassword, 
       createUserWithEmailAndPassword, 
       signInWithPopup, 
-      GoogleAuthProvider, 
+      GoogleAuthProvider,
+      RecaptchaVerifier,
+      signInWithPhoneNumber,
       signOut, 
       onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -58,6 +60,8 @@
       signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
       signInWithPopup,
+      RecaptchaVerifier,
+      signInWithPhoneNumber,
       signOut,
       onAuthStateChanged,
       doc,
@@ -2086,6 +2090,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Firebase Phone Auth reCAPTCHA Container -->
+  <div id="recaptcha-container"></div>
 
   <!-- Modal 1: Register/Login Mobile Number -->
   <div class="modal-overlay" id="register-modal">

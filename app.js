@@ -1872,12 +1872,69 @@ function initAuthModule() {
   const otpInput = document.getElementById('otp-input');
   const openOtpModalBtn = document.getElementById('open-otp-modal-btn');
 
-  let currentGeneratedOtp = '827419';
+  // Real Firebase Phone Authentication Handler
+  let firebaseConfirmationResult = null;
 
-  function triggerMobileOtpFlow(phoneNum = '9876543210') {
+  async function triggerMobileOtpFlow(phoneNum = '9876543210') {
+    const cleanDigits = phoneNum.replace(/\D/g, '');
+    const phone10 = cleanDigits.slice(-10) || '9876543210';
+    const formattedE164 = `+91${phone10}`;
+
     const regPhone = document.getElementById('reg-phone');
-    if (regPhone) regPhone.value = phoneNum;
+    if (regPhone) regPhone.value = phone10;
 
+    showToast(`⏳ Initiating Firebase Real SMS OTP to ${formattedE164}...`);
+
+    if (window.firebaseAuth && window.firebaseMethods) {
+      try {
+        if (!window.recaptchaVerifier) {
+          window.recaptchaVerifier = new window.firebaseMethods.RecaptchaVerifier(
+            window.firebaseAuth,
+            'recaptcha-container',
+            {
+              'size': 'invisible',
+              'callback': () => {
+                console.log("reCAPTCHA verified");
+              }
+            }
+          );
+        }
+
+        const appVerifier = window.recaptchaVerifier;
+        const confirmationResult = await window.firebaseMethods.signInWithPhoneNumber(
+          window.firebaseAuth,
+          formattedE164,
+          appVerifier
+        );
+
+        firebaseConfirmationResult = confirmationResult;
+        window.confirmationResult = confirmationResult;
+
+        showToast(`📲 Real Firebase SMS OTP sent to ${formattedE164}! Check your SMS inbox.`);
+
+        if (simulatedOtpCode) simulatedOtpCode.textContent = "SMS SENT";
+        if (otpInput) {
+          otpInput.value = "";
+          otpInput.placeholder = "Enter 6-digit SMS OTP";
+        }
+
+        if (registerModal) registerModal.classList.remove('active');
+        if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
+        if (otpModal) otpModal.classList.add('active');
+        return;
+      } catch (err) {
+        console.warn("Firebase Phone Auth error:", err.code, err.message);
+        if (err.code === 'auth/invalid-app-credential' || err.code === 'auth/operation-not-allowed') {
+          showToast(`⚠️ Enable 'Phone' sign-in in Firebase Console -> Auth -> Sign-in Method`);
+        } else if (err.code === 'auth/unauthorized-domain') {
+          showToast(`⚠️ Add '${window.location.hostname}' to Authorized Domains in Firebase Console`);
+        } else {
+          showToast(`Firebase Phone Auth Note: ${err.message}`);
+        }
+      }
+    }
+
+    // Fallback demo OTP simulation if Firebase Phone Auth is disabled in Firebase Console
     currentGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
     if (simulatedOtpCode) simulatedOtpCode.textContent = currentGeneratedOtp;
     if (otpInput) otpInput.value = currentGeneratedOtp;
@@ -1886,7 +1943,7 @@ function initAuthModule() {
     if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
     if (otpModal) otpModal.classList.add('active');
 
-    showToast(`📱 OTP Sent to +91 ${phoneNum}: ${currentGeneratedOtp}`);
+    showToast(`📱 Simulated OTP for +91 ${phone10}: ${currentGeneratedOtp}`);
   }
 
   if (openOtpModalBtn) {
@@ -1919,16 +1976,50 @@ function initAuthModule() {
     verifyOtpBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const userEnteredOtp = (otpInput && otpInput.value) ? otpInput.value.trim() : '';
+      
+      const regPhone = document.getElementById('reg-phone');
+      const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
+      const cleanDigits = phoneVal.replace(/\D/g, '');
+      const phone10 = cleanDigits.slice(-10) || '9876543210';
+      const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
+
+      if (firebaseConfirmationResult && userEnteredOtp.length === 6) {
+        try {
+          showToast(`⏳ Verifying SMS OTP with Firebase...`);
+          const result = await firebaseConfirmationResult.confirm(userEnteredOtp);
+          const user = result.user;
+
+          showToast(`🔥 Real Firebase SMS Verified: ${user.phoneNumber}`);
+
+          if (otpModal) otpModal.classList.remove('active');
+
+          if (window.firebaseDb) {
+            try {
+              const userRef = window.firebaseMethods.doc(window.firebaseDb, 'users', user.uid);
+              await window.firebaseMethods.setDoc(userRef, {
+                uid: user.uid,
+                phoneNumber: user.phoneNumber,
+                name: name,
+                role: 'patient',
+                lastLogin: new Date().toISOString()
+              }, { merge: true });
+            } catch (dbErr) {
+              console.warn("Firestore record note:", dbErr);
+            }
+          }
+
+          await handleFirebaseLogin(`+91 ${phone10}`, 'otp_verified', 'patient', name);
+          return;
+        } catch (err) {
+          console.warn("OTP verification error:", err);
+          showToast(`⚠️ Incorrect SMS OTP code entered. Please try again.`);
+          return;
+        }
+      }
+
       if (userEnteredOtp === currentGeneratedOtp || userEnteredOtp.length === 6) {
         showToast('✓ OTP Verified Successfully!');
         if (otpModal) otpModal.classList.remove('active');
-        const regPhone = document.getElementById('reg-phone');
-        const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
-        
-        const cleanDigits = phoneVal.replace(/\D/g, '');
-        const phone10 = cleanDigits.slice(-10) || '9876543210';
-        const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
-
         await handleFirebaseLogin(`+91 ${phone10}`, 'otp_verified', 'patient', name);
       } else {
         showToast('⚠️ Invalid OTP code entered. Please check simulated OTP.');
@@ -1939,14 +2030,28 @@ function initAuthModule() {
   if (otpForm) {
     otpForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (otpModal) otpModal.classList.remove('active');
+      const userEnteredOtp = (otpInput && otpInput.value) ? otpInput.value.trim() : '';
       const regPhone = document.getElementById('reg-phone');
       const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
-      
       const cleanDigits = phoneVal.replace(/\D/g, '');
       const phone10 = cleanDigits.slice(-10) || '9876543210';
       const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
 
+      if (firebaseConfirmationResult && userEnteredOtp.length === 6) {
+        try {
+          const result = await firebaseConfirmationResult.confirm(userEnteredOtp);
+          const user = result.user;
+          showToast(`🔥 Real Firebase SMS Verified: ${user.phoneNumber}`);
+          if (otpModal) otpModal.classList.remove('active');
+          await handleFirebaseLogin(`+91 ${phone10}`, 'otp_verified', 'patient', name);
+          return;
+        } catch (err) {
+          showToast(`⚠️ Incorrect SMS OTP code.`);
+          return;
+        }
+      }
+
+      if (otpModal) otpModal.classList.remove('active');
       await handleFirebaseLogin(`+91 ${phone10}`, 'otp_verified', 'patient', name);
     });
   }
