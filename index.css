@@ -2747,6 +2747,30 @@ body.high-contrast .faq-question {
   .emergency-grid {
     grid-template-columns: 1fr;
   }
+
+  #patient-disease-intake-form {
+    padding: 18px 14px !important;
+  }
+  
+  #submit-disease-intake-btn,
+  #profile-launch-portal-btn,
+  #intake-cancel-btn,
+  #conf-launch-video-btn,
+  #conf-return-profile-btn {
+    width: 100% !important;
+    min-height: 48px !important;
+    font-size: 0.95rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 12px 18px !important;
+  }
+
+  .intake-attached-report-cb {
+    width: 20px !important;
+    height: 20px !important;
+  }
 }
 
 

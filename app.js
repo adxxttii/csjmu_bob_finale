@@ -3518,10 +3518,18 @@ function openPatientDiseaseIntakeView() {
 }
 
 function initPatientIntakeFormHandlers() {
-  // Attach Start Consultation click handlers across the website
-  const heroBtns = document.querySelectorAll('.slide-btn');
-  heroBtns.forEach(btn => {
-    if (btn.textContent.includes('Start Consultation')) {
+  // Attach Start Consultation click handlers dynamically across all buttons & service cards
+  const allConsultationButtons = document.querySelectorAll('.slide-btn, .service-card .btn, .profile-btn.primary, #open-register-btn, .hero-actions button');
+  allConsultationButtons.forEach(btn => {
+    const btnText = (btn.textContent || '').trim();
+    if (
+      btnText.includes('Start Consultation') ||
+      btnText.includes('Book OPD Consultation') ||
+      btnText.includes('Join OPD Teleconsultation') ||
+      btnText.includes('Join Teleconsultation') ||
+      btnText.includes('Consult Doctor') ||
+      btnText.includes('Consult Specialist Doctor')
+    ) {
       btn.onclick = (e) => {
         e.preventDefault();
         openPatientDiseaseIntakeView();
@@ -3529,9 +3537,9 @@ function initPatientIntakeFormHandlers() {
     }
   });
 
-  const openRegisterBtn = document.getElementById('open-register-btn');
-  if (openRegisterBtn) {
-    openRegisterBtn.onclick = (e) => {
+  const launchBtn = document.getElementById('profile-launch-portal-btn');
+  if (launchBtn) {
+    launchBtn.onclick = (e) => {
       e.preventDefault();
       openPatientDiseaseIntakeView();
     };
