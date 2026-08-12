@@ -24,6 +24,7 @@ let rtdb = null;
 let googleProvider = null;
 let authListeners = [];
 
+
 // Initialize Firebase SDK
 function initFirebaseServices() {
   try {
@@ -37,7 +38,7 @@ function initFirebaseServices() {
         rtdb = firebase.database();
       }
       googleProvider = new firebase.auth.GoogleAuthProvider();
-      
+
       // Enable offline persistence for Firestore if available
       db.enablePersistence({ synchronizeTabs: true }).catch(err => {
         if (err.code === 'failed-precondition') {
@@ -46,7 +47,7 @@ function initFirebaseServices() {
           console.warn('Firestore persistence not supported by browser');
         }
       });
-      
+
       isFirebaseInitialized = true;
       console.log('✅ Firebase Auth & Cloud Firestore initialized successfully.');
     } else {
@@ -77,7 +78,7 @@ async function signUpUser(email, password, displayName, role = 'patient', phone 
     try {
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
-      
+
       await user.updateProfile({ displayName: displayName });
 
       const userDoc = {
@@ -117,19 +118,18 @@ async function signUpUser(email, password, displayName, role = 'patient', phone 
 /**
  * Sign In User with Email & Password
  */
-async function signInUser(email, password, preferredRole = '') {
+async function signInUser(email, password) {
   const isMockKey = firebaseConfig.apiKey.includes('Mock');
   if (auth && firebase.apps.length && !isMockKey) {
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const user = userCredential.user;
-      
-      let userData = { uid: user.uid, email: user.email, displayName: user.displayName || email.split('@')[0], role: preferredRole || 'patient' };
+
+      let userData = { uid: user.uid, email: user.email, displayName: user.displayName || email.split('@')[0] };
       try {
         const doc = await db.collection('users').doc(user.uid).get();
         if (doc.exists) {
           userData = { ...userData, ...doc.data() };
-          if (preferredRole) userData.role = preferredRole;
         }
       } catch (dbErr) {
         console.warn('Firestore user doc read warning:', dbErr);
@@ -141,8 +141,8 @@ async function signInUser(email, password, preferredRole = '') {
       console.warn('Firebase Auth Cloud Sign-In info:', error.code, error.message);
       const cleanName = email ? email.split('@')[0].replace(/[\._-]/g, ' ') : 'User';
       const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-      const inferredRole = preferredRole || ((email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && (email.includes('cho') || email.includes('healthworker') || email.includes('hwc'))) ? 'health_worker' : 'patient'));
-      const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: inferredRole };
+      const role = (email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && email.includes('cho') || email.includes('healthworker')) ? 'cho' : 'patient');
+      const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: role };
       localStorage.setItem('swasthya_current_user', JSON.stringify(mockUser));
       notifyAuthListeners(mockUser);
       return { success: true, user: mockUser };
@@ -150,8 +150,8 @@ async function signInUser(email, password, preferredRole = '') {
   } else {
     const cleanName = email ? email.split('@')[0].replace(/[\._-]/g, ' ') : 'User';
     const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
-    const inferredRole = preferredRole || ((email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && (email.includes('cho') || email.includes('healthworker') || email.includes('hwc'))) ? 'health_worker' : 'patient'));
-    const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: inferredRole };
+    const role = (email && (email.includes('doctor') || email.includes('dr.'))) ? 'doctor' : ((email && email.includes('cho') || email.includes('healthworker')) ? 'cho' : 'patient');
+    const mockUser = { uid: 'user_' + Date.now(), email: email || 'user@swasthyasetu.org', displayName: formattedName, role: role };
     localStorage.setItem('swasthya_current_user', JSON.stringify(mockUser));
     notifyAuthListeners(mockUser);
     return { success: true, user: mockUser };
@@ -176,7 +176,7 @@ async function signInWithGoogle() {
       };
       try {
         await db.collection('users').doc(user.uid).set(userData, { merge: true });
-      } catch (dbErr) {}
+      } catch (dbErr) { }
       localStorage.setItem('swasthya_current_user', JSON.stringify(userData));
       notifyAuthListeners(userData);
       return { success: true, user: userData };
@@ -257,40 +257,45 @@ function getCurrentUser() {
 // ----------------------------------------------------
 
 /**
- * Save OPD Consultation Intake Record to Firestore
+ * Save OPD Consultation Intake Record to Firestore & Realtime Database
  */
 async function saveConsultationRecord(consultationData) {
-  const record = {
-    ...consultationData,
-    status: consultationData.status || 'queued',
-    createdAt: (db && firebase.apps.length) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
-  };
+  const isMockKey = firebaseConfig.apiKey.includes('Mock');
+  const timestampIso = new Date().toISOString();
 
-  if (db && firebase.apps.length) {
+  // Save to local storage as instant backup
+  const localConsults = JSON.parse(localStorage.getItem('swasthya_consultations') || '[]');
+  const localId = 'consult_' + Date.now();
+  const localRecord = { id: localId, ...consultationData, status: consultationData.status || 'queued', createdAt: timestampIso };
+  localConsults.unshift(localRecord);
+  localStorage.setItem('swasthya_consultations', JSON.stringify(localConsults));
+
+  if (db && firebase.apps.length && !isMockKey) {
     try {
-      const docRef = await db.collection('consultations').add(record);
+      const docRecord = {
+        ...consultationData,
+        status: consultationData.status || 'queued',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      const docRef = await db.collection('consultations').add(docRecord);
       console.log('📁 Firestore: Consultation saved with ID:', docRef.id);
-      
-      // Also push to Realtime Database if configured
+
+      // Push to Realtime Database safely
       if (rtdb) {
         rtdb.ref('consultations/' + docRef.id).set({
           ...consultationData,
           status: consultationData.status || 'queued',
-          createdAt: new Date().toISOString()
-        });
+          createdAt: timestampIso
+        }).catch(rtdbErr => console.warn('Realtime Database write notice:', rtdbErr.message));
       }
 
       return { success: true, id: docRef.id };
     } catch (error) {
-      console.error('Firestore save consultation error:', error);
-      return { success: false, error: error.message };
+      console.warn('Cloud Firestore save consultation notice:', error.message);
+      return { success: true, id: localId, isLocal: true };
     }
   } else {
-    const localConsults = JSON.parse(localStorage.getItem('swasthya_consultations') || '[]');
-    record.id = 'consult_' + Date.now();
-    localConsults.unshift(record);
-    localStorage.setItem('swasthya_consultations', JSON.stringify(localConsults));
-    return { success: true, id: record.id };
+    return { success: true, id: localId };
   }
 }
 
@@ -298,61 +303,73 @@ async function saveConsultationRecord(consultationData) {
  * Real-time Subscription to Consultations Archive for HWC Workstation & Admin
  */
 function subscribeToConsultations(callback) {
-  if (db && firebase.apps.length) {
+  const isMockKey = firebaseConfig.apiKey.includes('Mock');
+  if (db && firebase.apps.length && !isMockKey) {
     return db.collection('consultations')
       .orderBy('createdAt', 'desc')
       .limit(50)
       .onSnapshot(snapshot => {
         const consults = [];
         snapshot.forEach(doc => {
-          consults.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          consults.push({ id: doc.id, ...data });
         });
-        callback(consults);
+        if (consults.length > 0) {
+          callback(consults);
+        } else {
+          const local = JSON.parse(localStorage.getItem('swasthya_consultations') || '[]');
+          callback(local);
+        }
       }, err => {
-        console.warn('Firestore snapshot error fallback:', err);
+        console.warn('Firestore snapshot notice:', err.message);
         const local = JSON.parse(localStorage.getItem('swasthya_consultations') || '[]');
         callback(local);
       });
   } else {
     const local = JSON.parse(localStorage.getItem('swasthya_consultations') || '[]');
     callback(local);
-    return () => {};
+    return () => { };
   }
 }
 
 /**
- * Save Generated Prescription Document to Firestore
+ * Save Generated Prescription Document to Firestore & Realtime Database
  */
 async function savePrescriptionRecord(presData) {
-  const record = {
-    ...presData,
-    issuedAt: (db && firebase.apps.length) ? firebase.firestore.FieldValue.serverTimestamp() : new Date().toISOString()
-  };
+  const isMockKey = firebaseConfig.apiKey.includes('Mock');
+  const timestampIso = new Date().toISOString();
 
-  if (db && firebase.apps.length) {
+  // Save to local storage as backup
+  const localPres = JSON.parse(localStorage.getItem('swasthya_prescriptions') || '[]');
+  const localId = 'pres_' + Date.now();
+  const localRecord = { id: localId, ...presData, issuedAt: timestampIso };
+  localPres.unshift(localRecord);
+  localStorage.setItem('swasthya_prescriptions', JSON.stringify(localPres));
+
+  if (db && firebase.apps.length && !isMockKey) {
     try {
-      const docRef = await db.collection('prescriptions').add(record);
+      const docRecord = {
+        ...presData,
+        issuedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      const docRef = await db.collection('prescriptions').add(docRecord);
       console.log('📄 Firestore: Prescription saved with ID:', docRef.id);
-      
-      // Also push to Realtime Database if configured
+
+      // Push to Realtime Database safely
       if (rtdb) {
         rtdb.ref('prescriptions/' + docRef.id).set({
           ...presData,
-          issuedAt: new Date().toISOString()
-        });
+          issuedAt: timestampIso
+        }).catch(rtdbErr => console.warn('Realtime Database prescription write notice:', rtdbErr.message));
       }
 
       return { success: true, id: docRef.id };
     } catch (error) {
-      console.error('Firestore save prescription error:', error);
-      return { success: false, error: error.message };
+      console.warn('Cloud Firestore save prescription notice:', error.message);
+      return { success: true, id: localId, isLocal: true };
     }
   } else {
-    const localPres = JSON.parse(localStorage.getItem('swasthya_prescriptions') || '[]');
-    record.id = 'pres_' + Date.now();
-    localPres.unshift(record);
-    localStorage.setItem('swasthya_prescriptions', JSON.stringify(localPres));
-    return { success: true, id: record.id };
+    return { success: true, id: localId };
   }
 }
 
