@@ -1747,6 +1747,8 @@ function initAuthModule() {
     unifiedLoginModal.classList.add('active');
   }
 
+  window.openUnifiedModal = openUnifiedModal;
+
   // Attach event listener to main nav Sign In button
   if (openUnifiedLoginBtn) {
     openUnifiedLoginBtn.addEventListener('click', (e) => {
@@ -2440,9 +2442,19 @@ function initAuthModule() {
     if (hwcLoginModal) hwcLoginModal.classList.remove('active');
     if (doctorLoginModal) doctorLoginModal.classList.remove('active');
 
-    // Display dedicated Profile Web Page
-    showView('profile');
-    showToast(`✓ Welcome back, ${formattedName}! Profile page updated.`);
+    // Display dedicated Page View
+    if (pendingIntakeLaunchAfterLogin && role === 'patient') {
+      pendingIntakeLaunchAfterLogin = false;
+      if (typeof openPatientDiseaseIntakeView === 'function') {
+        openPatientDiseaseIntakeView();
+      } else {
+        showView('profile');
+      }
+      showToast(`✓ Welcome back, ${formattedName}! Opening Disease Intake Form...`);
+    } else {
+      showView('profile');
+      showToast(`✓ Welcome back, ${formattedName}! Profile page updated.`);
+    }
   }
 
   // Header Logout Button Handler
@@ -3234,7 +3246,9 @@ function openPatientDiseaseIntakeView() {
   if (!user) {
     pendingIntakeLaunchAfterLogin = true;
     showToast('⚠️ Please Sign In as Patient first to start your consultation.');
-    openUnifiedModal('patient');
+    if (typeof window.openUnifiedModal === 'function') {
+      window.openUnifiedModal('patient');
+    }
     return;
   }
 
