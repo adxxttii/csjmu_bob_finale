@@ -1858,6 +1858,25 @@ function initAuthModule() {
     await handleFirebaseLogin(formattedEmail, pass, 'patient', displayName);
   };
 
+  // Direct OPD Registration without OTP
+  const directRegisterBtn = document.getElementById('direct-register-btn');
+  if (directRegisterBtn) {
+    directRegisterBtn.addEventListener('click', async () => {
+      const regPhone = document.getElementById('reg-phone');
+      const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
+      const cleanDigits = phoneVal.replace(/\D/g, '');
+      const phone10 = cleanDigits.slice(-10) || '9876543210';
+      const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
+
+      showToast(`⚡ OPD Registration complete for +91 ${phone10}! Access granted.`);
+
+      if (registerModal) registerModal.classList.remove('active');
+      if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
+
+      await handleFirebaseLogin(`+91 ${phone10}`, 'direct_no_otp', 'patient', name);
+    });
+  }
+
   // Mobile Number OTP Modal Flow Handlers
   const registerForm = document.getElementById('register-form');
   const sendOtpBtn = document.getElementById('send-otp-btn');
