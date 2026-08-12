@@ -9,6 +9,66 @@
   
   <!-- Material Design Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+  <!-- Firebase Web SDK (v10 Modular) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      createUserWithEmailAndPassword, 
+      signInWithPopup, 
+      GoogleAuthProvider, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      collection, 
+      addDoc, 
+      getDocs 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // User's Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQs_FrSTyzOZg4pCE5CzxhZbj0dqkAuwo",
+      authDomain: "swasthya-36f5a.firebaseapp.com",
+      projectId: "swasthya-36f5a",
+      storageBucket: "swasthya-36f5a.firebasestorage.app",
+      messagingSenderId: "1085649385379",
+      appId: "1:1085649385379:web:166f53a69978d6f166cc16",
+      measurementId: "G-1R38Y84XJ6"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    // Expose Firebase globally for app.js
+    window.firebaseApp = app;
+    window.firebaseAuth = auth;
+    window.firebaseDb = db;
+    window.googleProvider = googleProvider;
+    window.firebaseMethods = {
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      addDoc,
+      getDocs
+    };
+    console.log("🔥 Firebase Initialized Successfully!");
+  </script>
 </head>
 <body id="main-body">
 

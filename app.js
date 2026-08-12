@@ -1757,36 +1757,116 @@ function initAuthModule() {
     });
   });
 
+  // Firebase Authentication & Database Helper Function
+  async function handleFirebaseLogin(rawEmail, password, role, defaultName) {
+    // Sanitize input: If user entered phone number or username without '@', format as email for Firebase Auth
+    let email = rawEmail ? rawEmail.trim() : '';
+    if (email && !email.includes('@')) {
+      email = `${email.replace(/[^a-zA-Z0-9]/g, '')}@swasthya.app`;
+    }
+    
+    // Ensure password meets Firebase min 6 char length requirement
+    let pass = password && password.length >= 6 ? password : `${password || '123456'}Demo123!`;
+
+    if (window.firebaseAuth && window.firebaseMethods) {
+      const { signInWithEmailAndPassword, createUserWithEmailAndPassword, doc, setDoc } = window.firebaseMethods;
+      try {
+        let userCred = null;
+        try {
+          userCred = await signInWithEmailAndPassword(window.firebaseAuth, email, pass);
+          showToast(`🔥 Firebase Auth: Signed in as ${email}`);
+        } catch (authErr) {
+          console.warn("Firebase SignIn code:", authErr.code, authErr.message);
+          
+          if (authErr.code === 'auth/unauthorized-domain') {
+            showToast(`⚠️ Firebase Domain Warning: Add '${window.location.hostname}' to Firebase Console -> Auth -> Settings -> Authorized Domains`);
+          } else if (
+            authErr.code === 'auth/invalid-credential' || 
+            authErr.code === 'auth/user-not-found' || 
+            authErr.code === 'auth/wrong-password' ||
+            authErr.code === 'auth/invalid-email'
+          ) {
+            try {
+              // Attempt to auto-create user on first sign-in
+              userCred = await createUserWithEmailAndPassword(window.firebaseAuth, email, pass);
+              showToast(`🔥 Firebase Auth: Created new user for ${email}`);
+            } catch (createErr) {
+              console.warn("Firebase CreateUser Error:", createErr.code, createErr.message);
+              if (createErr.code === 'auth/unauthorized-domain') {
+                showToast(`⚠️ Firebase Warning: Please add '${window.location.hostname}' to Authorized Domains in Firebase Console`);
+              } else if (createErr.code === 'auth/email-already-in-use') {
+                showToast(`⚠️ Invalid Password for registered email ${email}`);
+              } else {
+                showToast(`Auth Info: ${createErr.message}`);
+              }
+            }
+          } else {
+            showToast(`Auth Note: ${authErr.message}`);
+          }
+        }
+
+        if (userCred && userCred.user && window.firebaseDb) {
+          try {
+            const userRef = doc(window.firebaseDb, 'users', userCred.user.uid);
+            await setDoc(userRef, {
+              uid: userCred.user.uid,
+              email: email,
+              role: role,
+              name: defaultName,
+              lastLogin: new Date().toISOString()
+            }, { merge: true });
+            console.log("🔥 Firestore updated for user UID:", userCred.user.uid);
+          } catch (dbErr) {
+            console.warn("Firestore save note:", dbErr.message);
+          }
+        }
+      } catch (err) {
+        console.warn("Firebase Login Error:", err.message);
+      }
+    } else {
+      console.warn("Firebase SDK loading or not yet initialized");
+    }
+    
+    // Fallthrough to load dashboard view
+    loginAsRole(role, email, defaultName);
+  }
+
   // Handle Unified Doctor Form Submit
   const uniDoctorForm = document.getElementById('unified-doctor-form');
   if (uniDoctorForm) {
-    uniDoctorForm.addEventListener('submit', (e) => {
+    uniDoctorForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      loginAsRole('doctor', document.getElementById('uni-doc-email').value, 'Dr. Rajesh Kumar (MD)');
+      const email = document.getElementById('uni-doc-email').value;
+      const pass = document.getElementById('uni-doc-pass').value;
+      await handleFirebaseLogin(email, pass, 'doctor', 'Dr. Rajesh Kumar (MD)');
     });
   }
 
   // Handle Unified Patient Form Submit
   const uniPatientForm = document.getElementById('unified-patient-form');
   if (uniPatientForm) {
-    uniPatientForm.addEventListener('submit', (e) => {
+    uniPatientForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      loginAsRole('patient', document.getElementById('uni-pat-input').value, 'Citizen Patient');
+      const email = document.getElementById('uni-pat-input').value;
+      const pass = document.getElementById('uni-pat-pass').value;
+      await handleFirebaseLogin(email, pass, 'patient', 'Citizen Patient');
     });
   }
 
   // Handle Unified Health Worker Form Submit
   const uniHwcForm = document.getElementById('unified-hwc-form');
   if (uniHwcForm) {
-    uniHwcForm.addEventListener('submit', (e) => {
+    uniHwcForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      loginAsRole('health_worker', document.getElementById('uni-hwc-email').value, 'Health Worker (HW101)');
+      const email = document.getElementById('uni-hwc-email').value;
+      const pass = document.getElementById('uni-hwc-pass').value;
+      await handleFirebaseLogin(email, pass, 'health_worker', 'Health Worker (HW101)');
     });
   }
 
   // Unified Google Login Handler
   if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', () => {
+    googleLoginBtn.addEventListener('click', async () => {
       const activeTab = document.querySelector('.role-tab-btn.active');
       const activeRole = activeTab ? activeTab.dataset.role : 'doctor';
 
@@ -1801,10 +1881,33 @@ function initAuthModule() {
         targetRole = 'health_worker';
       }
 
-      showToast(`Google OAuth Connected! Authenticating as Google User...`);
-      setTimeout(() => {
-        loginAsRole(targetRole, `google_user@medisetu.demo`, `Google Verified (${roleName})`);
-      }, 1000);
+      showToast(`Initiating Google Firebase Authentication...`);
+
+      if (window.firebaseAuth && window.firebaseMethods && window.googleProvider) {
+        try {
+          const result = await window.firebaseMethods.signInWithPopup(window.firebaseAuth, window.googleProvider);
+          const user = result.user;
+          showToast(`🔥 Firebase Google Auth: ${user.email}`);
+
+          if (window.firebaseDb) {
+            const userRef = window.firebaseMethods.doc(window.firebaseDb, 'users', user.uid);
+            await window.firebaseMethods.setDoc(userRef, {
+              uid: user.uid,
+              email: user.email,
+              name: user.displayName || roleName,
+              photoURL: user.photoURL || '',
+              role: targetRole,
+              lastLogin: new Date().toISOString()
+            }, { merge: true });
+          }
+          loginAsRole(targetRole, user.email, user.displayName || `Google User (${roleName})`);
+          return;
+        } catch (err) {
+          console.warn("Google Auth popup note:", err.message);
+        }
+      }
+
+      loginAsRole(targetRole, `google_user@swasthya.app`, `Google Verified (${roleName})`);
     });
   }
 
