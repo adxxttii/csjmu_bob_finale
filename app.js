@@ -177,11 +177,18 @@ window.showView = function(viewName) {
   const hwcDashboardView = document.getElementById('hwc-dashboard-view');
   const intakeView = document.getElementById('patient-disease-intake-view');
 
-  if (landingView) landingView.style.display = (viewName === 'landing') ? 'block' : 'none';
-  if (userProfileView) userProfileView.style.display = (viewName === 'profile') ? 'block' : 'none';
-  if (doctorDashboardView) doctorDashboardView.style.display = (viewName === 'doctor') ? 'flex' : 'none';
-  if (hwcDashboardView) hwcDashboardView.style.display = (viewName === 'hwc') ? 'flex' : 'none';
-  if (intakeView) intakeView.style.display = (viewName === 'intake' || viewName === 'patient-intake') ? 'block' : 'none';
+  const target = viewName || 'landing';
+  const isIntake = (target === 'intake' || target === 'patient-intake');
+  const isProfile = (target === 'profile');
+  const isDoctor = (target === 'doctor');
+  const isHwc = (target === 'hwc');
+  const isLanding = (!isIntake && !isProfile && !isDoctor && !isHwc) || target === 'landing';
+
+  if (landingView) landingView.style.display = isLanding ? 'block' : 'none';
+  if (userProfileView) userProfileView.style.display = isProfile ? 'block' : 'none';
+  if (doctorDashboardView) doctorDashboardView.style.display = isDoctor ? 'flex' : 'none';
+  if (hwcDashboardView) hwcDashboardView.style.display = isHwc ? 'flex' : 'none';
+  if (intakeView) intakeView.style.display = isIntake ? 'block' : 'none';
   
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
