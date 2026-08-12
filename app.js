@@ -436,6 +436,11 @@ function initSimulation() {
     const deptCode = patientState.opdClinic.substring(0, 3).toUpperCase();
     patientState.token = `${deptCode}-${randNum}`;
 
+    // Save Consultation Record to Cloud Firestore Database
+    if (typeof saveConsultationRecord === 'function') {
+      saveConsultationRecord(patientState);
+    }
+
     closeModal(infoModal);
     startQueueSimulation();
   });
@@ -704,6 +709,19 @@ function initSimulation() {
   });
 
   function generateAndDownloadPrescription() {
+    // Save Prescription Record to Cloud Firestore Database
+    if (typeof savePrescriptionRecord === 'function') {
+      savePrescriptionRecord({
+        patientName: patientState.name,
+        patientPhone: patientState.phone,
+        opdClinic: patientState.opdClinic,
+        token: patientState.token,
+        dhrId: patientState.dhrId,
+        symptoms: patientState.symptoms,
+        doctor: 'Dr. Rajesh Kumar'
+      });
+    }
+
     const today = new Date().toLocaleDateString('en-IN', {
       day: 'numeric',
       month: 'short',
@@ -1658,7 +1676,6 @@ function initAuthModule() {
 
   // Unified Auth Modal Elements
   const unifiedLoginModal = document.getElementById('unified-login-modal');
-  const openUnifiedLoginBtn = document.getElementById('open-unified-login-btn');
   const roleTabBtns = document.querySelectorAll('.role-tab-btn');
   const roleFormPanels = document.querySelectorAll('.role-form-panel');
   const googleLoginBtn = document.getElementById('google-login-btn');
