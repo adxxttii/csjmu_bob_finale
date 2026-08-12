@@ -1762,14 +1762,19 @@ function initAuthModule() {
     });
   }
 
-  // Close modal when clicking backdrop outside modal container
-  if (unifiedLoginModal) {
-    unifiedLoginModal.addEventListener('click', (e) => {
-      if (e.target === unifiedLoginModal) {
-        unifiedLoginModal.classList.remove('active');
-      }
+  // Attach event listeners for switching Role Tabs inside the Unified Login Modal
+  roleTabBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const role = btn.dataset.role;
+      roleTabBtns.forEach(b => b.classList.remove('active'));
+      roleFormPanels.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const targetPanel = document.getElementById(`panel-role-${role}`);
+      if (targetPanel) targetPanel.classList.add('active');
     });
-  }
+  });
 
   // Helper to format Doctor's name accurately
   function formatDoctorName(inputEmail, fallbackName) {
