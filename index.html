@@ -145,7 +145,7 @@
     </ul>
     <div class="nav-right-actions" style="display: flex; align-items: center; gap: 12px;">
       <span class="desktop-only" style="font-size: 0.85rem; font-weight: 600;">Toll-Free: 1-800-555-0199</span>
-      <button class="nav-login-btn" id="open-unified-login-btn">
+      <button class="nav-login-btn" id="open-unified-login-btn" onclick="if(typeof openUnifiedModal==='function'){ openUnifiedModal('patient'); }">
         <span class="material-icons-outlined" style="font-size: 18px;">account_circle</span> Sign In
       </button>
       <div id="user-profile-display" class="user-profile-badge" style="display: none; align-items: center; gap: 10px; background: rgba(16, 132, 126, 0.08); border: 1px solid rgba(16, 132, 126, 0.25); padding: 4px 14px 4px 6px; border-radius: 30px;">

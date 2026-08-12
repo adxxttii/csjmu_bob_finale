@@ -1936,11 +1936,14 @@ function initAuthModule() {
   const doctorLogoutBtn = document.getElementById('doctor-logout-btn');
 
   // Open Unified Modal with specific active role tab
-  function openUnifiedModal(targetRole = 'doctor') {
-    if (!unifiedLoginModal) return;
+  function openUnifiedModal(targetRole = 'patient') {
+    const modal = document.getElementById('unified-login-modal') || unifiedLoginModal;
+    if (!modal) return;
     
-    // Switch active role tab
-    roleTabBtns.forEach(btn => {
+    const tabs = modal.querySelectorAll('.role-tab-btn');
+    const panels = modal.querySelectorAll('.role-form-panel');
+
+    tabs.forEach(btn => {
       if (btn.dataset.role === targetRole) {
         btn.classList.add('active');
       } else {
@@ -1948,7 +1951,7 @@ function initAuthModule() {
       }
     });
 
-    roleFormPanels.forEach(panel => {
+    panels.forEach(panel => {
       if (panel.id === `panel-role-${targetRole}`) {
         panel.classList.add('active');
       } else {
@@ -1956,7 +1959,7 @@ function initAuthModule() {
       }
     });
 
-    unifiedLoginModal.classList.add('active');
+    modal.classList.add('active');
   }
 
   window.openUnifiedModal = openUnifiedModal;
@@ -1965,7 +1968,7 @@ function initAuthModule() {
   if (openUnifiedLoginBtn) {
     openUnifiedLoginBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      openUnifiedModal('doctor');
+      openUnifiedModal('patient');
     });
   }
 
