@@ -1051,7 +1051,7 @@
             <strong>Demo Doctor Account:</strong><br>
             Email: <code>doctor@medisetu.demo</code> | Pass: <code>Demo@123</code>
           </div>
-          <form id="unified-doctor-form" onsubmit="return false;">
+          <form id="unified-doctor-form" onsubmit="event.preventDefault();">
             <div class="form-group">
               <label for="uni-doc-email">Doctor Email / License Reg ID</label>
               <input type="text" id="uni-doc-email" class="form-input" value="doctor@medisetu.demo" required>
@@ -1060,7 +1060,7 @@
               <label for="uni-doc-pass">Password</label>
               <input type="password" id="uni-doc-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="submit" class="form-submit" style="background: var(--primary-navy);">Login as Doctor</button>
+            <button type="button" id="submit-uni-doc-btn" class="form-submit" style="background: var(--primary-navy);">Login as Doctor</button>
           </form>
         </div>
 
@@ -1070,7 +1070,7 @@
             <strong>Demo Patient Account:</strong><br>
             Mobile / Email: <code>patient@medisetu.demo</code> | Mobile: <code>9876543210</code>
           </div>
-          <form id="unified-patient-form" onsubmit="return false;">
+          <form id="unified-patient-form" onsubmit="event.preventDefault();">
             <div class="form-group">
               <label for="uni-pat-input">Mobile Number or Email</label>
               <input type="text" id="uni-pat-input" class="form-input" value="patient@medisetu.demo" required>
@@ -1079,7 +1079,7 @@
               <label for="uni-pat-pass">Password / OTP Code</label>
               <input type="password" id="uni-pat-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="submit" class="form-submit" style="background: var(--accent-saffron);">Continue as Patient</button>
+            <button type="button" id="submit-uni-pat-btn" class="form-submit" style="background: var(--accent-saffron);">Continue as Patient</button>
           </form>
         </div>
 
@@ -1089,7 +1089,7 @@
             <strong>Demo Health Worker Account:</strong><br>
             Email: <code>healthworker@medisetu.demo</code> | Pass: <code>Demo@123</code>
           </div>
-          <form id="unified-hwc-form" onsubmit="return false;">
+          <form id="unified-hwc-form" onsubmit="event.preventDefault();">
             <div class="form-group">
               <label for="uni-hwc-email">Health Worker Email / Staff ID</label>
               <input type="text" id="uni-hwc-email" class="form-input" value="healthworker@medisetu.demo" required>
@@ -1098,7 +1098,7 @@
               <label for="uni-hwc-pass">Password</label>
               <input type="password" id="uni-hwc-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="submit" class="form-submit" style="background: var(--health-teal);">Login as Health Worker</button>
+            <button type="button" id="submit-uni-hwc-btn" class="form-submit" style="background: var(--health-teal);">Login as Health Worker</button>
           </form>
         </div>
 

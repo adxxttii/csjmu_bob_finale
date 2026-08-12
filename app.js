@@ -1771,38 +1771,41 @@ function initAuthModule() {
     }
   }
 
-  // Handle Unified Doctor Form Submit
+  // Direct Click Handlers & Form Submit Handlers for Guaranteed Login Execution
+  const submitUniDocBtn = document.getElementById('submit-uni-doc-btn');
+  const submitUniPatBtn = document.getElementById('submit-uni-pat-btn');
+  const submitUniHwcBtn = document.getElementById('submit-uni-hwc-btn');
+
+  const doDoctorLogin = async () => {
+    const email = document.getElementById('uni-doc-email').value || 'doctor@medisetu.demo';
+    const pass = document.getElementById('uni-doc-pass').value || 'Demo@123';
+    await loginAsRole('doctor', email, pass, 'Dr. Rajesh Kumar (MD)');
+  };
+
+  const doPatientLogin = async () => {
+    const email = document.getElementById('uni-pat-input').value || 'patient@medisetu.demo';
+    const pass = document.getElementById('uni-pat-pass').value || 'Demo@123';
+    await loginAsRole('patient', email, pass, 'Citizen Patient');
+  };
+
+  const doHwcLogin = async () => {
+    const email = document.getElementById('uni-hwc-email').value || 'healthworker@medisetu.demo';
+    const pass = document.getElementById('uni-hwc-pass').value || 'Demo@123';
+    await loginAsRole('health_worker', email, pass, 'Health Worker (HW101)');
+  };
+
+  if (submitUniDocBtn) submitUniDocBtn.addEventListener('click', doDoctorLogin);
+  if (submitUniPatBtn) submitUniPatBtn.addEventListener('click', doPatientLogin);
+  if (submitUniHwcBtn) submitUniHwcBtn.addEventListener('click', doHwcLogin);
+
   const uniDoctorForm = document.getElementById('unified-doctor-form');
-  if (uniDoctorForm) {
-    uniDoctorForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('uni-doc-email').value;
-      const pass = document.getElementById('uni-doc-pass').value;
-      await loginAsRole('doctor', email, pass, 'Dr. Rajesh Kumar (MD)');
-    });
-  }
+  if (uniDoctorForm) uniDoctorForm.addEventListener('submit', (e) => { e.preventDefault(); doDoctorLogin(); });
 
-  // Handle Unified Patient Form Submit
   const uniPatientForm = document.getElementById('unified-patient-form');
-  if (uniPatientForm) {
-    uniPatientForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('uni-pat-input').value;
-      const pass = document.getElementById('uni-pat-pass').value;
-      await loginAsRole('patient', email, pass, 'Citizen Patient');
-    });
-  }
+  if (uniPatientForm) uniPatientForm.addEventListener('submit', (e) => { e.preventDefault(); doPatientLogin(); });
 
-  // Handle Unified Health Worker Form Submit
   const uniHwcForm = document.getElementById('unified-hwc-form');
-  if (uniHwcForm) {
-    uniHwcForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('uni-hwc-email').value;
-      const pass = document.getElementById('uni-hwc-pass').value;
-      await loginAsRole('health_worker', email, pass, 'Health Worker (HW101)');
-    });
-  }
+  if (uniHwcForm) uniHwcForm.addEventListener('submit', (e) => { e.preventDefault(); doHwcLogin(); });
 
   // Unified Google Login Handler
   if (googleLoginBtn) {
