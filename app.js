@@ -8,9 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initSlider();
   initFAQ();
   initSimulation();
+  initHWCModule();
+  initAuthModule();
 });
 
-/* ================= 1. Accessibility Controls ================= */
+/* ================= 1. Accessibility Controls & Multilingual Engine ================= */
 function initAccessibility() {
   const html = document.documentElement;
   const body = document.body;
@@ -49,6 +51,202 @@ function initAccessibility() {
     localStorage.setItem('highContrast', isHC);
     contrastToggle.textContent = isHC ? 'Normal View' : 'High Contrast';
   });
+
+  // Dynamic Multilingual Translations Object
+  const translations = {
+    en: {
+      navHome: 'Home',
+      navServices: 'Services',
+      navHow: 'How it Works',
+      navFaq: 'FAQs',
+      heroTitle1: 'Stay Home, Consult Doctor',
+      heroDesc1: 'A leading secure patient-to-doctor teleconsultation system. Register online, verify via OTP, consult medical specialists, and download digital prescriptions.',
+      hwcBadge: 'Assisted Telemedicine',
+      hwcTitle: 'SwasthyaSetuAB-HWC',
+      hwcDesc: 'Designed for healthcare workers and Community Health Officers (CHOs) to connect rural patients at spokes with expert specialist doctors at diagnostic hubs.',
+      hwcBtn: 'HWC Login',
+      opdBadge: 'Stay Home OPD',
+      opdTitle: 'SwasthyaSetuOPD',
+      opdDesc: 'Direct access for citizens to consult doctors from home. Safe, instant, queue-based online clinics featuring real-time consultations and prescriptions.',
+      opdBtn: 'Register / Login',
+      howTitle: 'How does Citizen OPD Work?',
+      faqTitle: 'Frequently Asked Questions'
+    },
+    hi: {
+      navHome: 'मुख्य पृष्ठ',
+      navServices: 'सेवाएं',
+      navHow: 'यह कैसे काम करता है',
+      navFaq: 'सामान्य प्रश्न',
+      heroTitle1: 'घर पर रहें, डॉक्टर से परामर्श लें',
+      heroDesc1: 'सुरक्षित मरीज-से-डॉक्टर टेलीकंसल्टेशन प्लेटफॉर्म। ऑनलाइन पंजीकरण करें, डॉक्टर से परामर्श करें और डिजिटल पर्ची डाउनलोड करें।',
+      hwcBadge: 'सहायक टेलीमेडिसिन',
+      hwcTitle: 'स्वास्थ्यसेतु AB-HWC',
+      hwcDesc: 'स्वास्थ्य कार्यकर्ताओं और सीएचओ के लिए ग्रामीण रोगियों को विशेषज्ञ डॉक्टरों से जोड़ने हेतु डिजाइन किया गया।',
+      hwcBtn: 'HWC लॉगिन',
+      opdBadge: 'घर बैठे ओपीडी',
+      opdTitle: 'स्वास्थ्यसेतु OPD',
+      opdDesc: 'नागरिकों के लिए घर बैठे डॉक्टरों से परामर्श करने की प्रत्यक्ष सुविधा। सुरक्षित और त्वरित ऑनलाइन क्लिनिक।',
+      opdBtn: 'पंजीकरण / लॉगिन',
+      howTitle: 'नागरिक ओपीडी कैसे काम करता है?',
+      faqTitle: 'अक्सर पूछे जाने वाले प्रश्न'
+    },
+    bn: {
+      navHome: 'হোম পেজ',
+      navServices: 'সেবাসমূহ',
+      navHow: 'এটি কীভাবে কাজ করে',
+      navFaq: 'প্রশ্নোত্তর',
+      heroTitle1: 'ঘরে থাকুন, ডাক্তারের পরামর্শ নিন',
+      heroDesc1: 'একটি নিরাপদ পেশেন্ট-টু-ডক্টর টেলিকনসালটেশন সিস্টেম। অনলাইনে নিবন্ধন করুন, ডাক্তারের সাথে পরামর্শ করুন এবং ডিজিটাল প্রেসক্রিপশন ডাউনলোড করুন।',
+      hwcBadge: 'সহায়ক টেলিমেডিসিন',
+      hwcTitle: 'স্বাস্থ্যসেতু AB-HWC',
+      hwcDesc: 'স্বাস্থ্যকর্মী এবং সিএইচও-দের গ্রামীণ রোগীদের বিশেষজ্ঞ চিকিৎসকদের সাথে সংযুক্ত করার জন্য নির্মিত।',
+      hwcBtn: 'HWC লগইন',
+      opdBadge: 'ঘরে বসেই ওপিডি',
+      opdTitle: 'স্বাস্থ্যসেতু OPD',
+      opdDesc: 'নাগরিকদের জন্য বাড়ি থেকে সরাসরি ডাক্তারদের পরামর্শ নেওয়ার সুবিধা। নিরাপদ ও তাত্ক্ষণিক চিকিৎসা কেন্দ্র।',
+      opdBtn: 'নিবন্ধন / লগইন',
+      howTitle: 'সিটিজেন ওপিডি কীভাবে কাজ করে?',
+      faqTitle: 'সাধারণ জিজ্ঞাসাসমূহ'
+    },
+    mr: {
+      navHome: 'मुख्य पृष्ठ',
+      navServices: 'सेवा',
+      navHow: 'हे कसे कार्य करते',
+      navFaq: 'वारंवार विचारले जाणारे प्रश्न',
+      heroTitle1: 'घरी राहा, डॉक्टरांचा सल्ला घ्या',
+      heroDesc1: 'एक सुरक्षित रुग्ण-ते-डॉक्टर टेलिकन्सल्टेशन प्रणाली. ऑनलाइन नोंदणी करा, डॉक्टरांचा सल्ला घ्या आणि डिजिटल प्रिस्क्रिप्शन डाउनलोड करा.',
+      hwcBadge: 'सहाय्यक टेलिमेडिसिन',
+      hwcTitle: 'स्वास्थ्यसेतु AB-HWC',
+      hwcDesc: 'आरोग्य कर्मचारी आणि सीएचओ साठी ग्रामीण रुग्णांना तज्ज्ञ डॉक्टरांशी जोडण्यासाठी डिझाइन केलेले.',
+      hwcBtn: 'HWC लॉगिन',
+      opdBadge: 'घरीच ओपीडी',
+      opdTitle: 'स्वास्थ्यसेतु OPD',
+      opdDesc: 'नागरिकांना घरातूनच थेट डॉक्टरांचा सल्ला घेण्याची सुविधा. सुरक्षित आणि त्वरित ऑनलाइन क्लिनिक.',
+      opdBtn: 'नोंदणी / लॉगिन',
+      howTitle: 'नागरिक ओपीडी कसे कार्य करते?',
+      faqTitle: 'वारंवार विचारले जाणारे प्रश्न'
+    },
+    ta: {
+      navHome: 'முகப்பு',
+      navServices: 'சேவைகள்',
+      navHow: 'செயல்படும் முறை',
+      navFaq: 'கேள்விகள்',
+      heroTitle1: 'வீட்டில் இருங்கள், மருத்துவரை அணுகுங்கள்',
+      heroDesc1: 'பாதுகாப்பான நோயாளி-மருத்துவர் தொலை மருத்துவ சேவை. ஆன்லைனில் பதிவு செய்து டிஜிட்டல் மருந்துக் குறிப்பைத் பதிவிறக்கவும்.',
+      hwcBadge: 'உதவி தொலை மருத்துவம்',
+      hwcTitle: 'ஸ்வஸ்தியசேது AB-HWC',
+      hwcDesc: 'சுகாதாரப் பணியாளர்கள் கிராமப்புற நோயாளிகளை நிபுணத்துவ மருத்துவர்களுடன் இணைக்க வடிவமைக்கப்பட்டது.',
+      hwcBtn: 'HWC உள்நுழைவு',
+      opdBadge: 'வீட்டு OPD',
+      opdTitle: 'ஸ்வஸ்தியசேது OPD',
+      opdDesc: 'வீட்டிலிருந்தபடியே நேரடியாக மருத்துவ ஆலோசனை பெறும் வசதி. பாதுகாப்பான ஆன்லைன் கிளினிக்.',
+      opdBtn: 'பதிவு / உள்நுழைவு',
+      howTitle: 'OPD எவ்வாறு செயல்படுகிறது?',
+      faqTitle: 'அடிக்கடி கேட்கப்படும் கேள்விகள்'
+    },
+    te: {
+      navHome: 'హోమ్',
+      navServices: 'సేవలు',
+      navHow: 'ఇది ఎలా పనిచేస్తుంది',
+      navFaq: 'ప్రశ్నలు',
+      heroTitle1: 'ఇంట్లోనే ఉండండి, డాక్టర్‌ను సంప్రదించండి',
+      heroDesc1: 'సురక్షితమైన పేషెంట్-టు-డాక్టర్ టెలికన్సల్టేషన్ వ్యవస్థ. ఆన్‌లైన్‌లో రిజిస్టర్ చేసుకోండి మరియు డిజిటల్ ప్రిస్క్రిప్షన్ పొందండి.',
+      hwcBadge: 'సహాయక టెలిమెడిసిన్',
+      hwcTitle: 'స్వాస్థ్యసేతు AB-HWC',
+      hwcDesc: 'గ్రామీణ రోగులను నిపుణులైన వైద్యులతో అనుసంధానించడానికి ఆరోగ్య కార్యకర్తల కోసం రూపొందించబడింది.',
+      hwcBtn: 'HWC లాగిన్',
+      opdBadge: 'ఇంటి వద్దే OPD',
+      opdTitle: 'స్వాస్థ్యసేతు OPD',
+      opdDesc: 'ఇంటి నుంచే నేరుగా డాక్టర్లను సంప్రదించే వెసులుబాటు. సురక్షితమైన ఆన్‌లైన్ క్లినిక్.',
+      opdBtn: 'రిజిస్టర్ / లాగిన్',
+      howTitle: 'సిటిజన్ OPD ఎలా పనిచేస్తుంది?',
+      faqTitle: 'తరచుగా అడిగే ప్రశ్నలు'
+    },
+    gu: {
+      navHome: 'મુખ્ય પૃષ્ઠ',
+      navServices: 'સેવાઓ',
+      navHow: 'તે કેવી રીતે કામ કરે છે',
+      navFaq: 'પ્રશ્નોત્તરી',
+      heroTitle1: 'ઘરે રહો, ડૉક્ટરની સલાહ લો',
+      heroDesc1: 'એક સુરક્ષિત પેશન્ટ-ટુ-ડૉક્ટર ટેલિકન્સલ્ટેશન સિસ્ટમ. ઓનલાઈન રજીસ્ટર કરો અને ડિજિટલ પ્રિસ્ક્રિપ્શન ડાઉનલોડ કરો.',
+      hwcBadge: 'સહાયક ટેલિમેડિસિન',
+      hwcTitle: 'સ્વાસ્થ્યસેતુ AB-HWC',
+      hwcDesc: 'આરોગ્ય કાર્યકરો માટે ગ્રામીણ દર્દીઓને નિષ્ણાત ડૉક્ટરો સાથે જોડવા માટે ડિઝાઇન કરાયેલ.',
+      hwcBtn: 'HWC લોગિન',
+      opdBadge: 'ઘરે બેઠા OPD',
+      opdTitle: 'સ્વાસ્થ્યસેતુ OPD',
+      opdDesc: 'નાગરિકો માટે ઘરેથી સીધા ડૉક્ટરોની સલાહ લેવાની સુવિધા. સુરક્ષિત ઓનલાઈન ક્લિનિક.',
+      opdBtn: 'રજીસ્ટર / લોગિન',
+      howTitle: 'સિટીઝન OPD કેવી રીતે કામ કરે છે?',
+      faqTitle: 'વારંવાર પૂછાતા પ્રશ્નો'
+    }
+  };
+
+  const langSelector = document.getElementById('lang-selector');
+  if (langSelector) {
+    const savedLang = localStorage.getItem('preferredLang') || 'en';
+    langSelector.value = savedLang;
+    applyLanguage(savedLang);
+
+    langSelector.addEventListener('change', (e) => {
+      const selectedLang = e.target.value;
+      localStorage.setItem('preferredLang', selectedLang);
+      applyLanguage(selectedLang);
+      showLanguageToast(selectedLang);
+    });
+  }
+
+  function applyLanguage(lang) {
+    const t = translations[lang] || translations.en;
+    
+    const navHome = document.getElementById('nav-home');
+    const navServices = document.getElementById('nav-services');
+    const navHow = document.getElementById('nav-how');
+    const navFaq = document.getElementById('nav-faq');
+    if (navHome) navHome.textContent = t.navHome;
+    if (navServices) navServices.textContent = t.navServices;
+    if (navHow) navHow.textContent = t.navHow;
+    if (navFaq) navFaq.textContent = t.navFaq;
+
+    const slide1H2 = document.querySelector('#slide-1 h2');
+    const slide1P = document.querySelector('#slide-1 p');
+    if (slide1H2) slide1H2.innerHTML = `${t.heroTitle1}<br><span>SwasthyaSetu OPD</span>`;
+    if (slide1P) slide1P.textContent = t.heroDesc1;
+
+    const hwcBadge = document.querySelector('.service-card.hwc .service-badge');
+    const hwcTitle = document.getElementById('hwc-title');
+    const hwcDesc = document.querySelector('.service-card.hwc .service-desc');
+    const openHwcBtn = document.getElementById('open-hwc-login-btn');
+
+    if (hwcBadge) hwcBadge.textContent = t.hwcBadge;
+    if (hwcTitle) hwcTitle.textContent = t.hwcTitle;
+    if (hwcDesc) hwcDesc.textContent = t.hwcDesc;
+    if (openHwcBtn) openHwcBtn.innerHTML = `<span class="material-icons-outlined">login</span> ${t.hwcBtn}`;
+
+    const opdBadge = document.querySelector('.service-card.opd .service-badge');
+    const opdTitle = document.getElementById('opd-title');
+    const opdDesc = document.querySelector('.service-card.opd .service-desc');
+    const openRegBtn = document.getElementById('open-register-btn');
+
+    if (opdBadge) opdBadge.textContent = t.opdBadge;
+    if (opdTitle) opdTitle.textContent = t.opdTitle;
+    if (opdDesc) opdDesc.textContent = t.opdDesc;
+    if (openRegBtn) openRegBtn.innerHTML = `<span class="material-icons-outlined">how_to_reg</span> ${t.opdBtn}`;
+
+    const howTitle = document.getElementById('how-title');
+    const faqTitle = document.getElementById('faq-title');
+    if (howTitle) howTitle.textContent = t.howTitle;
+    if (faqTitle) faqTitle.textContent = t.faqTitle;
+  }
+
+  function showLanguageToast(lang) {
+    const langNames = { en: 'English', hi: 'Hindi', bn: 'Bengali', mr: 'Marathi', ta: 'Tamil', te: 'Telugu', gu: 'Gujarati' };
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: #0f3b5f; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 600; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 0.9rem; animation: slide-down 0.3s ease;';
+    toast.innerHTML = `<span class="material-icons-outlined" style="vertical-align: middle; margin-right: 6px; color: var(--accent-saffron);">translate</span> Language changed to <strong>${langNames[lang] || lang}</strong>`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
 }
 
 /* ================= 2. Slider Carousel ================= */
@@ -649,3 +847,1116 @@ function initSimulation() {
     document.body.removeChild(link);
   }
 }
+
+/* ================= 6. Health Worker Module (HWC Portal) ================= */
+function initHWCModule() {
+  // DOM Elements
+  const hwcLoginModal = document.getElementById('hwc-login-modal');
+  const openHwcLoginBtn = document.getElementById('open-hwc-login-btn');
+  const hwcLoginForm = document.getElementById('hwc-login-form');
+  const hwcDashboardView = document.getElementById('hwc-dashboard-view');
+  const landingView = document.getElementById('landing-view');
+  const hwcLogoutBtn = document.getElementById('hwc-logout-btn');
+
+  // Sidebar Tabs
+  const menuItems = document.querySelectorAll('.hwc-sidebar .menu-item');
+  const tabContents = document.querySelectorAll('.hwc-tab-content');
+  const menuConsultTab = document.getElementById('menu-consult-tab');
+
+  // Search & Register Elements
+  const patientSearchInput = document.getElementById('hwc-patient-search');
+  const patientSearchBtn = document.getElementById('hwc-patient-search-btn');
+  const searchResultsList = document.getElementById('search-results-list');
+  const regForm = document.getElementById('hwc-reg-form');
+  const pnameInput = document.getElementById('hwc-pname');
+  const pageInput = document.getElementById('hwc-page');
+  const pgenderSelect = document.getElementById('hwc-pgender');
+  const pphoneInput = document.getElementById('hwc-pphone');
+  const pstateInput = document.getElementById('hwc-pstate');
+
+  // Vitals & Clinical Inputs
+  const tempInput = document.getElementById('hwc-temp');
+  const pulseInput = document.getElementById('hwc-pulse');
+  const bpInput = document.getElementById('hwc-bp');
+  const spo2Input = document.getElementById('hwc-spo2');
+  const injuriesSelect = document.getElementById('hwc-injuries');
+  const historyInput = document.getElementById('hwc-history');
+  const symptomsTextarea = document.getElementById('hwc-symptoms');
+
+  // Voice Inputs
+  const voiceBtnEn = document.getElementById('voice-dictate-en');
+  const voiceBtnHi = document.getElementById('voice-dictate-hi');
+  const voiceBtnBn = document.getElementById('voice-dictate-bn');
+  const voiceBtnMr = document.getElementById('voice-dictate-mr');
+  const voiceStatus = document.getElementById('voice-status');
+
+  // Upload Zone
+  const fileUploadZone = document.getElementById('file-upload-zone');
+  const fileInput = document.getElementById('hwc-file-input');
+  const uploadedFilesList = document.getElementById('uploaded-files-list');
+
+  // AI & Triage
+  const aiAnalyzeBtn = document.getElementById('hwc-ai-analyze-btn');
+  const aiAnalysisOutput = document.getElementById('ai-analysis-output');
+  const aiRiskBadge = document.getElementById('ai-risk-badge');
+  const aiRiskText = document.getElementById('ai-risk-text');
+  const aiSummaryText = document.getElementById('ai-summary-text');
+  const firstaidTextarea = document.getElementById('hwc-firstaid');
+  const startConsultBtn = document.getElementById('hwc-start-consult-btn');
+
+  // Active Consult Elements
+  const consultPname = document.getElementById('consult-pname');
+  const consultPdetails = document.getElementById('consult-pdetails');
+  const consultPdhr = document.getElementById('consult-pdhr');
+  const monitorTemp = document.getElementById('monitor-temp');
+  const monitorPulse = document.getElementById('monitor-pulse');
+  const monitorBp = document.getElementById('monitor-bp');
+  const monitorSpo2 = document.getElementById('monitor-spo2');
+  const consultSymptoms = document.getElementById('consult-symptoms');
+  const consultInjuries = document.getElementById('consult-injuries');
+  const consultFirstaid = document.getElementById('consult-firstaid');
+  const consultFiles = document.getElementById('consult-files');
+  const hwcPatientVideo = document.getElementById('hwc-patient-video');
+  const hwcDoctorStatus = document.getElementById('hwc-doctor-status');
+  const doctorPrescriptionNotes = document.getElementById('doctor-prescription-notes');
+  const prescriptionStatusText = document.getElementById('prescription-status-text');
+  const endConsultBtn = document.getElementById('hwc-end-consult-btn');
+
+  // Chat Elements
+  const hwcChatMessages = document.getElementById('hwc-chat-messages');
+  const hwcChatInput = document.getElementById('hwc-chat-input');
+  const hwcChatSendBtn = document.getElementById('hwc-chat-send-btn');
+
+  // Archive Table & Modal
+  const archiveTableBody = document.getElementById('archive-table-body');
+  const hwcCaseModal = document.getElementById('hwc-case-modal');
+  const hwcCaseModalBody = document.getElementById('hwc-case-modal-body');
+
+  // Prepopulated Registered Patients Database (Searchable)
+  let registeredPatients = [
+    { id: 'PAT-801', dhrId: 'DHR-8821-9910-1011', name: 'Ramesh Kumar', age: 45, gender: 'Male', phone: '9876543210', state: 'Uttar Pradesh', history: 'Hypertension, Mild Asthma' },
+    { id: 'PAT-802', dhrId: 'DHR-3392-4412-8831', name: 'Sunita Devi', age: 38, gender: 'Female', phone: '9123456789', state: 'Delhi', history: 'Type 2 Diabetes, Penicillin Allergy' },
+    { id: 'PAT-803', dhrId: 'DHR-5510-7729-2294', name: 'Vikram Singh', age: 52, gender: 'Male', phone: '9988776655', state: 'Punjab', history: 'No Known Allergies' }
+  ];
+
+  // Prepopulated Case Records Archive
+  let caseArchive = [
+    {
+      date: '2026-08-10',
+      token: 'HWC-9281',
+      patientName: 'Ramesh Kumar',
+      ageGender: '45 / Male',
+      opdClinic: 'General Telemedicine Hub',
+      aiRisk: { level: 'HIGH', badgeClass: 'risk-high' },
+      temp: '101.4', pulse: '88', bp: '135/88', spo2: '94',
+      symptoms: 'High fever for 3 days with cough and throat inflammation.',
+      injuries: 'None',
+      history: 'Hypertension',
+      firstaid: 'Cold compress, Paracetamol 650mg given at Spoke.',
+      aiSummary: 'Fever of unknown origin with mild hypoxemia. Triage: High Risk.',
+      doctorNotes: 'Prescribed Tab. Amoxicillin 500mg BD x 5 days, Tab. Paracetamol 650mg TDS x 3 days. Saline gargles advised.',
+      dhrId: 'DHR-8821-9910-1011'
+    },
+    {
+      date: '2026-08-08',
+      token: 'HWC-7410',
+      patientName: 'Sunita Devi',
+      ageGender: '38 / Female',
+      opdClinic: 'Diabetic & Endocrine Spoke',
+      aiRisk: { level: 'MODERATE', badgeClass: 'risk-moderate' },
+      temp: '98.6', pulse: '76', bp: '128/82', spo2: '98',
+      symptoms: 'Dizziness, routine HbA1c check follow-up.',
+      injuries: 'None',
+      history: 'Type 2 Diabetes',
+      firstaid: 'Oral hydration offered.',
+      aiSummary: 'Stable vitals, mild orthostatic dizziness.',
+      doctorNotes: 'Continue Metformin 500mg. Recheck FBS in 2 weeks.',
+      dhrId: 'DHR-3392-4412-8831'
+    }
+  ];
+
+  // Current Session Data State
+  let currentSession = {
+    patientId: '',
+    dhrId: '',
+    name: '',
+    age: '',
+    gender: '',
+    phone: '',
+    state: '',
+    temp: '',
+    pulse: '',
+    bp: '',
+    spo2: '',
+    injuries: 'None',
+    history: '',
+    symptoms: '',
+    firstaid: '',
+    uploadedFiles: [],
+    aiSummary: '',
+    aiRisk: null,
+    doctorNotes: '',
+    token: '',
+    date: ''
+  };
+
+  let mediaStreamHWC = null;
+
+  // Render Archive Table on Init
+  renderArchiveTable();
+
+  // Open HWC Login Modal
+  if (openHwcLoginBtn) {
+    openHwcLoginBtn.addEventListener('click', () => {
+      document.getElementById('hwc-staff-id').value = 'HW101';
+      document.getElementById('hwc-password').value = 'password123';
+      hwcLoginModal.classList.add('active');
+    });
+  }
+
+  // Handle Login Submit
+  if (hwcLoginForm) {
+    hwcLoginForm.addEventListener('submit', () => {
+      hwcLoginModal.classList.remove('active');
+      landingView.style.display = 'none';
+      hwcDashboardView.style.display = 'flex';
+    });
+  }
+
+  // Handle Logout
+  if (hwcLogoutBtn) {
+    hwcLogoutBtn.addEventListener('click', () => {
+      hwcDashboardView.style.display = 'none';
+      landingView.style.display = 'block';
+    });
+  }
+
+  // Sidebar Tab Switching
+  menuItems.forEach(item => {
+    item.addEventListener('click', () => {
+      if (item.classList.contains('disabled')) return;
+
+      const targetTabId = item.dataset.tab;
+      menuItems.forEach(m => m.classList.remove('active'));
+      tabContents.forEach(t => t.classList.remove('active'));
+
+      item.classList.add('active');
+      document.getElementById(targetTabId).classList.add('active');
+    });
+  });
+
+  // Patient Search Implementation
+  function performPatientSearch() {
+    const query = patientSearchInput.value.trim().toLowerCase();
+    searchResultsList.innerHTML = '';
+
+    if (!query) return;
+
+    const matches = registeredPatients.filter(p =>
+      p.name.toLowerCase().includes(query) || p.phone.includes(query) || p.id.toLowerCase().includes(query)
+    );
+
+    if (matches.length === 0) {
+      searchResultsList.innerHTML = `<div style="padding: 8px; font-size: 0.8rem; color: var(--text-muted);">No matching patients found. Fill form to register new.</div>`;
+      return;
+    }
+
+    matches.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'search-result-item';
+      item.innerHTML = `
+        <div style="font-weight: 700; color: var(--primary-navy); display: flex; justify-content: space-between;">
+          <span>${p.name} (${p.age}y/${p.gender})</span>
+          <span style="font-family: monospace; font-size: 0.75rem; color: var(--health-teal);">${p.id}</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted);">📱 ${p.phone} | 📍 ${p.state}</div>
+        <div style="font-size: 0.72rem; color: var(--accent-saffron); margin-top: 2px;">Past History: ${p.history || 'None'}</div>
+      `;
+      item.addEventListener('click', () => {
+        // Auto-fill patient registration fields
+        pnameInput.value = p.name;
+        pageInput.value = p.age;
+        pgenderSelect.value = p.gender;
+        pphoneInput.value = p.phone;
+        pstateInput.value = p.state;
+        historyInput.value = p.history;
+
+        currentSession.patientId = p.id;
+        currentSession.dhrId = p.dhrId;
+        currentSession.name = p.name;
+        currentSession.age = p.age;
+        currentSession.gender = p.gender;
+        currentSession.phone = p.phone;
+        currentSession.state = p.state;
+        currentSession.history = p.history;
+
+        searchResultsList.innerHTML = `<div style="padding: 6px; font-size: 0.78rem; color: var(--flag-green); font-weight: 600;">✓ Selected Patient: ${p.name} (${p.dhrId})</div>`;
+      });
+      searchResultsList.appendChild(item);
+    });
+  }
+
+  if (patientSearchInput) {
+    patientSearchInput.addEventListener('input', performPatientSearch);
+  }
+  if (patientSearchBtn) {
+    patientSearchBtn.addEventListener('click', performPatientSearch);
+  }
+
+  // Multilingual Voice Recognition
+  function initVoiceRecognition(langCode, langName, sampleText, buttonEl) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    buttonEl.classList.add('active');
+    voiceStatus.textContent = `🎙️ Listening in ${langName}... Speak now.`;
+
+    if (SpeechRecognition) {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = langCode;
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          symptomsTextarea.value = symptomsTextarea.value ? symptomsTextarea.value + ' ' + transcript : transcript;
+          voiceStatus.textContent = `✓ Speech captured (${langName})!`;
+          buttonEl.classList.remove('active');
+        };
+
+        recognition.onerror = (event) => {
+          console.warn("Speech recognition error, using fallback: ", event.error);
+          simulateSpeechInput(sampleText, langName, buttonEl);
+        };
+
+        recognition.start();
+        return;
+      } catch (err) {
+        console.warn("Speech recognition failed to start: ", err);
+      }
+    }
+
+    simulateSpeechInput(sampleText, langName, buttonEl);
+  }
+
+  function simulateSpeechInput(sampleText, langName, buttonEl) {
+    setTimeout(() => {
+      symptomsTextarea.value = symptomsTextarea.value ? symptomsTextarea.value + ' ' + sampleText : sampleText;
+      voiceStatus.textContent = `✓ Simulated voice captured (${langName})!`;
+      buttonEl.classList.remove('active');
+    }, 1500);
+  }
+
+  if (voiceBtnEn) {
+    voiceBtnEn.addEventListener('click', () => {
+      initVoiceRecognition('en-IN', 'English', 'Patient reports high fever 102°F, chest congestion, and body pain for 2 days.', voiceBtnEn);
+    });
+  }
+  if (voiceBtnHi) {
+    voiceBtnHi.addEventListener('click', () => {
+      initVoiceRecognition('hi-IN', 'Hindi', 'मरीज को 3 दिन से तेज बुखार, सूखी खांसी और सीने में दर्द है।', voiceBtnHi);
+    });
+  }
+  if (voiceBtnBn) {
+    voiceBtnBn.addEventListener('click', () => {
+      initVoiceRecognition('bn-IN', 'Bengali', 'রোগীর ৩ দিন ধরে খুব জ্বর, বুকে কফ এবং সর্দি আছে।', voiceBtnBn);
+    });
+  }
+  if (voiceBtnMr) {
+    voiceBtnMr.addEventListener('click', () => {
+      initVoiceRecognition('mr-IN', 'Marathi', 'रुग्णाला ३ दिवसांपासून खूप ताप, सुका खोकला आणि अंगदुखी आहे.', voiceBtnMr);
+    });
+  }
+
+  // File Upload Handling
+  if (fileUploadZone && fileInput) {
+    fileUploadZone.addEventListener('click', () => fileInput.click());
+
+    fileUploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      fileUploadZone.classList.add('dragover');
+    });
+
+    fileUploadZone.addEventListener('dragleave', () => {
+      fileUploadZone.classList.remove('dragover');
+    });
+
+    fileUploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      fileUploadZone.classList.remove('dragover');
+      if (e.dataTransfer.files.length) {
+        handleFiles(e.dataTransfer.files);
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        handleFiles(e.target.files);
+      }
+    });
+  }
+
+  function handleFiles(files) {
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileData = {
+          name: file.name,
+          size: (file.size / 1024).toFixed(1) + ' KB',
+          type: file.type,
+          dataUrl: e.target.result
+        };
+        currentSession.uploadedFiles.push(fileData);
+        renderUploadedFiles();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderUploadedFiles() {
+    uploadedFilesList.innerHTML = '';
+    currentSession.uploadedFiles.forEach((file, index) => {
+      const fileItem = document.createElement('div');
+      fileItem.className = 'file-item';
+      const isImg = file.type.startsWith('image/');
+
+      fileItem.innerHTML = `
+        <div class="file-item-info">
+          ${isImg ? `<img src="${file.dataUrl}" class="file-thumb" alt="preview">` : `<span class="material-icons-outlined" style="color:var(--health-teal);">description</span>`}
+          <div>
+            <strong style="font-size: 0.78rem;">${file.name}</strong>
+            <span style="font-size: 0.7rem; color: var(--text-muted); display: block;">${file.size}</span>
+          </div>
+        </div>
+        <button class="remove-file-btn" data-index="${index}">&times;</button>
+      `;
+
+      fileItem.querySelector('.remove-file-btn').addEventListener('click', (e) => {
+        const idx = parseInt(e.target.dataset.index);
+        currentSession.uploadedFiles.splice(idx, 1);
+        renderUploadedFiles();
+      });
+
+      uploadedFilesList.appendChild(fileItem);
+    });
+  }
+
+  // AI Decision Support & Risk Analysis Engine
+  if (aiAnalyzeBtn) {
+    aiAnalyzeBtn.addEventListener('click', () => {
+      const name = pnameInput.value.trim() || 'Unregistered Patient';
+      const age = pageInput.value || '35';
+      const gender = pgenderSelect.value || 'Unknown';
+      const temp = parseFloat(tempInput.value) || 98.6;
+      const pulse = parseInt(pulseInput.value) || 72;
+      const bp = bpInput.value.trim() || '120/80';
+      const spo2 = parseInt(spo2Input.value) || 98;
+      const injuries = injuriesSelect.value;
+      const history = historyInput.value.trim() || 'None reported';
+      const symptoms = symptomsTextarea.value.trim() || 'General feeling of malaise';
+
+      currentSession.name = name;
+      currentSession.age = age;
+      currentSession.gender = gender;
+      currentSession.phone = pphoneInput.value || '9876543210';
+      currentSession.state = pstateInput.value || 'State Clinic';
+      if (!currentSession.dhrId) {
+        currentSession.dhrId = 'DHR-' + Math.floor(1000 + Math.random() * 9000) + '-' + Math.floor(1000 + Math.random() * 9000);
+      }
+      currentSession.temp = temp;
+      currentSession.pulse = pulse;
+      currentSession.bp = bp;
+      currentSession.spo2 = spo2;
+      currentSession.injuries = injuries;
+      currentSession.history = history;
+      currentSession.symptoms = symptoms;
+
+      // Add to registered patients if new
+      if (!registeredPatients.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+        registeredPatients.push({
+          id: 'PAT-' + Math.floor(100 + Math.random() * 900),
+          dhrId: currentSession.dhrId,
+          name: name,
+          age: age,
+          gender: gender,
+          phone: currentSession.phone,
+          state: currentSession.state,
+          history: history
+        });
+      }
+
+      // Risk Evaluation Algorithm
+      let riskLevel = 'LOW';
+      let badgeClass = 'risk-low';
+      let riskFactors = [];
+
+      if (spo2 < 90 || temp >= 103 || injuries === 'Deep Wound' || injuries === 'Thermal Burn') {
+        riskLevel = 'CRITICAL EMERGENCY';
+        badgeClass = 'risk-critical';
+        if (spo2 < 90) riskFactors.push(`Severe Hypoxia (SpO2: ${spo2}%)`);
+        if (temp >= 103) riskFactors.push(`High Hyperpyrexia (${temp}°F)`);
+        if (injuries !== 'None') riskFactors.push(`Severe Trauma (${injuries})`);
+      } else if (spo2 < 95 || temp >= 101 || pulse > 105 || injuries === 'Suspected Fracture') {
+        riskLevel = 'HIGH RISK';
+        badgeClass = 'risk-high';
+        if (spo2 < 95) riskFactors.push(`Mild Hypoxia (SpO2: ${spo2}%)`);
+        if (temp >= 101) riskFactors.push(`Moderate Fever (${temp}°F)`);
+        if (pulse > 105) riskFactors.push(`Tachycardia (${pulse} BPM)`);
+        if (injuries !== 'None') riskFactors.push(`Trauma/Injury (${injuries})`);
+      } else if (temp > 99.5 || pulse > 90) {
+        riskLevel = 'MODERATE RISK';
+        badgeClass = 'risk-moderate';
+        if (temp > 99.5) riskFactors.push(`Low-grade Fever (${temp}°F)`);
+        if (pulse > 90) riskFactors.push(`Elevated Pulse (${pulse} BPM)`);
+      }
+
+      currentSession.aiRisk = { level: riskLevel, badgeClass: badgeClass, factors: riskFactors };
+
+      aiRiskBadge.className = `ai-risk-badge ${badgeClass}`;
+      aiRiskText.textContent = `${riskLevel} ${riskFactors.length ? ' (' + riskFactors.join(', ') + ')' : ''}`;
+
+      aiSummaryText.innerHTML = `
+        • <strong>Demographics:</strong> ${name}, ${age}y/${gender}<br>
+        • <strong>Vitals Assessment:</strong> Temp: ${temp}°F | Pulse: ${pulse} BPM | BP: ${bp} | SpO2: ${spo2}%<br>
+        • <strong>Chief Complaints:</strong> ${symptoms}<br>
+        • <strong>Injuries:</strong> ${injuries}<br>
+        • <strong>Medical History:</strong> ${history}<br>
+        • <strong>Uploaded Reports:</strong> ${currentSession.uploadedFiles.length} document(s) attached.<br>
+        • <strong>Specialist Triage:</strong> ${riskLevel === 'LOW' ? 'Routine Teleconsultation' : 'Priority Tele-Specialist Evaluation Recommended'}.
+      `;
+
+      currentSession.aiSummary = aiSummaryText.innerText;
+
+      aiAnalysisOutput.style.display = 'block';
+      startConsultBtn.style.display = 'block';
+    });
+  }
+
+  // Request Doctor Consultation
+  if (startConsultBtn) {
+    startConsultBtn.addEventListener('click', async () => {
+      currentSession.firstaid = firstaidTextarea.value.trim() || 'Standard clinical observations recorded.';
+
+      menuConsultTab.classList.remove('disabled');
+
+      menuItems.forEach(m => m.classList.remove('active'));
+      tabContents.forEach(t => t.classList.remove('active'));
+      menuConsultTab.classList.add('active');
+      document.getElementById('tab-consult').classList.add('active');
+
+      consultPname.textContent = currentSession.name;
+      consultPdetails.textContent = `${currentSession.age} Yrs / ${currentSession.gender} | Mobile: ${currentSession.phone}`;
+      consultPdhr.textContent = `DHR ID: ${currentSession.dhrId}`;
+
+      monitorTemp.textContent = currentSession.temp;
+      monitorPulse.textContent = currentSession.pulse;
+      monitorBp.textContent = currentSession.bp;
+      monitorSpo2.textContent = currentSession.spo2;
+
+      consultSymptoms.textContent = currentSession.symptoms;
+      consultInjuries.textContent = currentSession.injuries;
+      consultFirstaid.textContent = currentSession.firstaid;
+
+      consultFiles.innerHTML = '';
+      if (currentSession.uploadedFiles.length === 0) {
+        consultFiles.innerHTML = `<span style="font-size: 0.78rem; color: var(--text-muted);">No reports uploaded.</span>`;
+      } else {
+        currentSession.uploadedFiles.forEach(f => {
+          const fileBadge = document.createElement('div');
+          fileBadge.className = 'file-item';
+          fileBadge.innerHTML = `<span class="material-icons-outlined" style="font-size: 16px;">attachment</span> ${f.name} (${f.size})`;
+          consultFiles.appendChild(fileBadge);
+        });
+      }
+
+      try {
+        mediaStreamHWC = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        hwcPatientVideo.srcObject = mediaStreamHWC;
+      } catch (e) {
+        console.warn("Patient video capture error/denied: ", e);
+      }
+
+      startDoctorSimulationHWC();
+    });
+  }
+
+  function startDoctorSimulationHWC() {
+    hwcDoctorStatus.textContent = "Connecting with Hub Specialist...";
+    prescriptionStatusText.textContent = "Connecting to Dr. Rajesh Kumar...";
+    doctorPrescriptionNotes.textContent = "";
+
+    setTimeout(() => {
+      hwcDoctorStatus.innerHTML = `<div style="text-align:center;"><span class="material-icons-outlined" style="font-size: 48px; color: var(--flag-green);">support_agent</span><br>Dr. Rajesh Kumar (Specialist Hub)</div>`;
+      prescriptionStatusText.textContent = "✓ Connected to Dr. Rajesh Kumar";
+
+      appendHWCChat("doctor", "Dr. Rajesh Kumar: Namaste Health Worker! I have opened the intake file for " + currentSession.name + ". Reviewing vitals (SpO2: " + currentSession.spo2 + "%, Temp: " + currentSession.temp + "°F) and AI risk flag.");
+
+      setTimeout(() => {
+        appendHWCChat("doctor", "Dr. Rajesh Kumar: Excellent first-aid intervention. I am streaming the clinical recommendations into the prescription notes field now.");
+
+        doctorPrescriptionNotes.textContent = `CLINICAL TELE-CONSULTATION RECOMMENDATION SHEET
+---------------------------------------------------
+Consulting Specialist: Dr. Rajesh Kumar, MD
+Hub Station: Central Diagnostic & Tele-specialty Hub
+
+DIAGNOSIS & CLINICAL OPINION:
+Acute Clinical Presentation. Patient evaluated via HWC Spoke intake.
+
+RECOMMENDED MEDICATIONS & MANAGEMENT:
+1. Tab. Paracetamol 650mg - 1 tablet TDS after food x 3 days.
+2. Syp. Ambroxol / Levosalbutamol 10ml BD x 5 days.
+3. Tab. Augmentin 625mg (Amoxicillin + Clavulanate) 1 BD x 5 days (if bacterial infection suspected).
+
+SPOKE ADVICE & FOLLOW-UP:
+- Continue Spoke vital monitoring every 4 hours.
+- Encourage oral hydration and steam inhalation.
+- If SpO2 drops below 92%, administer supplemental oxygen and re-evaluate for Hub transfer.`;
+
+        endConsultBtn.style.display = "block";
+      }, 4000);
+
+    }, 2500);
+  }
+
+  function appendHWCChat(sender, text) {
+    const msg = document.createElement('div');
+    msg.className = `chat-msg ${sender}`;
+    msg.textContent = text;
+    hwcChatMessages.appendChild(msg);
+    hwcChatMessages.scrollTop = hwcChatMessages.scrollHeight;
+  }
+
+  if (hwcChatSendBtn && hwcChatInput) {
+    const sendMsg = () => {
+      const val = hwcChatInput.value.trim();
+      if (val) {
+        appendHWCChat("user", `[Health Worker]: ${val}`);
+        hwcChatInput.value = '';
+
+        setTimeout(() => {
+          appendHWCChat("doctor", "Dr. Rajesh Kumar: Noted. Thank you for the update. I have updated the clinical notes accordingly.");
+        }, 1500);
+      }
+    };
+    hwcChatSendBtn.addEventListener('click', sendMsg);
+    hwcChatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMsg();
+    });
+  }
+
+  if (endConsultBtn) {
+    endConsultBtn.addEventListener('click', () => {
+      if (mediaStreamHWC) {
+        mediaStreamHWC.getTracks().forEach(t => t.stop());
+        mediaStreamHWC = null;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+      const token = 'HWC-' + Math.floor(1000 + Math.random() * 9000);
+
+      currentSession.date = today;
+      currentSession.token = token;
+      currentSession.doctorNotes = doctorPrescriptionNotes.textContent;
+      currentSession.opdClinic = 'Spoke-Station A Telemedicine Clinic';
+
+      caseArchive.unshift(JSON.parse(JSON.stringify(currentSession)));
+      renderArchiveTable();
+
+      downloadHWCCaseDocument(currentSession);
+
+      openHWCCaseModal(currentSession);
+    });
+  }
+
+  function renderArchiveTable() {
+    if (!archiveTableBody) return;
+    archiveTableBody.innerHTML = '';
+
+    caseArchive.forEach((record, idx) => {
+      const tr = document.createElement('tr');
+      const badgeClass = record.aiRisk ? record.aiRisk.badgeClass : 'risk-low';
+      const riskLevel = record.aiRisk ? record.aiRisk.level : 'LOW';
+
+      tr.innerHTML = `
+        <td>${record.date}</td>
+        <td style="font-family: monospace; font-weight: 700; color: var(--health-teal);">${record.token}</td>
+        <td><strong>${record.patientName || record.name}</strong></td>
+        <td>${record.ageGender || (record.age + ' / ' + record.gender)}</td>
+        <td>${record.opdClinic || 'Spoke Clinic'}</td>
+        <td><span class="ai-risk-badge ${badgeClass}" style="padding: 3px 8px; font-size: 0.72rem; margin: 0;">${riskLevel}</span></td>
+        <td>
+          <button class="table-btn view-case-btn" data-index="${idx}">
+            <span class="material-icons-outlined" style="font-size: 14px;">visibility</span> View / Print
+          </button>
+        </td>
+      `;
+
+      tr.querySelector('.view-case-btn').addEventListener('click', (e) => {
+        const index = parseInt(e.target.closest('.view-case-btn').dataset.index);
+        openHWCCaseModal(caseArchive[index]);
+      });
+
+      archiveTableBody.appendChild(tr);
+    });
+  }
+
+  function openHWCCaseModal(record) {
+    const badgeClass = record.aiRisk ? record.aiRisk.badgeClass : 'risk-low';
+    const riskLevel = record.aiRisk ? record.aiRisk.level : 'LOW';
+
+    hwcCaseModalBody.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary-navy); padding-bottom: 12px; margin-bottom: 15px;">
+        <div>
+          <h3 style="margin: 0; color: var(--primary-navy);">SwasthyaSetu HWC Clinical Case Record</h3>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Spoke Token: <strong>${record.token}</strong> | Date: ${record.date}</span>
+        </div>
+        <button id="modal-print-btn" class="form-submit" style="width: auto; padding: 8px 16px; background: var(--health-teal); font-weight: bold; cursor: pointer;">
+          <span class="material-icons-outlined" style="vertical-align: middle;">print</span> Print Case Sheet
+        </button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+        <div style="background: #f8fafc; border: 1px solid var(--border-light); padding: 12px; border-radius: var(--radius-sm);">
+          <strong>Patient Identity:</strong><br>
+          Name: ${record.patientName || record.name}<br>
+          Age/Gender: ${record.ageGender || (record.age + ' Yrs / ' + record.gender)}<br>
+          Mobile: ${record.phone || 'N/A'}<br>
+          DHR ID: <span style="font-family: monospace;">${record.dhrId || 'Linked'}</span>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid var(--border-light); padding: 12px; border-radius: var(--radius-sm);">
+          <strong>Vitals Log:</strong><br>
+          Temp: ${record.temp}°F | Pulse: ${record.pulse} BPM<br>
+          BP: ${record.bp} mmHg | SpO2: ${record.spo2}%<br>
+          AI Risk Triage: <span class="ai-risk-badge ${badgeClass}" style="padding: 2px 6px; font-size: 0.7rem; display: inline-block;">${riskLevel}</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <strong>Symptoms Reported:</strong>
+        <p style="background: #f1f5f9; padding: 8px; border-radius: 4px; font-size: 0.85rem; margin: 4px 0;">${record.symptoms || 'None'}</p>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <strong>Injuries & First-Aid Intervention:</strong>
+        <p style="background: #f1f5f9; padding: 8px; border-radius: 4px; font-size: 0.85rem; margin: 4px 0;">Injuries: ${record.injuries || 'None'} | First-Aid: ${record.firstaid || 'N/A'}</p>
+      </div>
+
+      <div style="margin-bottom: 12px;">
+        <strong>AI Decision Support Summary:</strong>
+        <div style="background: #f8fafc; border-left: 3px solid var(--health-teal); padding: 8px; font-size: 0.82rem;">${record.aiSummary || 'N/A'}</div>
+      </div>
+
+      <div>
+        <strong>Doctor Recommendation & e-Prescription Notes:</strong>
+        <pre style="background: #0f3b5f; color: #fff; padding: 12px; border-radius: 6px; font-size: 0.82rem; white-space: pre-wrap; font-family: monospace;">${record.doctorNotes || 'No notes available.'}</pre>
+      </div>
+    `;
+
+    document.getElementById('modal-print-btn').addEventListener('click', () => {
+      downloadHWCCaseDocument(record);
+    });
+
+    hwcCaseModal.classList.add('active');
+  }
+
+  function downloadHWCCaseDocument(record) {
+    const docHTML = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SwasthyaSetu HWC Case Record - ${record.token}</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #222; margin: 0; padding: 30px; line-height: 1.5; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #10847e; padding-bottom: 15px; }
+    .brand-name { font-size: 24px; font-weight: bold; color: #0f3b5f; }
+    .card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 6px; margin: 15px 0; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    .vitals-box { background: #0f3b5f; color: white; padding: 10px; border-radius: 4px; text-align: center; }
+    pre { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 15px; border-radius: 6px; font-family: monospace; white-space: pre-wrap; }
+    @media print { .no-print { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+    <button onclick="window.print()" style="background: #10847e; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Print / Download PDF</button>
+  </div>
+
+  <div class="header">
+    <div>
+      <div class="brand-name">SwasthyaSetu AB-HWC</div>
+      <div style="font-size: 12px; color: #666;">Assisted Telemedicine Clinical Spoke Record</div>
+    </div>
+    <div style="text-align: right; font-size: 11px; color: #444;">
+      <strong>Token: ${record.token}</strong><br>
+      Date: ${record.date}<br>
+      DHR Profile: ${record.dhrId || 'Linked'}
+    </div>
+  </div>
+
+  <div class="card grid">
+    <div>
+      <h4 style="margin:0 0 8px 0; color:#0f3b5f;">Patient Demographics</h4>
+      <strong>Name:</strong> ${record.patientName || record.name}<br>
+      <strong>Age/Gender:</strong> ${record.ageGender || (record.age + ' Yrs / ' + record.gender)}<br>
+      <strong>Mobile:</strong> +91-${record.phone || 'N/A'}<br>
+      <strong>State:</strong> ${record.state || 'N/A'}
+    </div>
+    <div>
+      <h4 style="margin:0 0 8px 0; color:#0f3b5f;">Clinical Vitals</h4>
+      <strong>Temp:</strong> ${record.temp}°F | <strong>Pulse:</strong> ${record.pulse} BPM<br>
+      <strong>BP:</strong> ${record.bp} mmHg | <strong>SpO2:</strong> ${record.spo2}%<br>
+      <strong>AI Risk Flag:</strong> ${record.aiRisk ? record.aiRisk.level : 'LOW'}
+    </div>
+  </div>
+
+  <div class="card">
+    <h4 style="margin:0 0 8px 0; color:#0f3b5f;">Spoke Intake & First-Aid</h4>
+    <strong>Symptoms:</strong> ${record.symptoms}<br>
+    <strong>Injuries:</strong> ${record.injuries}<br>
+    <strong>First-Aid Administered:</strong> ${record.firstaid}<br>
+    <strong>Past History:</strong> ${record.history || 'None'}
+  </div>
+
+  <div class="card">
+    <h4 style="margin:0 0 8px 0; color:#0f3b5f;">AI Triage Summary</h4>
+    <p style="margin:0;">${record.aiSummary}</p>
+  </div>
+
+  <h4>Doctor Tele-Consultation Recommendation Notes</h4>
+  <pre>${record.doctorNotes || 'No notes recorded.'}</pre>
+
+  <div style="margin-top: 40px; display: flex; justify-content: space-between; font-size: 12px; border-top: 1px solid #cbd5e1; padding-top: 10px;">
+    <div>Spoke Health Worker ID: HW101</div>
+    <div>Digitally Verified by Dr. Rajesh Kumar (National Medical Board)</div>
+  </div>
+</body>
+</html>
+    `;
+
+    const blob = new Blob([docHTML], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `SwasthyaSetu_HWC_CaseSheet_${record.token}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+}
+
+/* ================= 7. Authentication & Role-Based Access Control (RBAC) ================= */
+function initAuthModule() {
+  const DEMO_ACCOUNTS = {
+    'healthworker@medisetu.demo': { password: 'Demo@123', role: 'health_worker', name: 'Health Worker (HW101)', id: 'HW101' },
+    'hw101': { password: 'password123', role: 'health_worker', name: 'Health Worker (HW101)', id: 'HW101' },
+    'doctor@medisetu.demo': { password: 'Demo@123', role: 'doctor', name: 'Dr. Rajesh Kumar (MD)', id: 'NMB-82741-A' },
+    'doc101': { password: 'password123', role: 'doctor', name: 'Dr. Rajesh Kumar (MD)', id: 'NMB-82741-A' },
+    'patient@medisetu.demo': { password: 'Demo@123', role: 'patient', name: 'Citizen Patient', id: 'PAT-101' }
+  };
+
+  let currentUser = null;
+
+  // Unified Auth Modal Elements
+  const unifiedLoginModal = document.getElementById('unified-login-modal');
+  const openUnifiedLoginBtn = document.getElementById('open-unified-login-btn');
+  const roleTabBtns = document.querySelectorAll('.role-tab-btn');
+  const roleFormPanels = document.querySelectorAll('.role-form-panel');
+  const googleLoginBtn = document.getElementById('google-login-btn');
+
+  // Legacy/Direct modals
+  const hwcLoginModal = document.getElementById('hwc-login-modal');
+  const doctorLoginModal = document.getElementById('doctor-login-modal');
+
+  // Trigger buttons across page
+  const openHwcLoginBtn = document.getElementById('open-hwc-login-btn');
+  const openDoctorLoginBtn = document.getElementById('open-doctor-login-btn');
+  const openRegisterBtn = document.getElementById('open-register-btn');
+
+  // Views & Dashboards
+  const landingView = document.getElementById('landing-view');
+  const hwcDashboardView = document.getElementById('hwc-dashboard-view');
+  const doctorDashboardView = document.getElementById('doctor-dashboard-view');
+
+  const hwcLogoutBtn = document.getElementById('hwc-logout-btn');
+  const doctorLogoutBtn = document.getElementById('doctor-logout-btn');
+
+  // Open Unified Modal with specific active role tab
+  function openUnifiedModal(targetRole = 'doctor') {
+    if (!unifiedLoginModal) return;
+    
+    // Switch active role tab
+    roleTabBtns.forEach(btn => {
+      if (btn.dataset.role === targetRole) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    roleFormPanels.forEach(panel => {
+      if (panel.id === `panel-role-${targetRole}`) {
+        panel.classList.add('active');
+      } else {
+        panel.classList.remove('active');
+      }
+    });
+
+    unifiedLoginModal.classList.add('active');
+  }
+
+  if (openUnifiedLoginBtn) {
+    openUnifiedLoginBtn.addEventListener('click', () => openUnifiedModal('doctor'));
+  }
+
+  if (openDoctorLoginBtn) {
+    openDoctorLoginBtn.addEventListener('click', () => openUnifiedModal('doctor'));
+  }
+
+  if (openHwcLoginBtn) {
+    openHwcLoginBtn.addEventListener('click', () => openUnifiedModal('hwc'));
+  }
+
+  if (openRegisterBtn) {
+    openRegisterBtn.addEventListener('click', () => openUnifiedModal('patient'));
+  }
+
+  // Handle Role Tab Switching inside Unified Modal
+  roleTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const role = btn.dataset.role;
+      roleTabBtns.forEach(b => b.classList.remove('active'));
+      roleFormPanels.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const targetPanel = document.getElementById(`panel-role-${role}`);
+      if (targetPanel) targetPanel.classList.add('active');
+    });
+  });
+
+  // Handle Unified Doctor Form Submit
+  const uniDoctorForm = document.getElementById('unified-doctor-form');
+  if (uniDoctorForm) {
+    uniDoctorForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginAsRole('doctor', document.getElementById('uni-doc-email').value, 'Dr. Rajesh Kumar (MD)');
+    });
+  }
+
+  // Handle Unified Patient Form Submit
+  const uniPatientForm = document.getElementById('unified-patient-form');
+  if (uniPatientForm) {
+    uniPatientForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginAsRole('patient', document.getElementById('uni-pat-input').value, 'Citizen Patient');
+    });
+  }
+
+  // Handle Unified Health Worker Form Submit
+  const uniHwcForm = document.getElementById('unified-hwc-form');
+  if (uniHwcForm) {
+    uniHwcForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginAsRole('health_worker', document.getElementById('uni-hwc-email').value, 'Health Worker (HW101)');
+    });
+  }
+
+  // Unified Google Login Handler
+  if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', () => {
+      const activeTab = document.querySelector('.role-tab-btn.active');
+      const activeRole = activeTab ? activeTab.dataset.role : 'doctor';
+
+      let roleName = 'Doctor Specialist';
+      let targetRole = 'doctor';
+
+      if (activeRole === 'patient') {
+        roleName = 'Citizen Patient';
+        targetRole = 'patient';
+      } else if (activeRole === 'hwc') {
+        roleName = 'Health Worker';
+        targetRole = 'health_worker';
+      }
+
+      showToast(`Google OAuth Connected! Authenticating as Google User...`);
+      setTimeout(() => {
+        loginAsRole(targetRole, `google_user@medisetu.demo`, `Google Verified (${roleName})`);
+      }, 1000);
+    });
+  }
+
+  // Common Login Router
+  function loginAsRole(role, email, defaultName) {
+    currentUser = { email: email, role: role, name: defaultName };
+    if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
+    if (hwcLoginModal) hwcLoginModal.classList.remove('active');
+    if (doctorLoginModal) doctorLoginModal.classList.remove('active');
+
+    if (role === 'doctor') {
+      landingView.style.display = 'none';
+      hwcDashboardView.style.display = 'none';
+      doctorDashboardView.style.display = 'flex';
+      initDoctorDashboardLogic();
+      showToast(`✓ Logged in as Doctor: ${defaultName}`);
+    } else if (role === 'health_worker') {
+      landingView.style.display = 'none';
+      doctorDashboardView.style.display = 'none';
+      hwcDashboardView.style.display = 'flex';
+      showToast(`✓ Logged in as Health Worker: ${defaultName}`);
+    } else if (role === 'patient') {
+      doctorDashboardView.style.display = 'none';
+      hwcDashboardView.style.display = 'none';
+      landingView.style.display = 'block';
+      
+      const regModal = document.getElementById('register-modal');
+      if (regModal) regModal.classList.add('active');
+      showToast(`✓ Logged in as Patient. Enter mobile number for OTP consultation.`);
+    }
+  }
+
+  // Logout Handlers
+  if (hwcLogoutBtn) {
+    hwcLogoutBtn.addEventListener('click', () => {
+      currentUser = null;
+      hwcDashboardView.style.display = 'none';
+      doctorDashboardView.style.display = 'none';
+      landingView.style.display = 'block';
+      showToast('Logged out of Health Worker Portal.');
+    });
+  }
+
+  if (doctorLogoutBtn) {
+    doctorLogoutBtn.addEventListener('click', () => {
+      currentUser = null;
+      hwcDashboardView.style.display = 'none';
+      doctorDashboardView.style.display = 'none';
+      landingView.style.display = 'block';
+      showToast('Logged out of Doctor Specialist Portal.');
+    });
+  }
+
+  // Helper Toast Notification
+  function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f3b5f; color: white; padding: 12px 24px; border-radius: 25px; font-weight: 600; z-index: 9999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-size: 0.9rem; border: 1px solid var(--accent-saffron);';
+    toast.innerHTML = `<span class="material-icons-outlined" style="vertical-align: middle; margin-right: 6px; color: var(--accent-saffron);">verified_user</span> ${msg}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Doctor Dashboard Logic
+  function initDoctorDashboardLogic() {
+    const docMenuItems = document.querySelectorAll('#doctor-dashboard-view .menu-item');
+    const docTabContents = document.querySelectorAll('#doctor-dashboard-view .hwc-tab-content');
+    const doctorQueueTableBody = document.getElementById('doctor-queue-table-body');
+    const doctorArchiveTableBody = document.getElementById('doctor-archive-table-body');
+    const menuDocConsultTab = document.getElementById('menu-doc-consult-tab');
+
+    const docPrescriptionInput = document.getElementById('doc-prescription-input');
+    const docSignPrescriptionBtn = document.getElementById('doc-sign-prescription-btn');
+    const docChatMessages = document.getElementById('doc-chat-messages');
+    const docChatInput = document.getElementById('doc-chat-input');
+    const docChatSendBtn = document.getElementById('doc-chat-send-btn');
+    const doctorSelfVideo = document.getElementById('doctor-self-video');
+
+    let doctorStream = null;
+
+    docMenuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (item.classList.contains('disabled')) return;
+        const target = item.dataset.tab;
+        docMenuItems.forEach(m => m.classList.remove('active'));
+        docTabContents.forEach(t => t.classList.remove('active'));
+        item.classList.add('active');
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    function renderDoctorQueue() {
+      if (!doctorQueueTableBody) return;
+      doctorQueueTableBody.innerHTML = `
+        <tr>
+          <td style="font-family: monospace; font-weight: 700; color: var(--health-teal);">HWC-9281</td>
+          <td><strong>Ramesh Kumar</strong></td>
+          <td>45 / Male</td>
+          <td>Spoke-Station A (UP)</td>
+          <td><span class="ai-risk-badge risk-high" style="padding: 2px 6px; font-size: 0.72rem; margin:0;">HIGH RISK</span></td>
+          <td>SpO2: 94% | BP: 135/88</td>
+          <td>
+            <button class="table-btn accept-doc-consult-btn" style="background: var(--flag-green);">
+              <span class="material-icons-outlined" style="font-size:14px;">video_call</span> Accept Call
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td style="font-family: monospace; font-weight: 700; color: var(--health-teal);">HWC-7410</td>
+          <td><strong>Sunita Devi</strong></td>
+          <td>38 / Female</td>
+          <td>Spoke-Station B (Delhi)</td>
+          <td><span class="ai-risk-badge risk-moderate" style="padding: 2px 6px; font-size: 0.72rem; margin:0;">MODERATE</span></td>
+          <td>SpO2: 98% | BP: 128/82</td>
+          <td>
+            <button class="table-btn accept-doc-consult-btn" style="background: var(--primary-navy-light);">
+              <span class="material-icons-outlined" style="font-size:14px;">video_call</span> Accept Call
+            </button>
+          </td>
+        </tr>
+      `;
+
+      doctorQueueTableBody.querySelectorAll('.accept-doc-consult-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          menuDocConsultTab.classList.remove('disabled');
+          docMenuItems.forEach(m => m.classList.remove('active'));
+          docTabContents.forEach(t => t.classList.remove('active'));
+          menuDocConsultTab.classList.add('active');
+          document.getElementById('tab-doc-consult').classList.add('active');
+
+          document.getElementById('doc-consult-symptoms').textContent = "High fever for 3 days, cough, throat pain.";
+          document.getElementById('doc-consult-injuries').textContent = "None";
+          document.getElementById('doc-consult-firstaid').textContent = "Paracetamol 650mg & cold compress given at Spoke.";
+          document.getElementById('doc-consult-history').textContent = "Hypertension";
+          docPrescriptionInput.value = `Tab. Paracetamol 650mg TDS x 3 days\nSyp. Ambroxol 10ml BD x 5 days\nTab. Amoxicillin 500mg BD x 5 days\nAdvice: Warm saline gargles, bed rest.`;
+
+          try {
+            doctorStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            doctorSelfVideo.srcObject = doctorStream;
+          } catch (e) {
+            console.warn("Doctor webcam denied: ", e);
+          }
+        });
+      });
+    }
+
+    renderDoctorQueue();
+
+    if (docSignPrescriptionBtn) {
+      docSignPrescriptionBtn.addEventListener('click', () => {
+        const notes = docPrescriptionInput.value.trim();
+        if (!notes) {
+          alert('Please enter prescription notes before signing.');
+          return;
+        }
+        showToast('Prescription digitally signed & issued with license NMB-82741-A!');
+      });
+    }
+
+    if (docChatSendBtn && docChatInput) {
+      const sendDocMsg = () => {
+        const val = docChatInput.value.trim();
+        if (val) {
+          const msg = document.createElement('div');
+          msg.className = 'chat-msg doctor';
+          msg.textContent = `[Dr. Rajesh]: ${val}`;
+          docChatMessages.appendChild(msg);
+          docChatMessages.scrollTop = docChatMessages.scrollHeight;
+          docChatInput.value = '';
+        }
+      };
+      docChatSendBtn.addEventListener('click', sendDocMsg);
+      docChatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') sendDocMsg();
+      });
+    }
+  }
+}
+
+

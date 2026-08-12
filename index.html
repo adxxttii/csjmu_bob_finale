@@ -22,9 +22,14 @@
         <button class="access-btn" id="font-increase" aria-label="Increase text size">A+</button>
       </div>
       <button class="contrast-toggle" id="contrast-toggle" aria-label="Toggle High Contrast Mode">High Contrast</button>
-      <select id="lang-selector" aria-label="Select Language" class="access-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+      <select id="lang-selector" aria-label="Select Language" class="access-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; cursor: pointer; padding: 4px 8px; border-radius: var(--radius-sm);">
         <option value="en" style="color: black;">English</option>
-        <option value="hi" style="color: black;">हिन्दी</option>
+        <option value="hi" style="color: black;">हिन्दी (Hindi)</option>
+        <option value="bn" style="color: black;">বাংলা (Bengali)</option>
+        <option value="mr" style="color: black;">मराठी (Marathi)</option>
+        <option value="ta" style="color: black;">தமிழ் (Tamil)</option>
+        <option value="te" style="color: black;">తెలుగు (Telugu)</option>
+        <option value="gu" style="color: black;">ગુજરાતી (Gujarati)</option>
       </select>
     </div>
   </div>
@@ -74,9 +79,11 @@
       <li class="nav-item"><a href="#how-it-works" id="nav-how">How it Works</a></li>
       <li class="nav-item"><a href="#faq" id="nav-faq">FAQs</a></li>
     </ul>
-    <div class="desktop-only" style="display: flex; align-items: center; gap: 10px;">
-      <span class="material-icons-outlined" style="font-size: 18px; color: var(--health-teal);">contact_support</span>
-      <span style="font-size: 0.85rem; font-weight: 600;">Support Toll-Free: 1-800-555-0199</span>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span class="desktop-only" style="font-size: 0.85rem; font-weight: 600;">Toll-Free: 1-800-555-0199</span>
+      <button class="nav-login-btn" id="open-unified-login-btn">
+        <span class="material-icons-outlined" style="font-size: 18px;">account_circle</span> Sign In
+      </button>
     </div>
   </nav>
 
@@ -180,7 +187,7 @@
         <button class="action-btn primary" id="open-register-btn" aria-haspopup="dialog">
           <span class="material-icons-outlined">how_to_reg</span> Register / Login
         </button>
-        <button class="action-btn secondary" onclick="alert('Doctor registrations are handled via Central Medical Council licensing portals.')">
+        <button class="action-btn secondary" id="open-doctor-login-btn">
           Doctor Login
         </button>
       </div>
@@ -521,6 +528,12 @@
                   <button id="voice-dictate-hi" class="voice-mic-btn" title="Speak Hindi">
                     <span class="material-icons-outlined">mic</span> HI
                   </button>
+                  <button id="voice-dictate-bn" class="voice-mic-btn" title="Speak Bengali">
+                    <span class="material-icons-outlined">mic</span> BN
+                  </button>
+                  <button id="voice-dictate-mr" class="voice-mic-btn" title="Speak Marathi">
+                    <span class="material-icons-outlined">mic</span> MR
+                  </button>
                 </div>
               </div>
               <textarea id="hwc-symptoms" class="form-input" rows="3" placeholder="Click mic to speak, or type symptoms here..." required></textarea>
@@ -690,7 +703,306 @@
     </main>
   </div>
 
+  <!-- Doctor Workstation Dashboard View -->
+  <div id="doctor-dashboard-view" style="display: none;" class="hwc-dashboard-container doctor-theme">
+    <aside class="hwc-sidebar">
+      <div class="sidebar-header">
+        <span class="material-icons-outlined" style="font-size: 32px; color: var(--primary-navy);">medical_information</span>
+        <div>
+          <h4 style="margin: 0; color: var(--text-dark);">Doctor Workstation</h4>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Dr. Rajesh Kumar (MD)</span>
+        </div>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="menu-item active" data-tab="tab-doc-queue">
+          <span class="material-icons-outlined">queue</span>
+          <span>Patient Consult Queue</span>
+        </li>
+        <li class="menu-item disabled" id="menu-doc-consult-tab" data-tab="tab-doc-consult">
+          <span class="material-icons-outlined">video_call</span>
+          <span>Live Video Consult</span>
+        </li>
+        <li class="menu-item" data-tab="tab-doc-archive">
+          <span class="material-icons-outlined">assignment</span>
+          <span>Issued Prescriptions</span>
+        </li>
+      </ul>
+      <div class="sidebar-footer">
+        <button id="doctor-logout-btn" class="logout-btn">
+          <span class="material-icons-outlined">logout</span> Logout
+        </button>
+      </div>
+    </aside>
+    
+    <main class="hwc-main-content">
+      <header class="hwc-workspace-header">
+        <h2>Specialist Physician Workstation</h2>
+        <div class="health-worker-profile" style="border-color: var(--primary-navy);">
+          <span class="status-indicator online"></span>
+          <span>Hub Station: Central Diagnostic Hub | Reg: NMB-82741-A</span>
+        </div>
+      </header>
+
+      <!-- Tab 1: Patient Consult Queue -->
+      <div class="hwc-tab-content active" id="tab-doc-queue">
+        <div class="dashboard-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3>Incoming Tele-Consultation Queue (HWC Spokes)</h3>
+            <span class="queue-badge" style="background: var(--primary-navy); color: white;">Queue: Active</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">
+            Review incoming clinical intake files, vitals, AI triage risk flags, and accept patient calls from rural Spoke health centers.
+          </p>
+          <table class="archive-table">
+            <thead>
+              <tr>
+                <th>Token</th>
+                <th>Patient Name</th>
+                <th>Age/Gender</th>
+                <th>Spoke Station</th>
+                <th>AI Triage Risk</th>
+                <th>Vitals (SpO2/BP)</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="doctor-queue-table-body">
+              <!-- Dynamically populated queue rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 2: Live Doctor Video Consult & Prescription Suite -->
+      <div class="hwc-tab-content" id="tab-doc-consult">
+        <div class="consultation-workspace">
+          <!-- Left Panel: Patient Intake File & Vitals -->
+          <div class="dashboard-card patient-summary-panel">
+            <h3>Spoke Patient File</h3>
+            <div class="patient-profile-card">
+              <span class="material-icons-outlined" style="font-size: 48px; color: var(--primary-navy);">account_circle</span>
+              <div>
+                <h4 id="doc-consult-pname">Ramesh Kumar</h4>
+                <p id="doc-consult-pdetails">45 Yrs / Male | Mobile: 9876543210</p>
+                <p id="doc-consult-pdhr" style="font-family: monospace; font-size: 0.8rem;">DHR-8821-9910-1011</p>
+              </div>
+            </div>
+
+            <div class="vitals-monitor-grid">
+              <div class="vital-monitor-item">
+                <span class="vital-label">TEMP</span>
+                <span class="vital-value" id="doc-monitor-temp">101.4</span><span class="unit">°F</span>
+              </div>
+              <div class="vital-monitor-item">
+                <span class="vital-label">PULSE</span>
+                <span class="vital-value" id="doc-monitor-pulse">88</span><span class="unit">BPM</span>
+              </div>
+              <div class="vital-monitor-item">
+                <span class="vital-label">BP</span>
+                <span class="vital-value" id="doc-monitor-bp">135/88</span><span class="unit">mmHg</span>
+              </div>
+              <div class="vital-monitor-item">
+                <span class="vital-label">SPO2</span>
+                <span class="vital-value" id="doc-monitor-spo2">94</span><span class="unit">%</span>
+              </div>
+            </div>
+
+            <div class="clinical-notes-section">
+              <strong>Reported Symptoms:</strong>
+              <p id="doc-consult-symptoms" class="notes-para"></p>
+
+              <strong>AI Risk Evaluation:</strong>
+              <div id="doc-consult-airisk" class="ai-risk-badge risk-high" style="margin-top: 4px; padding: 4px 8px; font-size: 0.78rem;">HIGH RISK</div>
+
+              <strong>Injuries:</strong>
+              <p id="doc-consult-injuries" class="notes-para"></p>
+
+              <strong>First-Aid Administered:</strong>
+              <p id="doc-consult-firstaid" class="notes-para"></p>
+
+              <strong>Medical History:</strong>
+              <p id="doc-consult-history" class="notes-para"></p>
+            </div>
+          </div>
+
+          <!-- Center Panel: Doctor Video Call & Prescription Editor -->
+          <div class="consult-main-area">
+            <div class="hwc-video-container">
+              <!-- Doctor Self Camera -->
+              <div class="hwc-doctor-video-box">
+                <video id="doctor-self-video" style="width:100%; height:100%; object-fit:cover; transform:scaleX(-1);" autoplay playsinline></video>
+                <div class="video-overlay-name">Dr. Rajesh Kumar (Specialist Feed)</div>
+              </div>
+              <!-- Spoke Patient Camera Feed -->
+              <div class="hwc-patient-video-box">
+                <div id="doc-patient-status" class="doctor-video-feed-placeholder">Spoke Patient Feed Active</div>
+                <div class="video-overlay-name">Spoke Station Feed</div>
+              </div>
+            </div>
+
+            <!-- Doctor Prescription Editor -->
+            <div class="consult-details-grid">
+              <div class="dashboard-card">
+                <h3>Write & Issue e-Prescription</h3>
+                <div class="form-group">
+                  <label for="doc-prescription-input">Prescription Notes, Rx & Instructions</label>
+                  <textarea id="doc-prescription-input" class="form-input" rows="5" placeholder="Enter diagnosis, medicines, dosage, and instructions..."></textarea>
+                </div>
+                <button id="doc-sign-prescription-btn" class="form-submit" style="background: var(--flag-green);">
+                  <span class="material-icons-outlined" style="vertical-align: middle;">verified</span> Sign & Issue e-Prescription
+                </button>
+              </div>
+
+              <!-- Doctor Chat Panel -->
+              <div class="dashboard-card hwc-chat-container">
+                <h3>Doctor Chat with Spoke Station</h3>
+                <div class="chat-messages" id="doc-chat-messages">
+                  <div class="chat-msg system">Consultation session connected. Secure line active.</div>
+                </div>
+                <div class="chat-input-area">
+                  <input type="text" class="chat-input" id="doc-chat-input" placeholder="Type message to Health Worker...">
+                  <button class="chat-send" id="doc-chat-send-btn">
+                    <span class="material-icons-outlined">send</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Doctor Issued Prescriptions Archive -->
+      <div class="hwc-tab-content" id="tab-doc-archive">
+        <div class="dashboard-card">
+          <h3>Doctor Issued Prescriptions Log</h3>
+          <p style="color:var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Review and re-print e-prescriptions issued by Dr. Rajesh Kumar.</p>
+          <table class="archive-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Token</th>
+                <th>Patient Name</th>
+                <th>Age/Gender</th>
+                <th>Diagnosis Summary</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="doctor-archive-table-body">
+              <!-- Dynamically rendered -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
   <!-- ================= MODALS & SIMULATION POPUPS ================= -->
+
+  <!-- Modal 0: Unified 3-Option Role Login & Google Auth Modal -->
+  <div class="modal-overlay" id="unified-login-modal">
+    <div class="modal-container" style="max-width: 480px;" role="dialog" aria-modal="true" aria-labelledby="unified-login-title">
+      <div class="modal-header">
+        <h3 id="unified-login-title" style="display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined" style="color: var(--health-teal);">lock</span>
+          SwasthyaSetu Portal Login
+        </h3>
+        <button class="close-modal" id="close-unified-login-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; text-align: center;">
+          Select your portal role to sign in:
+        </p>
+
+        <!-- 3 Role Option Tabs -->
+        <div class="role-selector-tabs">
+          <button class="role-tab-btn active" data-role="doctor" id="role-tab-doctor">
+            <span class="material-icons-outlined">medical_information</span>
+            <span>Doctor</span>
+          </button>
+          <button class="role-tab-btn" data-role="patient" id="role-tab-patient">
+            <span class="material-icons-outlined">person</span>
+            <span>Patient</span>
+          </button>
+          <button class="role-tab-btn" data-role="hwc" id="role-tab-hwc">
+            <span class="material-icons-outlined">medical_services</span>
+            <span>Health Worker</span>
+          </button>
+        </div>
+
+        <!-- 1. Doctor Form Panel -->
+        <div class="role-form-panel active" id="panel-role-doctor">
+          <div class="demo-account-box">
+            <strong>Demo Doctor Account:</strong><br>
+            Email: <code>doctor@medisetu.demo</code> | Pass: <code>Demo@123</code>
+          </div>
+          <form id="unified-doctor-form" onsubmit="return false;">
+            <div class="form-group">
+              <label for="uni-doc-email">Doctor Email / License Reg ID</label>
+              <input type="text" id="uni-doc-email" class="form-input" value="doctor@medisetu.demo" required>
+            </div>
+            <div class="form-group">
+              <label for="uni-doc-pass">Password</label>
+              <input type="password" id="uni-doc-pass" class="form-input" value="Demo@123" required>
+            </div>
+            <button type="submit" class="form-submit" style="background: var(--primary-navy);">Login as Doctor</button>
+          </form>
+        </div>
+
+        <!-- 2. Patient Form Panel -->
+        <div class="role-form-panel" id="panel-role-patient">
+          <div class="demo-account-box" style="border-color: var(--accent-saffron); background: rgba(255,153,51,0.08);">
+            <strong>Demo Patient Account:</strong><br>
+            Mobile / Email: <code>patient@medisetu.demo</code> | Mobile: <code>9876543210</code>
+          </div>
+          <form id="unified-patient-form" onsubmit="return false;">
+            <div class="form-group">
+              <label for="uni-pat-input">Mobile Number or Email</label>
+              <input type="text" id="uni-pat-input" class="form-input" value="patient@medisetu.demo" required>
+            </div>
+            <div class="form-group">
+              <label for="uni-pat-pass">Password / OTP Code</label>
+              <input type="password" id="uni-pat-pass" class="form-input" value="Demo@123" required>
+            </div>
+            <button type="submit" class="form-submit" style="background: var(--accent-saffron);">Continue as Patient</button>
+          </form>
+        </div>
+
+        <!-- 3. Health Worker Form Panel -->
+        <div class="role-form-panel" id="panel-role-hwc">
+          <div class="demo-account-box" style="border-color: var(--health-teal); background: rgba(16,132,126,0.08);">
+            <strong>Demo Health Worker Account:</strong><br>
+            Email: <code>healthworker@medisetu.demo</code> | Pass: <code>Demo@123</code>
+          </div>
+          <form id="unified-hwc-form" onsubmit="return false;">
+            <div class="form-group">
+              <label for="uni-hwc-email">Health Worker Email / Staff ID</label>
+              <input type="text" id="uni-hwc-email" class="form-input" value="healthworker@medisetu.demo" required>
+            </div>
+            <div class="form-group">
+              <label for="uni-hwc-pass">Password</label>
+              <input type="password" id="uni-hwc-pass" class="form-input" value="Demo@123" required>
+            </div>
+            <button type="submit" class="form-submit" style="background: var(--health-teal);">Login as Health Worker</button>
+          </form>
+        </div>
+
+        <!-- Divider -->
+        <div class="auth-divider">
+          <span>OR</span>
+        </div>
+
+        <!-- Google Login Option -->
+        <button type="button" class="google-login-btn" id="google-login-btn">
+          <svg class="google-icon" width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Sign in with Google</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal 6: Health Worker Login -->
   <div class="modal-overlay" id="hwc-login-modal">
@@ -700,16 +1012,52 @@
         <button class="close-modal" id="close-hwc-login-btn" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
+        <div style="background: rgba(16, 132, 126, 0.08); border-left: 3px solid var(--health-teal); padding: 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 15px;">
+          <strong>Demo Health Worker Account:</strong><br>
+          Email: <code>healthworker@medisetu.demo</code><br>
+          Password: <code>Demo@123</code>
+        </div>
         <form id="hwc-login-form" onsubmit="return false;">
           <div class="form-group">
-            <label for="hwc-staff-id">Staff Credentials ID</label>
-            <input type="text" id="hwc-staff-id" class="form-input" placeholder="e.g. HW101" required>
+            <label for="hwc-staff-id">Staff Email or Credentials ID</label>
+            <input type="text" id="hwc-staff-id" class="form-input" placeholder="healthworker@medisetu.demo" required>
           </div>
           <div class="form-group">
             <label for="hwc-password">Portal Password</label>
             <input type="password" id="hwc-password" class="form-input" placeholder="••••••••" required>
           </div>
-          <button type="submit" class="form-submit" id="submit-hwc-login-btn">Secure Login</button>
+          <button type="submit" class="form-submit" id="submit-hwc-login-btn">Health Worker Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 8: Doctor Specialist Login -->
+  <div class="modal-overlay" id="doctor-login-modal">
+    <div class="modal-container" style="max-width: 420px;" role="dialog" aria-modal="true" aria-labelledby="doctor-login-title">
+      <div class="modal-header">
+        <h3 id="doctor-login-title" style="display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined" style="color: var(--primary-navy);">medical_information</span>
+          Doctor Specialist Portal Login
+        </h3>
+        <button class="close-modal" id="close-doctor-login-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: rgba(15, 59, 95, 0.08); border-left: 3px solid var(--primary-navy); padding: 10px; border-radius: 4px; font-size: 0.8rem; margin-bottom: 15px;">
+          <strong>Demo Doctor Account:</strong><br>
+          Email: <code>doctor@medisetu.demo</code><br>
+          Password: <code>Demo@123</code>
+        </div>
+        <form id="doctor-login-form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="doctor-email">Doctor Email or Medical Reg ID</label>
+            <input type="text" id="doctor-email" class="form-input" placeholder="doctor@medisetu.demo" required>
+          </div>
+          <div class="form-group">
+            <label for="doctor-password">Password</label>
+            <input type="password" id="doctor-password" class="form-input" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="form-submit" id="submit-doctor-login-btn" style="background: var(--primary-navy);">Doctor Login</button>
         </form>
       </div>
     </div>
@@ -931,6 +1279,22 @@
         <button class="form-submit" id="download-pdf-btn" style="background: var(--flag-green); display: flex; align-items: center; justify-content: center; gap: 10px;">
           <span class="material-icons-outlined">download</span> Download Digital Prescription
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 7: Health Worker Case Viewer & Print Modal -->
+  <div class="modal-overlay" id="hwc-case-modal">
+    <div class="modal-container" style="max-width: 650px;" role="dialog" aria-modal="true" aria-labelledby="hwc-case-title">
+      <div class="modal-header">
+        <h3 id="hwc-case-title" style="display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined" style="color: var(--health-teal);">assignment_turned_in</span>
+          Health Worker Clinical Case Record
+        </h3>
+        <button class="close-modal" id="close-hwc-case-btn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" style="max-height: 75vh; overflow-y: auto;" id="hwc-case-modal-body">
+        <!-- Content dynamically injected -->
       </div>
     </div>
   </div>
