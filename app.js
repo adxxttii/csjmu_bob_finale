@@ -440,6 +440,30 @@ function initSimulation() {
     startQueueSimulation();
   });
 
+  // Affected Area Image Upload Handler
+  const patientAffectedInput = document.getElementById('patient-affected-area-input');
+  const patientAffectedPreview = document.getElementById('patient-affected-area-preview');
+  const patientAffectedImgElem = document.getElementById('patient-affected-img-elem');
+
+  if (patientAffectedInput) {
+    patientAffectedInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          patientState.affectedImgDataUrl = evt.target.result;
+          patientAffectedImgElem.src = evt.target.result;
+          patientAffectedPreview.style.display = 'block';
+          
+          // Also update doctor consultation view if present
+          const docImgElem = document.getElementById('doc-consult-affected-img');
+          if (docImgElem) docImgElem.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
   // Queue simulation controller
   function startQueueSimulation() {
     const dashboard = document.getElementById('patient-dashboard');
@@ -1905,6 +1929,27 @@ function initAuthModule() {
           docPrescriptionSuite.style.display = 'none';
           docReferralSuite.style.display = 'block';
         }
+      });
+    }
+
+    // Doctor Affected Area Image Inspection & Lightbox
+    const docConsultAffectedImg = document.getElementById('doc-consult-affected-img');
+    const imageLightboxModal = document.getElementById('image-lightbox-modal');
+    const lightboxFullImg = document.getElementById('lightbox-full-img');
+    const closeLightboxBtn = document.getElementById('close-lightbox-btn');
+
+    if (docConsultAffectedImg) {
+      docConsultAffectedImg.addEventListener('click', () => {
+        if (lightboxFullImg && imageLightboxModal) {
+          lightboxFullImg.src = docConsultAffectedImg.src;
+          imageLightboxModal.classList.add('active');
+        }
+      });
+    }
+
+    if (closeLightboxBtn && imageLightboxModal) {
+      closeLightboxBtn.addEventListener('click', () => {
+        imageLightboxModal.classList.remove('active');
       });
     }
 

@@ -820,6 +820,16 @@
 
               <strong>Medical History:</strong>
               <p id="doc-consult-history" class="notes-para"></p>
+
+              <!-- Patient Uploaded Picture of Affected Area -->
+              <strong style="color: var(--primary-navy); display: flex; align-items: center; gap: 4px; margin-top: 10px;">
+                <span class="material-icons-outlined" style="font-size: 16px; color: var(--health-teal);">photo_camera</span>
+                Picture of Affected Area (Patient Upload):
+              </strong>
+              <div id="doc-consult-affected-box" style="margin-top: 6px; border: 1px solid var(--border-light); padding: 8px; border-radius: 6px; background: #f8fafc; text-align: center;">
+                <img id="doc-consult-affected-img" src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=500&auto=format&fit=crop&q=60" alt="Patient Affected Area" style="max-width: 100%; max-height: 160px; border-radius: 6px; object-fit: cover; cursor: pointer; border: 1px solid var(--border-light); box-shadow: var(--shadow-sm);" title="Click to view full screen">
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; font-weight: 600;">🔍 Click image for HD inspection view</div>
+              </div>
             </div>
           </div>
 
@@ -1266,7 +1276,23 @@
           </div>
           <div class="form-group">
             <label for="patient-symptoms">Symptoms / Brief History</label>
-            <textarea id="patient-symptoms" class="form-input" rows="3" placeholder="Fever, cough, body pain since 2 days..." required></textarea>
+            <textarea id="patient-symptoms" class="form-input" rows="2" placeholder="Fever, cough, body pain since 2 days..." required></textarea>
+          </div>
+
+          <!-- Affected Area Image Upload Section -->
+          <div class="form-group" style="background: rgba(16, 132, 126, 0.05); border: 1px dashed var(--health-teal); padding: 12px; border-radius: 8px; margin-top: 10px;">
+            <label style="font-weight: 700; color: var(--primary-navy); display: flex; align-items: center; gap: 6px;">
+              <span class="material-icons-outlined" style="color: var(--health-teal);">add_a_photo</span>
+              Upload Picture of Affected Area (Skin, Rash, Injury, Eye, etc.)
+            </label>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 8px;">
+              Take or upload a clear photo of the affected area so the consulting doctor can visually inspect it.
+            </p>
+            <input type="file" id="patient-affected-area-input" accept="image/*" class="form-input" style="padding: 6px;">
+            <div id="patient-affected-area-preview" style="margin-top: 10px; display: none; text-align: center;">
+              <img id="patient-affected-img-elem" style="max-width: 100%; max-height: 160px; border-radius: 6px; border: 2px solid var(--health-teal); box-shadow: var(--shadow-sm);" alt="Affected Area Preview">
+              <div style="font-size: 0.75rem; color: var(--flag-green); font-weight: 700; margin-top: 4px;">✓ Photo attached & ready for doctor review</div>
+            </div>
           </div>
           <div class="form-group" style="background: rgba(16, 132, 126, 0.06); border: 1.5px dashed var(--health-teal); padding: 15px; border-radius: var(--radius-md);">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
@@ -1416,6 +1442,20 @@
       </div>
       <div class="modal-body" id="doc-confirm-modal-body" style="max-height: 70vh; overflow-y: auto;">
         <!-- Dynamically injected summary -->
+      </div>
+    </div>
+  <!-- Modal 10: Affected Area Image Enlarge Lightbox Modal -->
+  <div class="modal-overlay" id="image-lightbox-modal">
+    <div class="modal-container" style="max-width: 820px; background: #0f172a; color: white;" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.15);">
+        <h3 id="lightbox-title" style="color: white; display: flex; align-items: center; gap: 8px;">
+          <span class="material-icons-outlined" style="color: var(--accent-saffron);">center_focus_strong</span>
+          Clinical Inspection: Patient Affected Area Photo (HD View)
+        </h3>
+        <button class="close-modal" id="close-lightbox-btn" style="color: white;" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 20px;">
+        <img id="lightbox-full-img" src="" alt="Full Resolution Clinical Image" style="max-width: 100%; max-height: 75vh; border-radius: 6px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2);">
       </div>
     </div>
   </div>
