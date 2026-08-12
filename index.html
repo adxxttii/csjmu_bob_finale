@@ -686,7 +686,7 @@
       </div>
     </div>
 
-    <!-- 👤 GENERAL USER / PATIENT PROFILE SECTION -->
+    <!-- 👤 GENERAL USER / PATIENT DEDICATED PROFILE SECTION -->
     <div id="patient-profile-content" style="display: block;">
       <div class="profile-page-header">
         <div class="profile-page-banner">
@@ -695,20 +695,20 @@
               <span class="material-icons-outlined" id="profile-avatar-icon">account_circle</span>
             </div>
             <div class="profile-hero-text">
-              <div class="profile-badge-pill" id="profile-role-badge">PATIENT PORTAL</div>
-              <h1 id="profile-welcome-name">Welcome back, User!</h1>
-              <p id="profile-user-email" class="profile-subtitle">user@swasthyasetu.org</p>
+              <div class="profile-badge-pill" id="profile-role-badge">PATIENT PORTAL • ABHA VERIFIED</div>
+              <h1 id="profile-welcome-name">Welcome back, Sunita Sharma!</h1>
+              <p id="profile-user-email" class="profile-subtitle">patient@swasthya.app • ABHA ID: 91-8274-1029-4821</p>
               <div class="profile-status-bar">
                 <span class="status-indicator active"></span>
                 <span id="profile-status-text">🔥 Authenticated via Firebase</span>
                 <span class="divider">•</span>
-                <span id="profile-uid-text">UID: usr_827419</span>
+                <span id="profile-uid-text">Patient ID: PAT-108274</span>
               </div>
             </div>
           </div>
           <div class="profile-header-actions">
             <button class="profile-btn primary" id="profile-launch-portal-btn">
-              <span class="material-icons-outlined">dashboard</span> <span id="profile-launch-btn-txt">Launch OPD Workspace</span>
+              <span class="material-icons-outlined">video_camera_front</span> <span id="profile-launch-btn-txt">Join OPD Teleconsultation</span>
             </button>
             <button class="profile-btn secondary-danger" id="profile-logout-btn">
               <span class="material-icons-outlined">logout</span> Sign Out
@@ -718,97 +718,319 @@
       </div>
 
       <div class="profile-page-body">
+        
+        <!-- 🚨 EMERGENCY INFORMATION BANNER (Prominent for Healthcare Personnel) -->
+        <div class="patient-emergency-alert-banner">
+          <div class="emergency-header">
+            <span class="material-icons-outlined" style="color: #fca5a5; font-size: 24px;">warning</span>
+            🚨 Emergency Information (Authorized Medical Access)
+          </div>
+          <div class="emergency-grid">
+            <div class="emergency-item">
+              <span class="lbl">Blood Group</span>
+              <span class="val" id="pat-emg-blood">O+ (Positive)</span>
+            </div>
+            <div class="emergency-item">
+              <span class="lbl">Allergies</span>
+              <span class="val" id="pat-emg-allergies">Penicillin, NSAIDs, Dust Mites</span>
+            </div>
+            <div class="emergency-item">
+              <span class="lbl">Critical Conditions</span>
+              <span class="val" id="pat-emg-conditions">Type 2 Diabetes, Mild Asthma</span>
+            </div>
+            <div class="emergency-item">
+              <span class="lbl">Current Critical Medication</span>
+              <span class="val" id="pat-emg-meds">Tab Metformin 500mg BD, Amlodipine 5mg</span>
+            </div>
+            <div class="emergency-item">
+              <span class="lbl">Emergency Contact</span>
+              <span class="val" id="pat-emg-contact">Ramesh Sharma (Father) - +91 98765 12345</span>
+            </div>
+            <div class="emergency-item">
+              <span class="lbl">Primary Tele-Clinic</span>
+              <span class="val">AIIMS OPD Hub / Spoke Rajpur</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 Detailed Profile Cards Grid -->
         <div class="profile-grid">
-          <!-- Card 1: Account Information -->
+          
+          <!-- 1. Basic Information Card -->
           <div class="profile-card">
             <div class="card-header">
               <span class="material-icons-outlined text-teal">person_outline</span>
-              <h3>Account Profile Details</h3>
+              <h3>👤 Basic Information</h3>
             </div>
             <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Patient ID</span>
+                <span class="field-val code" id="pat-info-id">PAT-108274</span>
+              </div>
               <div class="profile-field">
                 <span class="field-label">Full Name</span>
-                <span class="field-val" id="prof-detail-name">Citizen Patient</span>
+                <span class="field-val" id="pat-info-name">Sunita Sharma</span>
               </div>
               <div class="profile-field">
-                <span class="field-label">Email Address</span>
-                <span class="field-val" id="prof-detail-email">patient@swasthya.app</span>
+                <span class="field-label">Age & Date of Birth</span>
+                <span class="field-val" id="pat-info-dob">34 Yrs (12 May 1992)</span>
               </div>
               <div class="profile-field">
-                <span class="field-label">Portal Role</span>
-                <span class="field-val highlight" id="prof-detail-role">CITIZEN PATIENT</span>
+                <span class="field-label">Gender</span>
+                <span class="field-val" id="pat-info-gender">Female</span>
               </div>
               <div class="profile-field">
-                <span class="field-label">Firebase Auth UID</span>
-                <span class="field-val code" id="prof-detail-uid">usr_9812739812</span>
+                <span class="field-label">Phone Number</span>
+                <span class="field-val" id="pat-info-phone">+91 98765 43210</span>
               </div>
               <div class="profile-field">
-                <span class="field-label">Account Status</span>
-                <span class="field-val success">Active & Verified</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Card 2: Digital Health Record (DHR) -->
-          <div class="profile-card">
-            <div class="card-header">
-              <span class="material-icons-outlined text-teal">badge</span>
-              <h3>Digital Health Profile (DHR)</h3>
-            </div>
-            <div class="card-body">
-              <div class="profile-field">
-                <span class="field-label">National ABHA ID</span>
-                <span class="field-val" id="prof-abha-id">91-8274-1029-4821</span>
-              </div>
-              <div class="profile-field">
-                <span class="field-label">Teleconsultations Attended</span>
-                <span class="field-val">4 Consultations</span>
-              </div>
-              <div class="profile-field">
-                <span class="field-label">Primary Care Doctor</span>
-                <span class="field-val">Dr. Rajesh Kumar (MD)</span>
+                <span class="field-label">Address / Village</span>
+                <span class="field-val" id="pat-info-address">House 42, Village Rajpur, Dist. Kanpur, UP</span>
               </div>
               <div class="profile-field">
                 <span class="field-label">Preferred Language</span>
-                <span class="field-val">English / हिन्दी</span>
+                <span class="field-val" id="pat-info-lang">Hindi, English</span>
               </div>
               <div class="profile-field">
-                <span class="field-label">Prescription Records</span>
-                <span class="field-val success">Synced to Cloud</span>
+                <span class="field-label">Emergency Contact</span>
+                <span class="field-val" id="pat-info-emgcontact">Ramesh Sharma (+91 98765 12345)</span>
               </div>
             </div>
           </div>
+
+          <!-- 2. Medical Information (History) Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">medical_services</span>
+              <h3>🏥 Medical History & Background</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Blood Group</span>
+                <span class="field-val highlight" id="pat-med-blood">O+ Positive</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Known Allergies</span>
+                <span class="field-val text-danger" id="pat-med-allergies">Penicillin, NSAIDs</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Existing Medical Conditions</span>
+                <span class="field-val" id="pat-med-conditions">Hypertension, Asthma</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Previous Surgeries</span>
+                <span class="field-val" id="pat-med-surgeries">Appendectomy (2021)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Chronic Diseases</span>
+                <span class="field-val" id="pat-med-chronic">Type-2 Diabetes Mellitus</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Current Medications</span>
+                <span class="field-val" id="pat-med-meds">Metformin 500mg BD, Amlodipine 5mg</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Family Medical History</span>
+                <span class="field-val" id="pat-med-famhistory">Father: Diabetes, Mother: Hypertension</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Previous Illnesses</span>
+                <span class="field-val" id="pat-med-pastill">Acute Pneumonia (2024)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Current Clinical Vitals & Symptoms Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">monitor_heart</span>
+              <h3>🩺 Current Clinical Information & Vitals</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Current Symptoms</span>
+                <span class="field-val highlight" id="pat-clin-symptoms">High Fever, Persistent Cough & Weakness</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Symptom Duration</span>
+                <span class="field-val" id="pat-clin-duration">3 Days</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Body Temperature</span>
+                <span class="field-val" id="pat-clin-temp">101.4 °F (Fever)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Blood Pressure</span>
+                <span class="field-val" id="pat-clin-bp">128 / 84 mmHg</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Pulse Rate</span>
+                <span class="field-val" id="pat-clin-pulse">88 bpm (Normal)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Blood Oxygen (SpO₂)</span>
+                <span class="field-val success" id="pat-clin-spo2">97% (Normal)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Respiratory Rate</span>
+                <span class="field-val" id="pat-clin-resprate">18 breaths/min</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Body Weight</span>
+                <span class="field-val" id="pat-clin-weight">62 kg</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Blood Glucose Vitals</span>
+                <span class="field-val" id="pat-clin-glucose">110 mg/dL (Random)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Medical Documents Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">folder_open</span>
+              <h3>📁 Medical Documents & Scans</h3>
+            </div>
+            <div class="card-body">
+              <div class="doc-file-list">
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined">picture_as_pdf</span>
+                    <div>
+                      <div class="doc-file-title">Digital e-Prescription (Latest)</div>
+                      <div class="doc-file-date">Issued by Dr. Rajesh Kumar • 12 Aug 2026</div>
+                    </div>
+                  </div>
+                  <button class="profile-btn primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="alert('Downloading e-Prescription_12Aug2026.pdf')">Download</button>
+                </div>
+
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined">science</span>
+                    <div>
+                      <div class="doc-file-title">Complete Blood Count (CBC) Lab Report</div>
+                      <div class="doc-file-date">Pathology Hub • 10 Aug 2026</div>
+                    </div>
+                  </div>
+                  <button class="profile-btn primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="alert('Viewing CBC_Blood_Panel_Report.pdf')">View PDF</button>
+                </div>
+
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined">image</span>
+                    <div>
+                      <div class="doc-file-title">Digital Chest X-Ray (PA View)</div>
+                      <div class="doc-file-date">Radiology Dept • 05 Aug 2026</div>
+                    </div>
+                  </div>
+                  <button class="profile-btn primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="alert('Viewing Chest_XRay_Digital.png')">View Scan</button>
+                </div>
+
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined">description</span>
+                    <div>
+                      <div class="doc-file-title">Hospital Discharge Summary</div>
+                      <div class="doc-file-date">District Hospital • 14 Jan 2024</div>
+                    </div>
+                  </div>
+                  <button class="profile-btn primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="alert('Viewing Hospital_Discharge_Summary.pdf')">View File</button>
+                </div>
+
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined">camera_alt</span>
+                    <div>
+                      <div class="doc-file-title">Uploaded Symptom Photo (Throat Congestion)</div>
+                      <div class="doc-file-date">Uploaded by Patient • Today</div>
+                    </div>
+                  </div>
+                  <button class="profile-btn primary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="alert('Opening Clinical_Inspection_Photo.jpg')">View Image</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Quick Action Shortcuts -->
-        <div class="profile-shortcuts-section">
-          <h3>Quick Portal Shortcuts</h3>
-          <div class="shortcuts-grid">
-            <button class="shortcut-card" id="shortcut-opd">
-              <span class="material-icons-outlined icon">video_camera_front</span>
-              <div>
-                <h4>Join OPD Teleconsultation</h4>
-                <p>Connect with specialist doctors online</p>
+        <!-- 5. Consultation History & Flow Section -->
+        <div class="profile-card" style="margin-top: 24px;">
+          <div class="card-header">
+            <span class="material-icons-outlined text-teal">history_edu</span>
+            <h3>📜 Consultation History & Clinical Flow</h3>
+          </div>
+          <div class="card-body">
+            
+            <!-- Flow Diagram -->
+            <div class="consult-flow-timeline">
+              <div class="flow-step active">
+                <div class="step-icon"><span class="material-icons-outlined">today</span></div>
+                <div class="step-title">12 Aug 2026</div>
               </div>
-            </button>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-step active">
+                <div class="step-icon"><span class="material-icons-outlined">sick</span></div>
+                <div class="step-title">Fever + Weakness</div>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-step active">
+                <div class="step-icon"><span class="material-icons-outlined">psychology</span></div>
+                <div class="step-title">AI Assessment</div>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-step active">
+                <div class="step-icon"><span class="material-icons-outlined">medical_services</span></div>
+                <div class="step-title">Doctor Consultation</div>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-step active">
+                <div class="step-icon"><span class="material-icons-outlined">receipt_long</span></div>
+                <div class="step-title">e-Prescription</div>
+              </div>
+            </div>
 
-            <button class="shortcut-card" id="shortcut-dhr">
-              <span class="material-icons-outlined icon">folder_shared</span>
-              <div>
-                <h4>Digital Health Records (DHR)</h4>
-                <p>Access e-Prescriptions & lab reports</p>
-              </div>
-            </button>
+            <!-- Detailed Consultation Event Record -->
+            <div class="profile-field">
+              <span class="field-label">Consultation Date</span>
+              <span class="field-val highlight" id="hist-date">12 Aug 2026, 10:30 AM</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Assisting Health Worker</span>
+              <span class="field-val" id="hist-hwc">HW101 - Anita Devi (CHO Spoke Station)</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Consulting Specialist Doctor</span>
+              <span class="field-val" id="hist-doc">Dr. Rajesh Kumar (MD - Pulmonology)</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Reported Symptoms</span>
+              <span class="field-val" id="hist-symptoms">Fever, Persistent Cough, Muscle Ache (3 Days)</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">AI Triage Summary</span>
+              <span class="field-val" id="hist-aisummary">Moderate Upper Respiratory Tract Infection risk; vital signs stable</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Doctor's Clinical Assessment</span>
+              <span class="field-val" id="hist-docassessment">Acute Bronchitis; prescribed oral antipyretics & bronchial inhaler</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Issued Prescription</span>
+              <span class="field-val success" id="hist-rx">Tab Paracetamol 650mg, Tab Azithromycin 500mg, Salbutamol Inhaler</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Referral Recommendation</span>
+              <span class="field-val" id="hist-referral">OPD Pulmonology Clinic (Routine Review within 7 Days)</span>
+            </div>
+            <div class="profile-field">
+              <span class="field-label">Next Follow-Up Date</span>
+              <span class="field-val highlight" id="hist-followup">19 Aug 2026</span>
+            </div>
 
-            <button class="shortcut-card" id="shortcut-home">
-              <span class="material-icons-outlined icon">home</span>
-              <div>
-                <h4>Back to Main Platform</h4>
-                <p>Explore features, FAQs & services</p>
-              </div>
-            </button>
           </div>
         </div>
+
       </div>
     </div>
   </div>

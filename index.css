@@ -2608,9 +2608,144 @@ body.high-contrast .faq-question {
   color: var(--health-teal, #10847e);
 }
 
-@media (max-width: 900px) {
-  .doc-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+/* Emergency Alert Section */
+.patient-emergency-alert-banner {
+  background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+  color: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(185, 28, 28, 0.25);
+  border: 1px solid #ef4444;
+}
+
+.emergency-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 14px;
+  color: #fef2f2;
+}
+
+.emergency-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.emergency-item {
+  background: rgba(0, 0, 0, 0.22);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border-left: 3px solid #fca5a5;
+}
+
+.emergency-item .lbl {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fecaca;
+  font-weight: 700;
+}
+
+.emergency-item .val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Consultation Flow Timeline */
+.consult-flow-timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.flow-step {
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+}
+
+.flow-step .step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(16, 132, 126, 0.12);
+  color: var(--health-teal, #10847e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 6px;
+}
+
+.flow-step.active .step-icon {
+  background: var(--health-teal, #10847e);
+  color: white;
+}
+
+.flow-step .step-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.flow-arrow {
+  color: #94a3b8;
+  font-weight: 800;
+}
+
+/* Document Item List */
+.doc-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.doc-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.doc-file-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doc-file-info .material-icons-outlined {
+  color: var(--health-teal, #10847e);
+}
+
+.doc-file-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.doc-file-date {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .emergency-grid {
+    grid-template-columns: 1fr;
   }
 }
 

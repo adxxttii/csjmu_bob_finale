@@ -2014,27 +2014,24 @@ function initAuthModule() {
       const roleBadge = document.getElementById('profile-role-badge');
       const uidText = document.getElementById('profile-uid-text');
       
-      const profName = document.getElementById('prof-detail-name');
-      const profEmail = document.getElementById('prof-detail-email');
-      const profRole = document.getElementById('prof-detail-role');
-      const profUid = document.getElementById('prof-detail-uid');
-      const launchBtnTxt = document.getElementById('profile-launch-btn-txt');
-      const launchBtn = document.getElementById('profile-launch-portal-btn');
+      const patInfoId = document.getElementById('pat-info-id');
+      const patInfoName = document.getElementById('pat-info-name');
 
       if (welcomeName) welcomeName.textContent = `Welcome back, ${cleanName}!`;
-      if (userEmail) userEmail.textContent = user.email || 'user@swasthya.app';
-      if (profName) profName.textContent = cleanName;
-      if (profEmail) profEmail.textContent = user.email || 'user@swasthya.app';
+      if (userEmail) userEmail.textContent = `${user.email || 'patient@swasthya.app'} • ABHA ID: 91-8274-1029-4821`;
       
-      const uidDisplay = user.uid ? user.uid : 'usr_' + Date.now().toString().slice(-6);
-      if (profUid) profUid.textContent = uidDisplay;
-      if (uidText) uidText.textContent = `UID: ${uidDisplay.slice(0, 14)}`;
+      const patIdVal = user.uid ? 'PAT-' + user.uid.slice(-6).toUpperCase() : 'PAT-108274';
+      if (patInfoId) patInfoId.textContent = patIdVal;
+      if (patInfoName) patInfoName.textContent = cleanName;
+      if (uidText) uidText.textContent = `Patient ID: ${patIdVal}`;
 
-      let roleDisplay = 'CITIZEN PATIENT';
-      if (role === 'health_worker' || role === 'hwc') roleDisplay = 'HEALTH WORKER';
+      let roleDisplay = 'PATIENT PORTAL • ABHA VERIFIED';
+      if (role === 'health_worker' || role === 'hwc') roleDisplay = 'HEALTH WORKER PORTAL';
 
       if (roleBadge) roleBadge.textContent = roleDisplay;
-      if (profRole) profRole.textContent = roleDisplay;
+
+      const launchBtnTxt = document.getElementById('profile-launch-btn-txt');
+      const launchBtn = document.getElementById('profile-launch-portal-btn');
 
       if (launchBtnTxt) {
         if (role === 'health_worker' || role === 'hwc') launchBtnTxt.textContent = 'Open Health Worker Portal';
