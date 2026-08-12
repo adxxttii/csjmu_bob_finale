@@ -3723,17 +3723,7 @@ let pendingIntakeLaunchAfterLogin = false;
 
 function openPatientDiseaseIntakeView() {
   const user = currentUser || (typeof getCurrentUser === 'function' ? getCurrentUser() : null) || JSON.parse(localStorage.getItem('swasthya_current_user') || 'null');
-  if (!user) {
-    pendingIntakeLaunchAfterLogin = true;
-    showToast('⚠️ Please Sign In as Patient first to start your consultation.');
-    if (typeof window.openUnifiedModal === 'function') {
-      window.openUnifiedModal('patient');
-    }
-    return;
-  }
-
-  const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'Citizen Patient');
-  const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+  
   const intakeUserBadge = document.getElementById('intake-user-badge');
   const intakeName = document.getElementById('intake-patient-name');
   const intakePhone = document.getElementById('intake-patient-phone');
@@ -3741,9 +3731,15 @@ function openPatientDiseaseIntakeView() {
   const form = document.getElementById('patient-disease-intake-form');
   const confScreen = document.getElementById('intake-confirmation-screen');
 
-  if (intakeUserBadge) intakeUserBadge.textContent = `Signed in as ${cleanName}`;
-  if (intakeName) intakeName.value = cleanName;
-  if (intakePhone && user.phone) intakePhone.value = user.phone;
+  if (user) {
+    const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'Citizen Patient');
+    const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+    if (intakeUserBadge) intakeUserBadge.textContent = `Signed in as ${cleanName}`;
+    if (intakeName && !intakeName.value) intakeName.value = cleanName;
+    if (intakePhone && user.phone && !intakePhone.value) intakePhone.value = user.phone;
+  } else {
+    if (intakeUserBadge) intakeUserBadge.textContent = `Guest Patient (OPD Intake)`;
+  }
 
   if (form) form.style.display = 'block';
   if (confScreen) confScreen.style.display = 'none';
