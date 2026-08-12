@@ -1771,41 +1771,67 @@ function initAuthModule() {
     }
   }
 
-  // Direct Click Handlers & Form Submit Handlers for Guaranteed Login Execution
+  // Direct Click Handlers & Form Submit Handlers for All Login Modals
   const submitUniDocBtn = document.getElementById('submit-uni-doc-btn');
   const submitUniPatBtn = document.getElementById('submit-uni-pat-btn');
   const submitUniHwcBtn = document.getElementById('submit-uni-hwc-btn');
+  const submitHwcLoginBtn = document.getElementById('submit-hwc-login-btn');
+  const submitDoctorLoginBtn = document.getElementById('submit-doctor-login-btn');
 
   const doDoctorLogin = async () => {
-    const email = document.getElementById('uni-doc-email').value || 'doctor@medisetu.demo';
-    const pass = document.getElementById('uni-doc-pass').value || 'Demo@123';
+    const uniEmail = document.getElementById('uni-doc-email');
+    const docEmail = document.getElementById('doctor-email');
+    const uniPass = document.getElementById('uni-doc-pass');
+    const docPass = document.getElementById('doctor-password');
+
+    const email = (uniEmail && uniEmail.value) ? uniEmail.value : ((docEmail && docEmail.value) ? docEmail.value : 'doctor@medisetu.demo');
+    const pass = (uniPass && uniPass.value) ? uniPass.value : ((docPass && docPass.value) ? docPass.value : 'Demo@123');
     await loginAsRole('doctor', email, pass, 'Dr. Rajesh Kumar (MD)');
   };
 
   const doPatientLogin = async () => {
-    const email = document.getElementById('uni-pat-input').value || 'patient@medisetu.demo';
-    const pass = document.getElementById('uni-pat-pass').value || 'Demo@123';
+    const patInput = document.getElementById('uni-pat-input');
+    const patPass = document.getElementById('uni-pat-pass');
+    const email = (patInput && patInput.value) ? patInput.value : 'patient@medisetu.demo';
+    const pass = (patPass && patPass.value) ? patPass.value : 'Demo@123';
     await loginAsRole('patient', email, pass, 'Citizen Patient');
   };
 
   const doHwcLogin = async () => {
-    const email = document.getElementById('uni-hwc-email').value || 'healthworker@medisetu.demo';
-    const pass = document.getElementById('uni-hwc-pass').value || 'Demo@123';
+    const uniEmail = document.getElementById('uni-hwc-email');
+    const staffEmail = document.getElementById('hwc-staff-id');
+    const uniPass = document.getElementById('uni-hwc-pass');
+    const staffPass = document.getElementById('hwc-password');
+
+    const email = (uniEmail && uniEmail.value) ? uniEmail.value : ((staffEmail && staffEmail.value) ? staffEmail.value : 'healthworker@medisetu.demo');
+    const pass = (uniPass && uniPass.value) ? uniPass.value : ((staffPass && staffPass.value) ? staffPass.value : 'Demo@123');
     await loginAsRole('health_worker', email, pass, 'Health Worker (HW101)');
   };
 
+  // Attach button click listeners across all modals
   if (submitUniDocBtn) submitUniDocBtn.addEventListener('click', doDoctorLogin);
-  if (submitUniPatBtn) submitUniPatBtn.addEventListener('click', doPatientLogin);
-  if (submitUniHwcBtn) submitUniHwcBtn.addEventListener('click', doHwcLogin);
+  if (submitDoctorLoginBtn) submitDoctorLoginBtn.addEventListener('click', doDoctorLogin);
 
+  if (submitUniPatBtn) submitUniPatBtn.addEventListener('click', doPatientLogin);
+
+  if (submitUniHwcBtn) submitUniHwcBtn.addEventListener('click', doHwcLogin);
+  if (submitHwcLoginBtn) submitHwcLoginBtn.addEventListener('click', doHwcLogin);
+
+  // Attach form submit listeners
   const uniDoctorForm = document.getElementById('unified-doctor-form');
   if (uniDoctorForm) uniDoctorForm.addEventListener('submit', (e) => { e.preventDefault(); doDoctorLogin(); });
+
+  const doctorLoginForm = document.getElementById('doctor-login-form');
+  if (doctorLoginForm) doctorLoginForm.addEventListener('submit', (e) => { e.preventDefault(); doDoctorLogin(); });
 
   const uniPatientForm = document.getElementById('unified-patient-form');
   if (uniPatientForm) uniPatientForm.addEventListener('submit', (e) => { e.preventDefault(); doPatientLogin(); });
 
   const uniHwcForm = document.getElementById('unified-hwc-form');
   if (uniHwcForm) uniHwcForm.addEventListener('submit', (e) => { e.preventDefault(); doHwcLogin(); });
+
+  const hwcLoginForm = document.getElementById('hwc-login-form');
+  if (hwcLoginForm) hwcLoginForm.addEventListener('submit', (e) => { e.preventDefault(); doHwcLogin(); });
 
   // Unified Google Login Handler
   if (googleLoginBtn) {
