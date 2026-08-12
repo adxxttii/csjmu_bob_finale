@@ -1750,36 +1750,63 @@ function initAuthModule() {
     });
   });
 
+  // Helper to update Top Header Auth Badge
+  function updateHeaderAuthBadge(user) {
+    const openUnifiedLoginBtn = document.getElementById('open-unified-login-btn');
+    const userProfileDisplay = document.getElementById('user-profile-display');
+    const userDisplayName = document.getElementById('user-display-name');
+    const userDisplayRole = document.getElementById('user-display-role');
+
+    if (user) {
+      if (openUnifiedLoginBtn) openUnifiedLoginBtn.style.display = 'none';
+      if (userProfileDisplay) userProfileDisplay.style.display = 'flex';
+      
+      const cleanName = user.displayName || (user.name ? user.name : (user.email ? user.email.split('@')[0].replace(/[\._-]/g, ' ') : 'User'));
+      const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+      if (userDisplayName) userDisplayName.textContent = formattedName;
+      if (userDisplayRole) userDisplayRole.textContent = (user.role || 'Patient').toUpperCase();
+    } else {
+      if (openUnifiedLoginBtn) openUnifiedLoginBtn.style.display = 'flex';
+      if (userProfileDisplay) userProfileDisplay.style.display = 'none';
+    }
+  }
+
   // Handle Unified Doctor Form Submit
   const uniDoctorForm = document.getElementById('unified-doctor-form');
   if (uniDoctorForm) {
-    uniDoctorForm.addEventListener('submit', (e) => {
+    uniDoctorForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      loginAsRole('doctor', document.getElementById('uni-doc-email').value, 'Dr. Rajesh Kumar (MD)');
+      const email = document.getElementById('uni-doc-email').value;
+      const pass = document.getElementById('uni-doc-pass').value;
+      await loginAsRole('doctor', email, pass, 'Dr. Rajesh Kumar (MD)');
     });
   }
 
   // Handle Unified Patient Form Submit
   const uniPatientForm = document.getElementById('unified-patient-form');
   if (uniPatientForm) {
-    uniPatientForm.addEventListener('submit', (e) => {
+    uniPatientForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      loginAsRole('patient', document.getElementById('uni-pat-input').value, 'Citizen Patient');
+      const email = document.getElementById('uni-pat-input').value;
+      const pass = document.getElementById('uni-pat-pass').value;
+      await loginAsRole('patient', email, pass, 'Citizen Patient');
     });
   }
 
   // Handle Unified Health Worker Form Submit
   const uniHwcForm = document.getElementById('unified-hwc-form');
   if (uniHwcForm) {
-    uniHwcForm.addEventListener('submit', (e) => {
+    uniHwcForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      loginAsRole('health_worker', document.getElementById('uni-hwc-email').value, 'Health Worker (HW101)');
+      const email = document.getElementById('uni-hwc-email').value;
+      const pass = document.getElementById('uni-hwc-pass').value;
+      await loginAsRole('health_worker', email, pass, 'Health Worker (HW101)');
     });
   }
 
   // Unified Google Login Handler
   if (googleLoginBtn) {
-    googleLoginBtn.addEventListener('click', () => {
+    googleLoginBtn.addEventListener('click', async () => {
       const activeTab = document.querySelector('.role-tab-btn.active');
       const activeRole = activeTab ? activeTab.dataset.role : 'doctor';
 
@@ -1794,16 +1821,41 @@ function initAuthModule() {
         targetRole = 'health_worker';
       }
 
-      showToast(`Google OAuth Connected! Authenticating as Google User...`);
-      setTimeout(() => {
-        loginAsRole(targetRole, `google_user@medisetu.demo`, `Google Verified (${roleName})`);
-      }, 1000);
+      showToast(`Google OAuth Connected! Authenticating with Firebase...`);
+      let gUser = null;
+      if (typeof signInWithGoogle === 'function') {
+        const res = await signInWithGoogle();
+        if (res && res.user) gUser = res.user;
+      }
+
+      const gName = gUser ? gUser.displayName : `Google User (${roleName})`;
+      const gEmail = gUser ? gUser.email : `google_user@swasthyasetu.org`;
+      await loginAsRole(targetRole, gEmail, 'google123', gName);
     });
   }
 
   // Common Login Router
-  function loginAsRole(role, email, defaultName) {
-    currentUser = { email: email, role: role, name: defaultName };
+  async function loginAsRole(role, email, pass = '', defaultName = '') {
+    const cleanName = defaultName || (email ? email.split('@')[0].replace(/[\._-]/g, ' ') : 'User');
+    const formattedName = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+    
+    // Call Firebase Auth signInUser helper if available
+    let authRes = null;
+    if (typeof signInUser === 'function' && email) {
+      authRes = await signInUser(email, pass || 'demo123456');
+    }
+
+    const userData = (authRes && authRes.user) ? authRes.user : {
+      uid: 'user_' + Date.now(),
+      email: email || 'user@swasthyasetu.org',
+      displayName: formattedName,
+      role: role
+    };
+
+    currentUser = userData;
+    localStorage.setItem('swasthya_current_user', JSON.stringify(userData));
+    updateHeaderAuthBadge(userData);
+
     if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
     if (hwcLoginModal) hwcLoginModal.classList.remove('active');
     if (doctorLoginModal) doctorLoginModal.classList.remove('active');
@@ -1813,12 +1865,12 @@ function initAuthModule() {
       hwcDashboardView.style.display = 'none';
       doctorDashboardView.style.display = 'flex';
       initDoctorDashboardLogic();
-      showToast(`✓ Logged in as Doctor: ${defaultName}`);
-    } else if (role === 'health_worker') {
+      showToast(`✓ Logged in as Doctor: ${formattedName}`);
+    } else if (role === 'health_worker' || role === 'cho') {
       landingView.style.display = 'none';
       doctorDashboardView.style.display = 'none';
       hwcDashboardView.style.display = 'flex';
-      showToast(`✓ Logged in as Health Worker: ${defaultName}`);
+      showToast(`✓ Logged in as Health Worker: ${formattedName}`);
     } else if (role === 'patient') {
       doctorDashboardView.style.display = 'none';
       hwcDashboardView.style.display = 'none';
@@ -1826,14 +1878,57 @@ function initAuthModule() {
       
       const regModal = document.getElementById('register-modal');
       if (regModal) regModal.classList.add('active');
-      showToast(`✓ Logged in as Patient. Enter mobile number for OTP consultation.`);
+      showToast(`✓ Logged in as Patient: ${formattedName}`);
+    } else {
+      doctorDashboardView.style.display = 'none';
+      hwcDashboardView.style.display = 'none';
+      landingView.style.display = 'block';
     }
+  }
+
+  // Header Logout Button Handler
+  const headerLogoutBtn = document.getElementById('header-logout-btn');
+  if (headerLogoutBtn) {
+    headerLogoutBtn.addEventListener('click', async () => {
+      if (typeof signOutUser === 'function') await signOutUser();
+      localStorage.removeItem('swasthya_current_user');
+      currentUser = null;
+      updateHeaderAuthBadge(null);
+      landingView.style.display = 'block';
+      doctorDashboardView.style.display = 'none';
+      hwcDashboardView.style.display = 'none';
+      showToast('Logged out of SwasthyaSetu.');
+    });
+  }
+
+  // Auto-restore session from LocalStorage / Firebase on load
+  const savedUser = localStorage.getItem('swasthya_current_user');
+  if (savedUser) {
+    try {
+      const parsedUser = JSON.parse(savedUser);
+      if (parsedUser && (parsedUser.role || parsedUser.email)) {
+        currentUser = parsedUser;
+        updateHeaderAuthBadge(parsedUser);
+      }
+    } catch (e) {}
+  }
+
+  // Firebase Auth State Listener
+  if (typeof onAuthChange === 'function') {
+    onAuthChange((user) => {
+      if (user) {
+        updateHeaderAuthBadge(user);
+      }
+    });
   }
 
   // Logout Handlers
   if (hwcLogoutBtn) {
-    hwcLogoutBtn.addEventListener('click', () => {
+    hwcLogoutBtn.addEventListener('click', async () => {
+      if (typeof signOutUser === 'function') await signOutUser();
+      localStorage.removeItem('swasthya_current_user');
       currentUser = null;
+      updateHeaderAuthBadge(null);
       hwcDashboardView.style.display = 'none';
       doctorDashboardView.style.display = 'none';
       landingView.style.display = 'block';
@@ -1842,8 +1937,11 @@ function initAuthModule() {
   }
 
   if (doctorLogoutBtn) {
-    doctorLogoutBtn.addEventListener('click', () => {
+    doctorLogoutBtn.addEventListener('click', async () => {
+      if (typeof signOutUser === 'function') await signOutUser();
+      localStorage.removeItem('swasthya_current_user');
       currentUser = null;
+      updateHeaderAuthBadge(null);
       hwcDashboardView.style.display = 'none';
       doctorDashboardView.style.display = 'none';
       landingView.style.display = 'block';
