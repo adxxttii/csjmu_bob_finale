@@ -2573,14 +2573,30 @@ function initAuthModule() {
       
       const patInfoId = document.getElementById('pat-info-id');
       const patInfoName = document.getElementById('pat-info-name');
+      const patInfoPhone = document.getElementById('pat-info-phone');
+      const patEmgContact = document.getElementById('pat-emg-contact');
+
+      // Generate unique deterministic ID for the CURRENT signing-in patient
+      const seedStr = user.uid || user.phone || user.phoneNumber || user.email || cleanName;
+      let hash = 0;
+      for (let i = 0; i < seedStr.length; i++) {
+        hash = (hash * 31 + seedStr.charCodeAt(i)) % 900000;
+      }
+      const uniqueNum = 100000 + Math.abs(hash);
+      const patIdVal = user.uid ? 'PAT-' + user.uid.slice(-6).toUpperCase() : 'PAT-' + uniqueNum;
+      const abhaIdVal = '91-' + (1000 + Math.abs(hash) % 9000) + '-' + (1000 + Math.abs(hash * 7) % 9000) + '-' + (1000 + Math.abs(hash * 13) % 9000);
+
+      const userPhoneVal = user.phone || user.phoneNumber || (cleanName.includes('+91') ? cleanName : '+91 98765 43210');
+      const userEmailVal = user.email || `${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '')}@swasthya.app`;
 
       if (welcomeName) welcomeName.textContent = `Welcome back, ${cleanName}!`;
-      if (userEmail) userEmail.textContent = `${user.email || 'patient@swasthya.app'} • ABHA ID: 91-8274-1029-4821`;
+      if (userEmail) userEmail.textContent = `${userEmailVal} • ABHA ID: ${abhaIdVal}`;
       
-      const patIdVal = user.uid ? 'PAT-' + user.uid.slice(-6).toUpperCase() : 'PAT-108274';
       if (patInfoId) patInfoId.textContent = patIdVal;
       if (patInfoName) patInfoName.textContent = cleanName;
       if (uidText) uidText.textContent = `Patient ID: ${patIdVal}`;
+      if (patInfoPhone) patInfoPhone.textContent = userPhoneVal;
+      if (patEmgContact) patEmgContact.textContent = `Primary Contact (${userPhoneVal})`;
 
       let roleDisplay = 'PATIENT PORTAL • ABHA VERIFIED';
       if (roleBadge) roleBadge.textContent = roleDisplay;
@@ -2601,6 +2617,55 @@ function initAuthModule() {
       initPatientReportUploadSystem();
     }
   }
+
+  // Global Session Reset Handler to ensure no data leaks between log outs
+  function clearPatientSessionAndResetForm() {
+    localStorage.removeItem('swasthya_current_user');
+    localStorage.removeItem('swasthya_uploaded_reports');
+    localStorage.removeItem('swasthya_last_consultation');
+
+    currentUser = null;
+
+    // Reset Intake Form
+    const intakeName = document.getElementById('intake-patient-name');
+    const intakePhone = document.getElementById('intake-patient-phone');
+    const intakeSymptoms = document.getElementById('intake-symptoms-detail');
+    const intakeReportsContainer = document.getElementById('intake-reports-selection-container');
+    const intakeForm = document.getElementById('patient-disease-intake-form');
+    const confScreen = document.getElementById('intake-confirmation-screen');
+
+    if (intakeName) intakeName.value = '';
+    if (intakePhone) intakePhone.value = '';
+    if (intakeSymptoms) intakeSymptoms.value = '';
+    if (intakeReportsContainer) intakeReportsContainer.innerHTML = '';
+    if (intakeForm) intakeForm.style.display = 'block';
+    if (confScreen) confScreen.style.display = 'none';
+
+    // Uncheck condition checkboxes
+    ['cond-diabetes', 'cond-htn', 'cond-asthma', 'cond-heart', 'cond-allergy'].forEach(id => {
+      const cb = document.getElementById(id);
+      if (cb) cb.checked = false;
+    });
+
+    // Reset Profile UI Placeholders
+    const welcomeName = document.getElementById('profile-welcome-name');
+    const patInfoName = document.getElementById('pat-info-name');
+    const patInfoId = document.getElementById('pat-info-id');
+    const patInfoPhone = document.getElementById('pat-info-phone');
+    const userEmail = document.getElementById('profile-user-email');
+    const uidText = document.getElementById('profile-uid-text');
+
+    if (welcomeName) welcomeName.textContent = 'Welcome back, Citizen Patient!';
+    if (patInfoName) patInfoName.textContent = 'Citizen Patient';
+    if (patInfoId) patInfoId.textContent = 'PAT-000000';
+    if (patInfoPhone) patInfoPhone.textContent = '--';
+    if (userEmail) userEmail.textContent = 'patient@swasthya.app';
+    if (uidText) uidText.textContent = 'Patient ID: PAT-000000';
+
+    updateHeaderAuthBadge(null);
+  }
+
+  window.clearPatientSessionAndResetForm = clearPatientSessionAndResetForm;
 
   // Helper to update Top Header Auth Badge
   function updateHeaderAuthBadge(user) {
@@ -2636,11 +2701,9 @@ function initAuthModule() {
   if (profileLogoutBtn) {
     profileLogoutBtn.addEventListener('click', async () => {
       if (typeof signOutUser === 'function') await signOutUser();
-      localStorage.removeItem('swasthya_current_user');
-      currentUser = null;
-      updateHeaderAuthBadge(null);
+      clearPatientSessionAndResetForm();
       showView('landing');
-      showToast('Logged out of SwasthyaSetu.');
+      showToast('Logged out of SwasthyaSetu. Session & data cleared.');
     });
   }
 
