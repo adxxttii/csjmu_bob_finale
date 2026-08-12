@@ -1955,56 +1955,103 @@ function initAuthModule() {
   function renderProfilePage(user) {
     if (!user) return;
     const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'User');
-    const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
     const role = (user.role || 'patient').toLowerCase();
 
-    const welcomeName = document.getElementById('profile-welcome-name');
-    const userEmail = document.getElementById('profile-user-email');
-    const roleBadge = document.getElementById('profile-role-badge');
-    const uidText = document.getElementById('profile-uid-text');
-    
-    const profName = document.getElementById('prof-detail-name');
-    const profEmail = document.getElementById('prof-detail-email');
-    const profRole = document.getElementById('prof-detail-role');
-    const profUid = document.getElementById('prof-detail-uid');
-    const launchBtnTxt = document.getElementById('profile-launch-btn-txt');
-    const launchBtn = document.getElementById('profile-launch-portal-btn');
+    const docProfileContent = document.getElementById('doctor-profile-content');
+    const patientProfileContent = document.getElementById('patient-profile-content');
 
-    if (welcomeName) welcomeName.textContent = `Welcome back, ${cleanName}!`;
-    if (userEmail) userEmail.textContent = user.email || 'user@swasthya.app';
-    if (profName) profName.textContent = cleanName;
-    if (profEmail) profEmail.textContent = user.email || 'user@swasthya.app';
-    
-    const uidDisplay = user.uid ? user.uid : 'usr_' + Date.now().toString().slice(-6);
-    if (profUid) profUid.textContent = uidDisplay;
-    if (uidText) uidText.textContent = `UID: ${uidDisplay.slice(0, 14)}`;
+    if (role === 'doctor') {
+      if (docProfileContent) docProfileContent.style.display = 'block';
+      if (patientProfileContent) patientProfileContent.style.display = 'none';
 
-    let roleDisplay = 'CITIZEN PATIENT';
-    if (role === 'doctor') roleDisplay = 'DOCTOR SPECIALIST';
-    else if (role === 'health_worker' || role === 'hwc') roleDisplay = 'HEALTH WORKER';
+      const docName = formatDoctorName(user.email, name);
+      updateDoctorNameDisplays(docName);
 
-    if (roleBadge) roleBadge.textContent = roleDisplay;
-    if (profRole) profRole.textContent = roleDisplay;
+      const docProfName = document.getElementById('doc-profile-name');
+      const docInfoName = document.getElementById('doc-info-name');
+      const docInfoEmail = document.getElementById('doc-info-email');
+      const docInfoId = document.getElementById('doc-info-id');
+      const docProfUid = document.getElementById('doc-profile-uid');
+      const docInfoUid = document.getElementById('doc-info-uid');
+      const docInfoLastLogin = document.getElementById('doc-info-lastlogin');
 
-    if (launchBtnTxt) {
-      if (role === 'doctor') launchBtnTxt.textContent = 'Launch Doctor Workstation';
-      else if (role === 'health_worker' || role === 'hwc') launchBtnTxt.textContent = 'Open Health Worker Portal';
-      else launchBtnTxt.textContent = 'Join OPD Teleconsultation';
-    }
+      if (docProfName) docProfName.textContent = docName;
+      if (docInfoName) docInfoName.textContent = docName;
+      if (docInfoEmail) docInfoEmail.textContent = user.email || 'doctor@medisetu.demo';
+      
+      const docIdVal = user.uid ? 'DOC-' + user.uid.slice(-6).toUpperCase() : 'DOC-827419';
+      if (docInfoId) docInfoId.textContent = docIdVal;
+      if (docProfUid) docProfUid.textContent = `Doctor ID: ${docIdVal}`;
+      if (docInfoUid) docInfoUid.textContent = user.uid || 'usr_827419';
+      if (docInfoLastLogin) docInfoLastLogin.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ' (Live Session)';
 
-    if (launchBtn) {
-      launchBtn.onclick = () => {
-        if (role === 'doctor') {
+      const docLaunchBtn = document.getElementById('doc-launch-workstation-btn');
+      if (docLaunchBtn) {
+        docLaunchBtn.onclick = () => {
           showView('doctor');
           initDoctorDashboardLogic();
-        } else if (role === 'health_worker' || role === 'hwc') {
-          showView('hwc');
-        } else {
+        };
+      }
+
+      const docLogoutBtn = document.getElementById('doc-logout-btn');
+      if (docLogoutBtn) {
+        docLogoutBtn.onclick = async () => {
+          if (typeof signOutUser === 'function') await signOutUser();
+          localStorage.removeItem('swasthya_current_user');
+          currentUser = null;
+          updateHeaderAuthBadge(null);
           showView('landing');
-          const regModal = document.getElementById('register-modal');
-          if (regModal) regModal.classList.add('active');
-        }
-      };
+          showToast('Logged out of SwasthyaSetu Doctor Portal.');
+        };
+      }
+    } else {
+      if (docProfileContent) docProfileContent.style.display = 'none';
+      if (patientProfileContent) patientProfileContent.style.display = 'block';
+
+      const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+      const welcomeName = document.getElementById('profile-welcome-name');
+      const userEmail = document.getElementById('profile-user-email');
+      const roleBadge = document.getElementById('profile-role-badge');
+      const uidText = document.getElementById('profile-uid-text');
+      
+      const profName = document.getElementById('prof-detail-name');
+      const profEmail = document.getElementById('prof-detail-email');
+      const profRole = document.getElementById('prof-detail-role');
+      const profUid = document.getElementById('prof-detail-uid');
+      const launchBtnTxt = document.getElementById('profile-launch-btn-txt');
+      const launchBtn = document.getElementById('profile-launch-portal-btn');
+
+      if (welcomeName) welcomeName.textContent = `Welcome back, ${cleanName}!`;
+      if (userEmail) userEmail.textContent = user.email || 'user@swasthya.app';
+      if (profName) profName.textContent = cleanName;
+      if (profEmail) profEmail.textContent = user.email || 'user@swasthya.app';
+      
+      const uidDisplay = user.uid ? user.uid : 'usr_' + Date.now().toString().slice(-6);
+      if (profUid) profUid.textContent = uidDisplay;
+      if (uidText) uidText.textContent = `UID: ${uidDisplay.slice(0, 14)}`;
+
+      let roleDisplay = 'CITIZEN PATIENT';
+      if (role === 'health_worker' || role === 'hwc') roleDisplay = 'HEALTH WORKER';
+
+      if (roleBadge) roleBadge.textContent = roleDisplay;
+      if (profRole) profRole.textContent = roleDisplay;
+
+      if (launchBtnTxt) {
+        if (role === 'health_worker' || role === 'hwc') launchBtnTxt.textContent = 'Open Health Worker Portal';
+        else launchBtnTxt.textContent = 'Join OPD Teleconsultation';
+      }
+
+      if (launchBtn) {
+        launchBtn.onclick = () => {
+          if (role === 'health_worker' || role === 'hwc') {
+            showView('hwc');
+          } else {
+            showView('landing');
+            const regModal = document.getElementById('register-modal');
+            if (regModal) regModal.classList.add('active');
+          }
+        };
+      }
     }
   }
 

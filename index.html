@@ -456,125 +456,358 @@
 
   <!-- User Dedicated Profile Web Page View -->
   <div id="user-profile-view" class="user-profile-page-container" style="display: none;">
-    <div class="profile-page-header">
-      <div class="profile-page-banner">
-        <div class="profile-hero-content">
-          <div class="profile-avatar-large">
-            <span class="material-icons-outlined" id="profile-avatar-icon">account_circle</span>
+    
+    <!-- 👨‍⚕️ DOCTOR DEDICATED PROFILE SECTION -->
+    <div id="doctor-profile-content" style="display: none;">
+      <div class="profile-page-header">
+        <div class="profile-page-banner">
+          <div class="profile-hero-content">
+            <div class="profile-avatar-large" style="background: rgba(255,255,255,0.18);">
+              <span class="material-icons-outlined" style="font-size: 50px;">medical_information</span>
+            </div>
+            <div class="profile-hero-text">
+              <div class="profile-badge-pill" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24;">DOCTOR SPECIALIST • VERIFIED</div>
+              <h1 id="doc-profile-name">Dr. Rajesh Kumar (MD)</h1>
+              <p id="doc-profile-sub" class="profile-subtitle">MBBS, MD (General Medicine) • Telemedicine Specialist</p>
+              <div class="profile-status-bar">
+                <span class="status-indicator active"></span>
+                <span>Current Availability:</span>
+                <span class="field-val success" style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 2px 10px; border-radius: 12px;" id="doc-status-badge">🟢 Available</span>
+                <span class="divider">•</span>
+                <span id="doc-profile-uid">Doctor ID: DOC-827419</span>
+              </div>
+            </div>
           </div>
-          <div class="profile-hero-text">
-            <div class="profile-badge-pill" id="profile-role-badge">PATIENT PORTAL</div>
-            <h1 id="profile-welcome-name">Welcome back, User!</h1>
-            <p id="profile-user-email" class="profile-subtitle">user@swasthyasetu.org</p>
-            <div class="profile-status-bar">
-              <span class="status-indicator active"></span>
-              <span id="profile-status-text">🔥 Authenticated via Firebase</span>
-              <span class="divider">•</span>
-              <span id="profile-uid-text">UID: usr_827419</span>
+          <div class="profile-header-actions">
+            <button class="profile-btn primary" id="doc-launch-workstation-btn">
+              <span class="material-icons-outlined">medical_services</span> Launch Doctor Workstation
+            </button>
+            <button class="profile-btn secondary-danger" id="doc-logout-btn">
+              <span class="material-icons-outlined">logout</span> Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-page-body">
+        <!-- Dashboard Statistics (KPI Row) -->
+        <div style="margin-bottom: 24px;">
+          <h3 style="font-size: 1.15rem; margin-bottom: 14px; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons-outlined text-teal">analytics</span>
+            Consultation & Performance Dashboard Statistics
+          </h3>
+          <div class="doc-stats-grid">
+            <div class="doc-stat-card">
+              <div class="stat-icon teal"><span class="material-icons-outlined">people</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="doc-stat-total">1,284</span>
+                <span class="stat-lbl">Total Consultations</span>
+              </div>
+            </div>
+            <div class="doc-stat-card">
+              <div class="stat-icon blue"><span class="material-icons-outlined">today</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="doc-stat-today">12</span>
+                <span class="stat-lbl">Today's Consultations</span>
+              </div>
+            </div>
+            <div class="doc-stat-card">
+              <div class="stat-icon orange"><span class="material-icons-outlined">hourglass_top</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="doc-stat-pending">3</span>
+                <span class="stat-lbl">Pending Consultations</span>
+              </div>
+            </div>
+            <div class="doc-stat-card">
+              <div class="stat-icon green"><span class="material-icons-outlined">task_alt</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="doc-stat-completed">1,281</span>
+                <span class="stat-lbl">Completed Consultations</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="doc-kpi-subrow">
+            <div class="kpi-chip">
+              <span class="material-icons-outlined">assignment</span>
+              <span>Prescriptions Issued: <strong id="doc-stat-rx">1,210</strong></span>
+            </div>
+            <div class="kpi-chip">
+              <span class="material-icons-outlined">local_hospital</span>
+              <span>Referrals Issued: <strong id="doc-stat-ref">48</strong></span>
+            </div>
+            <div class="kpi-chip">
+              <span class="material-icons-outlined">timer</span>
+              <span>Average Consultation Time: <strong id="doc-stat-avgtime">8.5 Mins</strong></span>
             </div>
           </div>
         </div>
-        <div class="profile-header-actions">
-          <button class="profile-btn primary" id="profile-launch-portal-btn">
-            <span class="material-icons-outlined">dashboard</span> <span id="profile-launch-btn-txt">Launch OPD Workspace</span>
-          </button>
-          <button class="profile-btn secondary-danger" id="profile-logout-btn">
-            <span class="material-icons-outlined">logout</span> Sign Out
-          </button>
+
+        <!-- 4 Detailed Profile Cards Grid -->
+        <div class="profile-grid">
+          
+          <!-- 1. Personal Information Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">badge</span>
+              <h3>👨‍⚕️ Personal Information</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Doctor ID</span>
+                <span class="field-val code" id="doc-info-id">DOC-827419</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Full Name</span>
+                <span class="field-val" id="doc-info-name">Dr. Rajesh Kumar (MD)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Gender</span>
+                <span class="field-val" id="doc-info-gender">Male</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Date of Birth / Age</span>
+                <span class="field-val" id="doc-info-dob">14 Aug 1984 (41 Yrs)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Phone Number</span>
+                <span class="field-val" id="doc-info-phone">+91 98765 43210</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Email Address</span>
+                <span class="field-val" id="doc-info-email">doctor@medisetu.demo</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Preferred Languages</span>
+                <span class="field-val" id="doc-info-lang">English, Hindi, Marathi</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Professional Information Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">verified</span>
+              <h3>📜 Professional Information</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Medical Registration No.</span>
+                <span class="field-val code" id="doc-info-regno">NMB-82741-A</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Qualification</span>
+                <span class="field-val" id="doc-info-qual">MBBS, MD (General Medicine)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Specialization</span>
+                <span class="field-val highlight" id="doc-info-spec">Telemedicine & Pulmonology</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Sub-Specialization</span>
+                <span class="field-val" id="doc-info-subspec">Respiratory Care & Critical Tele-ICU</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Years of Experience</span>
+                <span class="field-val" id="doc-info-exp">16+ Years</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Registration Authority</span>
+                <span class="field-val" id="doc-info-auth">National Medical Board (NMB) / MCI</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Verification Status</span>
+                <span class="field-val success" id="doc-info-verif">🟢 Verified Specialist</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Work Information Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">domain</span>
+              <h3>🏥 Work Information</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Hospital / Clinic</span>
+                <span class="field-val" id="doc-info-hosp">AIIMS Central Telehealth Hub</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Department</span>
+                <span class="field-val" id="doc-info-dept">Department of General Medicine & Tele-OPD</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Location / Hub</span>
+                <span class="field-val" id="doc-info-loc">New Delhi Hub / Remote Spoke Network</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Consultation Days</span>
+                <span class="field-val" id="doc-info-days">Monday — Saturday</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Available Time Slots</span>
+                <span class="field-val" id="doc-info-slots">09:00 AM — 05:00 PM IST</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Current Availability</span>
+                <span class="field-val success" id="doc-info-avail">🟢 Available</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Security & Activity Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">security</span>
+              <h3>🔒 Security & Session Log</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Firebase Auth UID</span>
+                <span class="field-val code" id="doc-info-uid">usr_827419</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Login Activity</span>
+                <span class="field-val success">Active HTTPS Web Session</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Last Login Timestamp</span>
+                <span class="field-val" id="doc-info-lastlogin">Today, Live Session</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Compliance</span>
+                <span class="field-val highlight">HIPAA & HL7/FHIR Compliant</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
 
-    <div class="profile-page-body">
-      <div class="profile-grid">
-        <!-- Card 1: Account Information -->
-        <div class="profile-card">
-          <div class="card-header">
-            <span class="material-icons-outlined text-teal">person_outline</span>
-            <h3>Account Profile Details</h3>
-          </div>
-          <div class="card-body">
-            <div class="profile-field">
-              <span class="field-label">Full Name</span>
-              <span class="field-val" id="prof-detail-name">Citizen Patient</span>
+    <!-- 👤 GENERAL USER / PATIENT PROFILE SECTION -->
+    <div id="patient-profile-content" style="display: block;">
+      <div class="profile-page-header">
+        <div class="profile-page-banner">
+          <div class="profile-hero-content">
+            <div class="profile-avatar-large">
+              <span class="material-icons-outlined" id="profile-avatar-icon">account_circle</span>
             </div>
-            <div class="profile-field">
-              <span class="field-label">Email Address</span>
-              <span class="field-val" id="prof-detail-email">patient@swasthya.app</span>
-            </div>
-            <div class="profile-field">
-              <span class="field-label">Portal Role</span>
-              <span class="field-val highlight" id="prof-detail-role">CITIZEN PATIENT</span>
-            </div>
-            <div class="profile-field">
-              <span class="field-label">Firebase Auth UID</span>
-              <span class="field-val code" id="prof-detail-uid">usr_9812739812</span>
-            </div>
-            <div class="profile-field">
-              <span class="field-label">Account Status</span>
-              <span class="field-val success">Active & Verified</span>
+            <div class="profile-hero-text">
+              <div class="profile-badge-pill" id="profile-role-badge">PATIENT PORTAL</div>
+              <h1 id="profile-welcome-name">Welcome back, User!</h1>
+              <p id="profile-user-email" class="profile-subtitle">user@swasthyasetu.org</p>
+              <div class="profile-status-bar">
+                <span class="status-indicator active"></span>
+                <span id="profile-status-text">🔥 Authenticated via Firebase</span>
+                <span class="divider">•</span>
+                <span id="profile-uid-text">UID: usr_827419</span>
+              </div>
             </div>
           </div>
-        </div>
-
-        <!-- Card 2: Digital Health Record (DHR) -->
-        <div class="profile-card">
-          <div class="card-header">
-            <span class="material-icons-outlined text-teal">badge</span>
-            <h3>Digital Health Profile (DHR)</h3>
-          </div>
-          <div class="card-body">
-            <div class="profile-field">
-              <span class="field-label">National ABHA ID</span>
-              <span class="field-val" id="prof-abha-id">91-8274-1029-4821</span>
-            </div>
-            <div class="profile-field">
-              <span class="field-label">Teleconsultations Attended</span>
-              <span class="field-val">4 Consultations</span>
-            </div>
-            <div class="profile-field">
-              <span class="field-label">Primary Care Doctor</span>
-              <span class="field-val">Dr. Rajesh Kumar (MD)</span>
-            </div>
-            <div class="profile-field">
-              <span class="field-label">Preferred Language</span>
-              <span class="field-val">English / हिन्दी</span>
-            </div>
-            <div class="profile-field">
-              <span class="field-label">Prescription Records</span>
-              <span class="field-val success">Synced to Cloud</span>
-            </div>
+          <div class="profile-header-actions">
+            <button class="profile-btn primary" id="profile-launch-portal-btn">
+              <span class="material-icons-outlined">dashboard</span> <span id="profile-launch-btn-txt">Launch OPD Workspace</span>
+            </button>
+            <button class="profile-btn secondary-danger" id="profile-logout-btn">
+              <span class="material-icons-outlined">logout</span> Sign Out
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Quick Action Shortcuts -->
-      <div class="profile-shortcuts-section">
-        <h3>Quick Portal Shortcuts</h3>
-        <div class="shortcuts-grid">
-          <button class="shortcut-card" id="shortcut-opd">
-            <span class="material-icons-outlined icon">video_camera_front</span>
-            <div>
-              <h4>Join OPD Teleconsultation</h4>
-              <p>Connect with specialist doctors online</p>
+      <div class="profile-page-body">
+        <div class="profile-grid">
+          <!-- Card 1: Account Information -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">person_outline</span>
+              <h3>Account Profile Details</h3>
             </div>
-          </button>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Full Name</span>
+                <span class="field-val" id="prof-detail-name">Citizen Patient</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Email Address</span>
+                <span class="field-val" id="prof-detail-email">patient@swasthya.app</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Portal Role</span>
+                <span class="field-val highlight" id="prof-detail-role">CITIZEN PATIENT</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Firebase Auth UID</span>
+                <span class="field-val code" id="prof-detail-uid">usr_9812739812</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Account Status</span>
+                <span class="field-val success">Active & Verified</span>
+              </div>
+            </div>
+          </div>
 
-          <button class="shortcut-card" id="shortcut-dhr">
-            <span class="material-icons-outlined icon">folder_shared</span>
-            <div>
-              <h4>Digital Health Records (DHR)</h4>
-              <p>Access e-Prescriptions & lab reports</p>
+          <!-- Card 2: Digital Health Record (DHR) -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">badge</span>
+              <h3>Digital Health Profile (DHR)</h3>
             </div>
-          </button>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">National ABHA ID</span>
+                <span class="field-val" id="prof-abha-id">91-8274-1029-4821</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Teleconsultations Attended</span>
+                <span class="field-val">4 Consultations</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Primary Care Doctor</span>
+                <span class="field-val">Dr. Rajesh Kumar (MD)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Preferred Language</span>
+                <span class="field-val">English / हिन्दी</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Prescription Records</span>
+                <span class="field-val success">Synced to Cloud</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <button class="shortcut-card" id="shortcut-home">
-            <span class="material-icons-outlined icon">home</span>
-            <div>
-              <h4>Back to Main Platform</h4>
-              <p>Explore features, FAQs & services</p>
-            </div>
-          </button>
+        <!-- Quick Action Shortcuts -->
+        <div class="profile-shortcuts-section">
+          <h3>Quick Portal Shortcuts</h3>
+          <div class="shortcuts-grid">
+            <button class="shortcut-card" id="shortcut-opd">
+              <span class="material-icons-outlined icon">video_camera_front</span>
+              <div>
+                <h4>Join OPD Teleconsultation</h4>
+                <p>Connect with specialist doctors online</p>
+              </div>
+            </button>
+
+            <button class="shortcut-card" id="shortcut-dhr">
+              <span class="material-icons-outlined icon">folder_shared</span>
+              <div>
+                <h4>Digital Health Records (DHR)</h4>
+                <p>Access e-Prescriptions & lab reports</p>
+              </div>
+            </button>
+
+            <button class="shortcut-card" id="shortcut-home">
+              <span class="material-icons-outlined icon">home</span>
+              <div>
+                <h4>Back to Main Platform</h4>
+                <p>Explore features, FAQs & services</p>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
