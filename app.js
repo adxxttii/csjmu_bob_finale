@@ -3,6 +3,50 @@
  * Handles accessibility, counters, slider, FAQ, and Patient Teleconsultation Simulation.
  */
 
+// Top-Level Global Open Unified Modal Helper
+window.openUnifiedModal = function(targetRole = 'patient') {
+  const modal = document.getElementById('unified-login-modal');
+  if (!modal) return;
+
+  const tabs = modal.querySelectorAll('.role-tab-btn');
+  const panels = modal.querySelectorAll('.role-form-panel');
+
+  tabs.forEach(btn => {
+    if (btn.dataset.role === targetRole) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  panels.forEach(panel => {
+    if (panel.id === `panel-role-${targetRole}`) {
+      panel.classList.add('active');
+      panel.style.display = 'block';
+    } else {
+      panel.classList.remove('active');
+      panel.style.display = 'none';
+    }
+  });
+
+  modal.style.display = 'flex';
+  modal.style.opacity = '1';
+  modal.style.visibility = 'visible';
+  modal.style.pointerEvents = 'auto';
+  modal.classList.add('active');
+};
+
+window.closeUnifiedModal = function() {
+  const modal = document.getElementById('unified-login-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    modal.style.display = 'none';
+    modal.style.opacity = '0';
+    modal.style.visibility = 'hidden';
+    modal.style.pointerEvents = 'none';
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   initAccessibility();
   initSlider();
@@ -10,6 +54,23 @@ document.addEventListener('DOMContentLoaded', () => {
   initSimulation();
   initHWCModule();
   initAuthModule();
+
+  // Global click listener for nav sign in button
+  const navLoginBtn = document.getElementById('open-unified-login-btn');
+  if (navLoginBtn) {
+    navLoginBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.openUnifiedModal('patient');
+    });
+  }
+
+  // Backdrop overlay click to close
+  document.addEventListener('click', (e) => {
+    const modal = document.getElementById('unified-login-modal');
+    if (modal && e.target === modal) {
+      window.closeUnifiedModal();
+    }
+  });
 });
 
 /* ================= 1. Accessibility Controls & Multilingual Engine ================= */
@@ -977,7 +1038,6 @@ function initHWCModule() {
   // Prepopulated Registered Patients Database (Searchable)
   let registeredPatients = [
     { id: 'PAT-801', dhrId: 'DHR-8821-9910-1011', name: 'Ramesh Kumar', age: 45, gender: 'Male', phone: '9876543210', state: 'Uttar Pradesh', history: 'Hypertension, Mild Asthma' },
-    { id: 'PAT-802', dhrId: 'DHR-3392-4412-8831', name: 'Sunita Devi', age: 38, gender: 'Female', phone: '9123456789', state: 'Delhi', history: 'Type 2 Diabetes, Penicillin Allergy' },
     { id: 'PAT-803', dhrId: 'DHR-5510-7729-2294', name: 'Vikram Singh', age: 52, gender: 'Male', phone: '9988776655', state: 'Punjab', history: 'No Known Allergies' }
   ];
 
@@ -998,22 +1058,6 @@ function initHWCModule() {
       aiSummary: 'Fever of unknown origin with mild hypoxemia. Triage: High Risk.',
       doctorNotes: 'Prescribed Tab. Amoxicillin 500mg BD x 5 days, Tab. Paracetamol 650mg TDS x 3 days. Saline gargles advised.',
       dhrId: 'DHR-8821-9910-1011'
-    },
-    {
-      date: '2026-08-08',
-      token: 'HWC-7410',
-      patientName: 'Sunita Devi',
-      ageGender: '38 / Female',
-      opdClinic: 'Diabetic & Endocrine Spoke',
-      aiRisk: { level: 'MODERATE', badgeClass: 'risk-moderate' },
-      temp: '98.6', pulse: '76', bp: '128/82', spo2: '98',
-      symptoms: 'Dizziness, routine HbA1c check follow-up.',
-      injuries: 'None',
-      history: 'Type 2 Diabetes',
-      firstaid: 'Oral hydration offered.',
-      aiSummary: 'Stable vitals, mild orthostatic dizziness.',
-      doctorNotes: 'Continue Metformin 500mg. Recheck FBS in 2 weeks.',
-      dhrId: 'DHR-3392-4412-8831'
     }
   ];
 
@@ -2052,18 +2096,18 @@ function initAuthModule() {
 
     const cleanDigits = inputVal.replace(/\D/g, '');
     let formattedEmail = inputVal;
-    let displayName = 'Sunita Sharma';
+    let displayName = 'Citizen Patient';
 
     if (cleanDigits.length >= 10) {
       const phoneNum = cleanDigits.slice(-10);
       formattedEmail = `+91 ${phoneNum}`;
-      displayName = phoneNum === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phoneNum})`;
+      displayName = `Patient (+91 ${phoneNum})`;
       
       const patPhoneElem = document.getElementById('pat-info-phone');
       if (patPhoneElem) patPhoneElem.textContent = `+91 ${phoneNum}`;
 
       const patEmgContact = document.getElementById('pat-emg-contact');
-      if (patEmgContact && phoneNum !== '9876543210') {
+      if (patEmgContact) {
         patEmgContact.textContent = `Primary Contact (+91 ${phoneNum})`;
       }
       showToast(`📱 Logging in with Mobile Number: +91 ${phoneNum}...`);
@@ -2083,7 +2127,7 @@ function initAuthModule() {
       const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
       const cleanDigits = phoneVal.replace(/\D/g, '');
       const phone10 = cleanDigits.slice(-10) || '9876543210';
-      const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
+      const name = `Patient (+91 ${phone10})`;
 
       showToast(`⚡ OPD Registration complete for +91 ${phone10}! Access granted.`);
 
@@ -2231,7 +2275,7 @@ function initAuthModule() {
     const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
     const cleanDigits = phoneVal.replace(/\D/g, '');
     const phone10 = cleanDigits.slice(-10) || '9876543210';
-    const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
+    const name = `Patient (+91 ${phone10})`;
 
     if (!userEnteredOtp) {
       showToast('⚠️ Please enter the 6-digit OTP code.');
@@ -2895,19 +2939,6 @@ function initAuthModule() {
             </button>
           </td>
         </tr>
-        <tr>
-          <td style="font-family: monospace; font-weight: 700; color: var(--health-teal);">HWC-7410</td>
-          <td><strong>Sunita Devi</strong></td>
-          <td>38 / Female</td>
-          <td>Spoke-Station B (Delhi)</td>
-          <td><span class="ai-risk-badge risk-moderate" style="padding: 2px 6px; font-size: 0.72rem; margin:0;">MODERATE</span></td>
-          <td>SpO2: 98% | BP: 128/82</td>
-          <td>
-            <button class="table-btn accept-doc-consult-btn" style="background: var(--primary-navy-light);">
-              <span class="material-icons-outlined" style="font-size:14px;">video_call</span> Accept Call
-            </button>
-          </td>
-        </tr>
       `;
 
       doctorQueueTableBody.querySelectorAll('.accept-doc-consult-btn').forEach(btn => {
@@ -3472,7 +3503,7 @@ function openPatientDiseaseIntakeView() {
     return;
   }
 
-  const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'Sunita Sharma');
+  const name = user.displayName || user.name || (user.email ? user.email.split('@')[0] : 'Citizen Patient');
   const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
   const intakeUserBadge = document.getElementById('intake-user-badge');
   const intakeName = document.getElementById('intake-patient-name');
