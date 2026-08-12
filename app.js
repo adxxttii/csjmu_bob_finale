@@ -1958,10 +1958,12 @@ function initAuthModule() {
     const role = (user.role || 'patient').toLowerCase();
 
     const docProfileContent = document.getElementById('doctor-profile-content');
+    const hwcProfileContent = document.getElementById('hwc-profile-content');
     const patientProfileContent = document.getElementById('patient-profile-content');
 
     if (role === 'doctor') {
       if (docProfileContent) docProfileContent.style.display = 'block';
+      if (hwcProfileContent) hwcProfileContent.style.display = 'none';
       if (patientProfileContent) patientProfileContent.style.display = 'none';
 
       const docName = formatDoctorName(user.email, name);
@@ -2004,8 +2006,49 @@ function initAuthModule() {
           showToast('Logged out of SwasthyaSetu Doctor Portal.');
         };
       }
+    } else if (role === 'health_worker' || role === 'hwc') {
+      if (docProfileContent) docProfileContent.style.display = 'none';
+      if (hwcProfileContent) hwcProfileContent.style.display = 'block';
+      if (patientProfileContent) patientProfileContent.style.display = 'none';
+
+      const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+      const formattedHwcName = cleanName.includes('Anita') ? 'Anita Devi (CHO)' : `${cleanName} (CHO)`;
+
+      const hwcProfName = document.getElementById('hwc-profile-name');
+      const hwcInfoName = document.getElementById('hwc-info-name');
+      const hwcInfoEmail = document.getElementById('hwc-info-email');
+      const hwcInfoId = document.getElementById('hwc-info-id');
+      const hwcProfUid = document.getElementById('hwc-profile-uid');
+
+      if (hwcProfName) hwcProfName.textContent = formattedHwcName;
+      if (hwcInfoName) hwcInfoName.textContent = formattedHwcName;
+      if (hwcInfoEmail) hwcInfoEmail.textContent = user.email || 'healthworker@medisetu.demo';
+
+      const hwcIdVal = user.uid ? 'HW-' + user.uid.slice(-6).toUpperCase() : 'HW-101827';
+      if (hwcInfoId) hwcInfoId.textContent = hwcIdVal;
+      if (hwcProfUid) hwcProfUid.textContent = `Health Worker ID: ${hwcIdVal}`;
+
+      const hwcLaunchBtn = document.getElementById('hwc-launch-portal-btn');
+      if (hwcLaunchBtn) {
+        hwcLaunchBtn.onclick = () => {
+          showView('hwc');
+        };
+      }
+
+      const hwcLogoutBtn = document.getElementById('hwc-logout-btn');
+      if (hwcLogoutBtn) {
+        hwcLogoutBtn.onclick = async () => {
+          if (typeof signOutUser === 'function') await signOutUser();
+          localStorage.removeItem('swasthya_current_user');
+          currentUser = null;
+          updateHeaderAuthBadge(null);
+          showView('landing');
+          showToast('Logged out of Health Worker Portal.');
+        };
+      }
     } else {
       if (docProfileContent) docProfileContent.style.display = 'none';
+      if (hwcProfileContent) hwcProfileContent.style.display = 'none';
       if (patientProfileContent) patientProfileContent.style.display = 'block';
 
       const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
@@ -2026,27 +2069,20 @@ function initAuthModule() {
       if (uidText) uidText.textContent = `Patient ID: ${patIdVal}`;
 
       let roleDisplay = 'PATIENT PORTAL • ABHA VERIFIED';
-      if (role === 'health_worker' || role === 'hwc') roleDisplay = 'HEALTH WORKER PORTAL';
-
       if (roleBadge) roleBadge.textContent = roleDisplay;
 
       const launchBtnTxt = document.getElementById('profile-launch-btn-txt');
       const launchBtn = document.getElementById('profile-launch-portal-btn');
 
       if (launchBtnTxt) {
-        if (role === 'health_worker' || role === 'hwc') launchBtnTxt.textContent = 'Open Health Worker Portal';
-        else launchBtnTxt.textContent = 'Join OPD Teleconsultation';
+        launchBtnTxt.textContent = 'Join OPD Teleconsultation';
       }
 
       if (launchBtn) {
         launchBtn.onclick = () => {
-          if (role === 'health_worker' || role === 'hwc') {
-            showView('hwc');
-          } else {
-            showView('landing');
-            const regModal = document.getElementById('register-modal');
-            if (regModal) regModal.classList.add('active');
-          }
+          showView('landing');
+          const regModal = document.getElementById('register-modal');
+          if (regModal) regModal.classList.add('active');
         };
       }
     }

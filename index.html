@@ -686,6 +686,265 @@
       </div>
     </div>
 
+    <!-- 🧑‍⚕️ HEALTH WORKER DEDICATED PROFILE SECTION -->
+    <div id="hwc-profile-content" style="display: none;">
+      <div class="profile-page-header">
+        <div class="profile-page-banner" style="background: linear-gradient(135deg, #0d5c56, #10847e);">
+          <div class="profile-hero-content">
+            <div class="profile-avatar-large" style="background: rgba(255,255,255,0.18);">
+              <span class="material-icons-outlined" style="font-size: 50px;">medical_services</span>
+            </div>
+            <div class="profile-hero-text">
+              <div class="profile-badge-pill" style="background: rgba(16, 185, 129, 0.25); color: #34d399;">COMMUNITY HEALTH WORKER • CERTIFIED</div>
+              <h1 id="hwc-profile-name">Anita Devi (CHO)</h1>
+              <p id="hwc-profile-sub" class="profile-subtitle">Community Health Officer • HWC Rajpur Spoke Station</p>
+              <div class="profile-status-bar">
+                <span class="status-indicator active"></span>
+                <span>Operational Status:</span>
+                <span class="field-val success" style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 2px 10px; border-radius: 12px;">🟢 On Duty (Spoke Active)</span>
+                <span class="divider">•</span>
+                <span id="hwc-profile-uid">Health Worker ID: HW-101827</span>
+              </div>
+            </div>
+          </div>
+          <div class="profile-header-actions">
+            <button class="profile-btn primary" id="hwc-launch-portal-btn">
+              <span class="material-icons-outlined">dashboard</span> Launch Health Worker Portal
+            </button>
+            <button class="profile-btn secondary-danger" id="hwc-logout-btn">
+              <span class="material-icons-outlined">logout</span> Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-page-body">
+        
+        <!-- Activity Dashboard KPI Overview -->
+        <div style="margin-bottom: 24px;">
+          <h3 style="font-size: 1.15rem; margin-bottom: 14px; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+            <span class="material-icons-outlined text-teal">assessment</span>
+            Operational Activity & Field Metrics Dashboard
+          </h3>
+          <div class="doc-stats-grid">
+            <div class="doc-stat-card">
+              <div class="stat-icon teal"><span class="material-icons-outlined">app_registration</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="hwc-stat-reg">482</span>
+                <span class="stat-lbl">Patients Registered</span>
+              </div>
+            </div>
+            <div class="doc-stat-card">
+              <div class="stat-icon blue"><span class="material-icons-outlined">health_and_safety</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="hwc-stat-assessed">415</span>
+                <span class="stat-lbl">Patients Assessed</span>
+              </div>
+            </div>
+            <div class="doc-stat-card">
+              <div class="stat-icon orange"><span class="material-icons-outlined">medication</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="hwc-stat-firstaid">98</span>
+                <span class="stat-lbl">First-Aid Cases Handled</span>
+              </div>
+            </div>
+            <div class="doc-stat-card">
+              <div class="stat-icon green"><span class="material-icons-outlined">video_camera_front</span></div>
+              <div class="stat-info">
+                <span class="stat-num" id="hwc-stat-tele">142</span>
+                <span class="stat-lbl">Doctor Tele-Consults</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="doc-kpi-subrow">
+            <div class="kpi-chip">
+              <span class="material-icons-outlined">emergency</span>
+              <span>Emergency Cases Escalated: <strong id="hwc-stat-emg">7 Cases</strong></span>
+            </div>
+            <div class="kpi-chip">
+              <span class="material-icons-outlined">pending_actions</span>
+              <span>Follow-ups Pending: <strong id="hwc-stat-followups">5 Patients</strong></span>
+            </div>
+            <div class="kpi-chip">
+              <span class="material-icons-outlined">groups</span>
+              <span>Today's Active Queue: <strong id="hwc-stat-todayqueue">8 Patients</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Detailed Profile Cards Grid -->
+        <div class="profile-grid">
+          
+          <!-- 1. Personal Information Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">badge</span>
+              <h3>🧑‍⚕️ Personal Information</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Health Worker ID</span>
+                <span class="field-val code" id="hwc-info-id">HW-101827</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Full Name</span>
+                <span class="field-val" id="hwc-info-name">Anita Devi (CHO)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Age & Gender</span>
+                <span class="field-val" id="hwc-info-age">29 Yrs • Female</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Phone Number</span>
+                <span class="field-val" id="hwc-info-phone">+91 98765 88990</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Email Address</span>
+                <span class="field-val" id="hwc-info-email">healthworker@medisetu.demo</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Assigned Address</span>
+                <span class="field-val" id="hwc-info-address">Spoke Station, Village Rajpur, Dist. Kanpur Dehat, UP</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Preferred Languages</span>
+                <span class="field-val" id="hwc-info-lang">Hindi, English</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Professional Information & Training Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">school</span>
+              <h3>📜 Professional Training & Competency</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Designation</span>
+                <span class="field-val highlight" id="hwc-info-desig">Community Health Officer (CHO)</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Training Certification</span>
+                <span class="field-val" id="hwc-info-cert">National Rural Telehealth CHO Certification</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Completion Date</span>
+                <span class="field-val" id="hwc-info-certdate">15 March 2024</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Years of Experience</span>
+                <span class="field-val" id="hwc-info-exp">5+ Years</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Verification Status</span>
+                <span class="field-val success" id="hwc-info-verif">🟢 Certified & Active</span>
+              </div>
+              <div class="profile-field" style="flex-direction: column; align-items: flex-start; gap: 6px;">
+                <span class="field-label">Clinical Skills Certified:</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;">
+                  <span class="kpi-chip" style="padding: 3px 8px; font-size: 0.75rem;">Basic First Aid ✓</span>
+                  <span class="kpi-chip" style="padding: 3px 8px; font-size: 0.75rem;">Vital Signs Screening ✓</span>
+                  <span class="kpi-chip" style="padding: 3px 8px; font-size: 0.75rem;">Wound Care ✓</span>
+                  <span class="kpi-chip" style="padding: 3px 8px; font-size: 0.75rem;">Emergency Recognition ✓</span>
+                  <span class="kpi-chip" style="padding: 3px 8px; font-size: 0.75rem;">Tele-ECG & SpO₂ ✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Assigned Health Centre Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">other_houses</span>
+              <h3>🏥 Assigned Health Centre (HWC)</h3>
+            </div>
+            <div class="card-body">
+              <div class="profile-field">
+                <span class="field-label">Health Centre ID</span>
+                <span class="field-val code" id="hwc-info-centreid">HWC-KANPUR-402</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Health Centre Name</span>
+                <span class="field-val" id="hwc-info-centrename">Ayushman Bharat HWC Rajpur</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Village / District</span>
+                <span class="field-val" id="hwc-info-loc">Rajpur Village, Kanpur Dehat</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">State</span>
+                <span class="field-val" id="hwc-info-state">Uttar Pradesh</span>
+              </div>
+              <div class="profile-field">
+                <span class="field-label">Working Hours</span>
+                <span class="field-val" id="hwc-info-hours">08:00 AM — 04:00 PM IST</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Available Diagnostic Equipment Card -->
+          <div class="profile-card">
+            <div class="card-header">
+              <span class="material-icons-outlined text-teal">inventory_2</span>
+              <h3>🎒 Diagnostic Equipment Available</h3>
+            </div>
+            <div class="card-body">
+              <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 10px;">
+                Verified operational kit carried at Spoke Station:
+              </p>
+              <div class="doc-file-list">
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined" style="color: var(--health-teal);">monitor_heart</span>
+                    <span class="doc-file-title">Blood Pressure Monitor</span>
+                  </div>
+                  <span class="field-val success" style="font-size: 0.8rem; font-weight: 700;">Operational ✓</span>
+                </div>
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined" style="color: var(--health-teal);">pulse_alert</span>
+                    <span class="doc-file-title">Pulse Oximeter (SpO₂)</span>
+                  </div>
+                  <span class="field-val success" style="font-size: 0.8rem; font-weight: 700;">Operational ✓</span>
+                </div>
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined" style="color: var(--health-teal);">thermostat</span>
+                    <span class="doc-file-title">Digital Thermometer</span>
+                  </div>
+                  <span class="field-val success" style="font-size: 0.8rem; font-weight: 700;">Operational ✓</span>
+                </div>
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined" style="color: var(--health-teal);">bloodtype</span>
+                    <span class="doc-file-title">Digital Glucometer Kit</span>
+                  </div>
+                  <span class="field-val success" style="font-size: 0.8rem; font-weight: 700;">Operational ✓</span>
+                </div>
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined" style="color: var(--health-teal);">medical_services</span>
+                    <span class="doc-file-title">Trauma First-Aid Kit</span>
+                  </div>
+                  <span class="field-val success" style="font-size: 0.8rem; font-weight: 700;">Operational ✓</span>
+                </div>
+                <div class="doc-file-item">
+                  <div class="doc-file-info">
+                    <span class="material-icons-outlined" style="color: var(--health-teal);">headphones</span>
+                    <span class="doc-file-title">Digital Bluetooth Stethoscope</span>
+                  </div>
+                  <span class="field-val success" style="font-size: 0.8rem; font-weight: 700;">Operational ✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- 👤 GENERAL USER / PATIENT DEDICATED PROFILE SECTION -->
     <div id="patient-profile-content" style="display: block;">
       <div class="profile-page-header">
