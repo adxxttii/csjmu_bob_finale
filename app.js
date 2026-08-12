@@ -1700,6 +1700,8 @@ function initAuthModule() {
 
   // Unified Auth Modal Elements
   const unifiedLoginModal = document.getElementById('unified-login-modal');
+  const openUnifiedLoginBtn = document.getElementById('open-unified-login-btn');
+  const closeUnifiedLoginBtn = document.getElementById('close-unified-login-btn');
   const roleTabBtns = document.querySelectorAll('.role-tab-btn');
   const roleFormPanels = document.querySelectorAll('.role-form-panel');
   const googleLoginBtn = document.getElementById('google-login-btn');
@@ -1745,8 +1747,28 @@ function initAuthModule() {
     unifiedLoginModal.classList.add('active');
   }
 
+  // Attach event listener to main nav Sign In button
   if (openUnifiedLoginBtn) {
-    openUnifiedLoginBtn.addEventListener('click', () => openUnifiedModal('doctor'));
+    openUnifiedLoginBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openUnifiedModal('doctor');
+    });
+  }
+
+  // Attach event listener to close modal button
+  if (closeUnifiedLoginBtn) {
+    closeUnifiedLoginBtn.addEventListener('click', () => {
+      if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
+    });
+  }
+
+  // Close modal when clicking backdrop outside modal container
+  if (unifiedLoginModal) {
+    unifiedLoginModal.addEventListener('click', (e) => {
+      if (e.target === unifiedLoginModal) {
+        unifiedLoginModal.classList.remove('active');
+      }
+    });
   }
 
   if (openDoctorLoginBtn) {
