@@ -3518,23 +3518,21 @@ function openPatientDiseaseIntakeView() {
 }
 
 function initPatientIntakeFormHandlers() {
-  // Attach Start Consultation click handlers dynamically across all buttons & service cards
-  const allConsultationButtons = document.querySelectorAll('.slide-btn, .service-card .btn, .profile-btn.primary, #open-register-btn, .hero-actions button');
-  allConsultationButtons.forEach(btn => {
-    const btnText = (btn.textContent || '').trim();
-    if (
-      btnText.includes('Start Consultation') ||
-      btnText.includes('Book OPD Consultation') ||
-      btnText.includes('Join OPD Teleconsultation') ||
-      btnText.includes('Join Teleconsultation') ||
-      btnText.includes('Consult Doctor') ||
-      btnText.includes('Consult Specialist Doctor')
-    ) {
-      btn.onclick = (e) => {
+  // Attach Start Consultation click handlers across all Hero Slide buttons & Services Tab buttons
+  const slideAndServiceButtons = document.querySelectorAll('.slide-btn, .service-card .action-btn, #open-register-btn, .service-actions button, .profile-btn.primary');
+  
+  slideAndServiceButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const user = currentUser || (typeof getCurrentUser === 'function' ? getCurrentUser() : null) || JSON.parse(localStorage.getItem('swasthya_current_user') || 'null');
+      
+      const btnText = (btn.textContent || '').trim();
+
+      // If patient is logged in or clicking slide/service button to start consultation
+      if (user || btn.classList.contains('slide-btn') || btn.id === 'open-register-btn' || btnText.includes('Book OPD') || btnText.includes('Start Consultation')) {
         e.preventDefault();
         openPatientDiseaseIntakeView();
-      };
-    }
+      }
+    });
   });
 
   const launchBtn = document.getElementById('profile-launch-portal-btn');

@@ -2752,6 +2752,9 @@ body.high-contrast .faq-question {
     padding: 18px 14px !important;
   }
   
+  .slide-btn,
+  .service-card .action-btn,
+  .service-actions .action-btn,
   #submit-disease-intake-btn,
   #profile-launch-portal-btn,
   #intake-cancel-btn,
