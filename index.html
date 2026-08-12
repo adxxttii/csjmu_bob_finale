@@ -1971,19 +1971,22 @@
         <!-- 2. Patient Form Panel -->
         <div class="role-form-panel" id="panel-role-patient">
           <div class="demo-account-box" style="border-color: var(--accent-saffron); background: rgba(255,153,51,0.08);">
-            <strong>Demo Patient Account:</strong><br>
-            Mobile / Email: <code>patient@medisetu.demo</code> | Mobile: <code>9876543210</code>
+            <strong>📱 OPD Mobile Number Login:</strong><br>
+            Mobile: <code>9876543210</code> | OTP: <code>827419</code> (or Email: <code>patient@medisetu.demo</code>)
           </div>
           <form id="unified-patient-form" onsubmit="event.preventDefault();">
             <div class="form-group">
-              <label for="uni-pat-input">Mobile Number or Email</label>
-              <input type="text" id="uni-pat-input" class="form-input" value="patient@medisetu.demo" required>
+              <label for="uni-pat-input">10-Digit Mobile Number or Email</label>
+              <input type="text" id="uni-pat-input" class="form-input" value="9876543210" placeholder="e.g. 9876543210" required>
             </div>
             <div class="form-group">
-              <label for="uni-pat-pass">Password / OTP Code</label>
-              <input type="password" id="uni-pat-pass" class="form-input" value="Demo@123" required>
+              <label for="uni-pat-pass">Password or 6-Digit OTP Code</label>
+              <input type="password" id="uni-pat-pass" class="form-input" value="827419" placeholder="Enter OTP or Password" required>
             </div>
-            <button type="button" id="submit-uni-pat-btn" class="form-submit" style="background: var(--accent-saffron);">Continue as Patient</button>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button type="button" id="submit-uni-pat-btn" class="form-submit" style="background: var(--accent-saffron); flex: 1;">📱 Login via Mobile Number</button>
+              <button type="button" id="open-otp-modal-btn" class="form-submit" style="background: var(--health-teal); flex: 1;">📲 Send OTP to Phone</button>
+            </div>
           </form>
         </div>
 

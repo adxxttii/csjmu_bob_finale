@@ -1827,11 +1827,141 @@ function initAuthModule() {
 
   const doPatientLogin = async () => {
     const patInput = document.getElementById('uni-pat-input');
+    const regPhone = document.getElementById('reg-phone');
     const patPass = document.getElementById('uni-pat-pass');
-    const email = (patInput && patInput.value) ? patInput.value : 'patient@medisetu.demo';
-    const pass = (patPass && patPass.value) ? patPass.value : 'Demo@123';
-    await handleFirebaseLogin(email, pass, 'patient', 'Citizen Patient');
+
+    const inputVal = (patInput && patInput.value) ? patInput.value.trim() : ((regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210');
+    const pass = (patPass && patPass.value) ? patPass.value : '827419';
+
+    const cleanDigits = inputVal.replace(/\D/g, '');
+    let formattedEmail = inputVal;
+    let displayName = 'Sunita Sharma';
+
+    if (cleanDigits.length >= 10) {
+      const phoneNum = cleanDigits.slice(-10);
+      formattedEmail = `+91 ${phoneNum}`;
+      displayName = phoneNum === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phoneNum})`;
+      
+      const patPhoneElem = document.getElementById('pat-info-phone');
+      if (patPhoneElem) patPhoneElem.textContent = `+91 ${phoneNum}`;
+
+      const patEmgContact = document.getElementById('pat-emg-contact');
+      if (patEmgContact && phoneNum !== '9876543210') {
+        patEmgContact.textContent = `Primary Contact (+91 ${phoneNum})`;
+      }
+      showToast(`📱 Logging in with Mobile Number: +91 ${phoneNum}...`);
+    } else if (inputVal.includes('@')) {
+      displayName = inputVal.split('@')[0];
+      displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+    }
+
+    await handleFirebaseLogin(formattedEmail, pass, 'patient', displayName);
   };
+
+  // Mobile Number OTP Modal Flow Handlers
+  const registerForm = document.getElementById('register-form');
+  const sendOtpBtn = document.getElementById('send-otp-btn');
+  const registerModal = document.getElementById('register-modal');
+  const closeRegisterBtn = document.getElementById('close-register-btn');
+
+  const otpModal = document.getElementById('otp-modal');
+  const closeOtpBtn = document.getElementById('close-otp-btn');
+  const otpForm = document.getElementById('otp-form');
+  const verifyOtpBtn = document.getElementById('verify-otp-btn');
+  const simulatedOtpCode = document.getElementById('simulated-otp-code');
+  const otpInput = document.getElementById('otp-input');
+  const openOtpModalBtn = document.getElementById('open-otp-modal-btn');
+
+  let currentGeneratedOtp = '827419';
+
+  function triggerMobileOtpFlow(phoneNum = '9876543210') {
+    const regPhone = document.getElementById('reg-phone');
+    if (regPhone) regPhone.value = phoneNum;
+
+    currentGeneratedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    if (simulatedOtpCode) simulatedOtpCode.textContent = currentGeneratedOtp;
+    if (otpInput) otpInput.value = currentGeneratedOtp;
+
+    if (registerModal) registerModal.classList.remove('active');
+    if (unifiedLoginModal) unifiedLoginModal.classList.remove('active');
+    if (otpModal) otpModal.classList.add('active');
+
+    showToast(`📱 OTP Sent to +91 ${phoneNum}: ${currentGeneratedOtp}`);
+  }
+
+  if (openOtpModalBtn) {
+    openOtpModalBtn.addEventListener('click', () => {
+      const patInput = document.getElementById('uni-pat-input');
+      const phoneVal = (patInput && patInput.value) ? patInput.value.trim() : '9876543210';
+      triggerMobileOtpFlow(phoneVal);
+    });
+  }
+
+  if (sendOtpBtn) {
+    sendOtpBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const regPhone = document.getElementById('reg-phone');
+      const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
+      triggerMobileOtpFlow(phoneVal);
+    });
+  }
+
+  if (registerForm) {
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const regPhone = document.getElementById('reg-phone');
+      const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
+      triggerMobileOtpFlow(phoneVal);
+    });
+  }
+
+  if (verifyOtpBtn) {
+    verifyOtpBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const userEnteredOtp = (otpInput && otpInput.value) ? otpInput.value.trim() : '';
+      if (userEnteredOtp === currentGeneratedOtp || userEnteredOtp.length === 6) {
+        showToast('✓ OTP Verified Successfully!');
+        if (otpModal) otpModal.classList.remove('active');
+        const regPhone = document.getElementById('reg-phone');
+        const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
+        
+        const cleanDigits = phoneVal.replace(/\D/g, '');
+        const phone10 = cleanDigits.slice(-10) || '9876543210';
+        const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
+
+        await handleFirebaseLogin(`+91 ${phone10}`, 'otp_verified', 'patient', name);
+      } else {
+        showToast('⚠️ Invalid OTP code entered. Please check simulated OTP.');
+      }
+    });
+  }
+
+  if (otpForm) {
+    otpForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (otpModal) otpModal.classList.remove('active');
+      const regPhone = document.getElementById('reg-phone');
+      const phoneVal = (regPhone && regPhone.value) ? regPhone.value.trim() : '9876543210';
+      
+      const cleanDigits = phoneVal.replace(/\D/g, '');
+      const phone10 = cleanDigits.slice(-10) || '9876543210';
+      const name = phone10 === '9876543210' ? 'Sunita Sharma' : `Patient (+91 ${phone10})`;
+
+      await handleFirebaseLogin(`+91 ${phone10}`, 'otp_verified', 'patient', name);
+    });
+  }
+
+  if (closeRegisterBtn) {
+    closeRegisterBtn.addEventListener('click', () => {
+      if (registerModal) registerModal.classList.remove('active');
+    });
+  }
+
+  if (closeOtpBtn) {
+    closeOtpBtn.addEventListener('click', () => {
+      if (otpModal) otpModal.classList.remove('active');
+    });
+  }
 
   const doHwcLogin = async () => {
     const uniEmail = document.getElementById('uni-hwc-email');
