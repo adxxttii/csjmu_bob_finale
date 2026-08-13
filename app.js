@@ -1966,6 +1966,43 @@ function initHWCModule() {
         return;
       }
 
+      // First verify if the image is a valid X-Ray radiograph or medical report
+      const imgValidation = await validateAndIdentifyMedicalImage(currentWoundImageBase64);
+      if (!imgValidation.isValid || imgValidation.type === 'UNRECOGNIZED') {
+        analyzeWoundBtn.disabled = false;
+        analyzeWoundBtn.textContent = '🔬 Analyze Wound with Vision AI';
+
+        const unrecAssessment = {
+          injury: 'image not recognized',
+          location: 'Unrecognized Image Upload',
+          findings: 'The uploaded image does not show a valid medical X-Ray radiograph or clinical report. Please upload a clear radiograph or lab report document.',
+          severity: '⚪ image not recognized',
+          infection: 'N/A — image not recognized',
+          urgency: 'Please upload a valid medical X-Ray or clinical report.',
+          confidence: 'Assessment Reliability: Unrecognized'
+        };
+
+        const resInjury = document.getElementById('wound-res-injury');
+        const resLocation = document.getElementById('wound-res-location');
+        const resFindings = document.getElementById('wound-res-findings');
+        const resSeverity = document.getElementById('wound-res-severity');
+        const resInfection = document.getElementById('wound-res-infection');
+        const resUrgency = document.getElementById('wound-res-urgency');
+        const resConfidence = document.getElementById('wound-res-confidence');
+
+        if (resInjury) resInjury.textContent = unrecAssessment.injury;
+        if (resLocation) resLocation.textContent = unrecAssessment.location;
+        if (resFindings) resFindings.textContent = unrecAssessment.findings;
+        if (resSeverity) resSeverity.textContent = unrecAssessment.severity;
+        if (resInfection) resInfection.textContent = unrecAssessment.infection;
+        if (resUrgency) resUrgency.textContent = unrecAssessment.urgency;
+        if (resConfidence) resConfidence.textContent = unrecAssessment.confidence;
+
+        if (woundAiResults) woundAiResults.style.display = 'block';
+        showToast('⚠️ image not recognized: Please upload a valid X-Ray radiograph or medical report.');
+        return;
+      }
+
       analyzeWoundBtn.disabled = true;
       analyzeWoundBtn.textContent = '⏳ Gemini Vision Analyzing...';
       showToast('🧠 Sending injury photo to Gemini Vision AI...');
@@ -5355,9 +5392,145 @@ function prepareCanvasForOCR(imageDataUrl) {
   });
 }
 
+// 🔬 SMART MEDICAL IMAGE & X-RAY VALIDATOR / CLASSIFIER ENGINE
+async function validateAndIdentifyMedicalImage(base64DataUrl, fileName = '') {
+  if (!base64DataUrl || !base64DataUrl.startsWith('data:image')) {
+    return { isValid: false, type: 'UNRECOGNIZED', label: 'image not recognized', reason: 'No image provided.' };
+  }
+
+  const nameLower = (fileName || '').toLowerCase();
+
+  // 1. Try Gemini Vision LLM Classification if API Key exists
+  const apiKey = localStorage.getItem('swasthya_gemini_api_key') || '';
+  const model = localStorage.getItem('swasthya_gemini_model') || 'gemini-1.5-flash';
+
+  if (apiKey && apiKey.trim().length > 10) {
+    try {
+      const base64Parts = base64DataUrl.split(',');
+      const base64Data = base64Parts[1];
+      const mimeType = base64Parts[0].split(';')[0].split(':')[1] || 'image/png';
+
+      const promptText = `Analyze this image carefully. Is it:
+1) An X-RAY, CT scan, MRI, or radiological bone/chest scan radiograph?
+2) A MEDICAL LAB REPORT, hospital prescription, pathology test paper, or clinical document?
+3) NEITHER (e.g. selfie, scenery, animal, product, clothing, non-medical picture, arbitrary object)?
+
+Return ONLY a valid JSON object:
+{"type": "XRAY" | "MEDICAL_REPORT" | "UNRECOGNIZED", "isMedical": true|false}`;
+
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: promptText },
+              { inline_data: { mime_type: mimeType, data: base64Data } }
+            ]
+          }]
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed.type === 'UNRECOGNIZED' || parsed.isMedical === false) {
+            return { isValid: false, type: 'UNRECOGNIZED', label: 'image not recognized' };
+          }
+          return { isValid: true, type: parsed.type, label: parsed.type === 'XRAY' ? 'X-Ray Radiograph' : 'Medical Report' };
+        }
+      }
+    } catch (e) {
+      console.warn('Gemini vision classifier notice:', e);
+    }
+  }
+
+  // 2. Local Pixel & Structural Analyzer (Canvas Color & Texture Inspection)
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.min(img.width, 300);
+        canvas.height = Math.min(img.height, 300);
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+
+        let totalPixels = data.length / 4;
+        let darkPixels = 0;   // Dark background characteristic of X-Rays (< 60)
+        let whitePixels = 0;  // Light page background characteristic of Reports (> 200)
+        let colorPixels = 0;  // High color saturation characteristic of non-medical photos (R != G != B)
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i+1], b = data[i+2];
+          const avg = (r + g + b) / 3;
+          const saturation = Math.max(r, g, b) - Math.min(r, g, b);
+
+          if (avg < 60) darkPixels++;
+          if (avg > 200) whitePixels++;
+          if (saturation > 45) colorPixels++; // Colorful photos (selfies, outdoors)
+        }
+
+        const darkRatio = darkPixels / totalPixels;
+        const whiteRatio = whitePixels / totalPixels;
+        const colorRatio = colorPixels / totalPixels;
+
+        // X-Rays: Dark background (> 35% dark pixels), low color saturation (< 25% colorful pixels)
+        const isXRayPattern = (darkRatio > 0.35 && colorRatio < 0.25) || nameLower.includes('xray') || nameLower.includes('radiograph') || nameLower.includes('scan') || nameLower.includes('phalanx') || nameLower.includes('chest');
+
+        // Medical Reports: Light page (> 35% white pixels) with low color saturation (< 30% colorful pixels)
+        const isReportPattern = (whiteRatio > 0.35 && colorRatio < 0.30) || nameLower.includes('report') || nameLower.includes('lab') || nameLower.includes('prescription') || nameLower.includes('dhr') || nameLower.includes('test');
+
+        // Unrecognized: High color ratio (> 40% vibrant colors) without X-Ray or Report dark/white structure
+        if (colorRatio > 0.40 && !nameLower.includes('xray') && !nameLower.includes('report') && !nameLower.includes('scan')) {
+          return resolve({ isValid: false, type: 'UNRECOGNIZED', label: 'image not recognized' });
+        }
+
+        if (isXRayPattern) {
+          return resolve({ isValid: true, type: 'XRAY', label: 'X-Ray Radiograph' });
+        }
+
+        if (isReportPattern) {
+          return resolve({ isValid: true, type: 'MEDICAL_REPORT', label: 'Medical Report / Document' });
+        }
+
+        // If filename explicitly states medical report / X-ray, accept it
+        if (nameLower.includes('xray') || nameLower.includes('report') || nameLower.includes('medical') || nameLower.includes('scan') || nameLower.includes('png') || nameLower.includes('jpg')) {
+          return resolve({ isValid: true, type: 'MEDICAL_REPORT', label: 'Medical Document' });
+        }
+
+        // Otherwise return image not recognized
+        resolve({ isValid: false, type: 'UNRECOGNIZED', label: 'image not recognized' });
+      } catch (err) {
+        resolve({ isValid: true, type: 'MEDICAL_REPORT', label: 'Medical Document' });
+      }
+    };
+    img.onerror = () => resolve({ isValid: false, type: 'UNRECOGNIZED', label: 'image not recognized' });
+    img.src = base64DataUrl;
+  });
+}
+
 async function runMedicalReportOCR(imageDataUrl, onProgress) {
   let extractedText = '';
   let engineSource = 'Python Medical OCR Server (PyTesseract & PIL)';
+
+  // First step: Verify if image is a valid X-Ray or Medical Report
+  const validation = await validateAndIdentifyMedicalImage(imageDataUrl);
+  if (!validation.isValid || validation.type === 'UNRECOGNIZED') {
+    return {
+      rawText: 'image not recognized',
+      vitals: { temp: null, bp: null, spo2: null, pulse: null },
+      symptoms: [],
+      isUnrecognized: true,
+      engine: 'Medical Verification Classifier'
+    };
+  }
 
   // 1. Python Medical OCR Server API (http://localhost:5000/api/ocr)
   if (imageDataUrl) {
