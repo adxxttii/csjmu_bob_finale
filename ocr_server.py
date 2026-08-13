@@ -25,6 +25,21 @@ try:
 except ImportError:
     PYTESSERACT_AVAILABLE = False
 
+# Try importing OpenCV safely
+try:
+    import cv2
+    import numpy as np
+    OPENCV_AVAILABLE = True
+except ImportError:
+    OPENCV_AVAILABLE = False
+
+# Try importing EasyOCR safely
+try:
+    import easyocr
+    EASYOCR_AVAILABLE = True
+except ImportError:
+    EASYOCR_AVAILABLE = False
+
 
 def normalize_medical_text(text):
     if not text:
@@ -84,7 +99,7 @@ def perform_python_ocr(base64_data_url):
     extracted_text = ""
     engine_used = "Python Regularized Medical RegEx OCR"
 
-    if PIL_AVAILABLE and base64_data_url:
+    if base64_data_url:
         try:
             # Decode base64 image data
             if ',' in base64_data_url:
@@ -93,21 +108,48 @@ def perform_python_ocr(base64_data_url):
                 base64_str = base64_data_url
             
             img_bytes = base64.b64decode(base64_str)
-            image = Image.open(io.BytesIO(img_bytes))
-
-            # Pre-process image in Python PIL (Grayscale, Contrast Enhancement, Sharpening)
-            image_gray = image.convert('L')
-            enhancer = ImageEnhance.Contrast(image_gray)
-            image_contrast = enhancer.enhance(2.0)
-
-            if PYTESSERACT_AVAILABLE:
+            
+            # 1. EasyOCR Deep Learning Text Detection Pipeline (if installed)
+            if EASYOCR_AVAILABLE:
                 try:
-                    raw = pytesseract.image_to_string(image_contrast)
-                    if raw and len(raw.strip()) > 10:
-                        extracted_text = raw
-                        engine_used = "Python PyTesseract + PIL OCR Engine"
-                except Exception as t_err:
-                    print("PyTesseract binary info:", t_err)
+                    reader = easyocr.Reader(['en', 'hi'], gpu=False)
+                    results = reader.readtext(img_bytes, detail=0)
+                    if results and len(results) > 0:
+                        extracted_text = " ".join(results)
+                        engine_used = "Python EasyOCR Deep Learning Engine (PyTorch)"
+                except Exception as easy_err:
+                    print("EasyOCR detection notice:", easy_err)
+
+            # 2. OpenCV Image Preprocessing + PyTesseract OCR Pipeline (if installed)
+            if (not extracted_text or len(extracted_text.strip()) < 10) and OPENCV_AVAILABLE and PYTESSERACT_AVAILABLE:
+                try:
+                    nparr = np.frombuffer(img_bytes, np.uint8)
+                    cv_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+                    gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
+                    blur = cv2.GaussianBlur(gray, (3, 3), 0)
+                    thresh = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+                    raw_cv_ocr = pytesseract.image_to_string(thresh)
+                    if raw_cv_ocr and len(raw_cv_ocr.strip()) > 10:
+                        extracted_text = raw_cv_ocr
+                        engine_used = "Python OpenCV + PyTesseract Adaptive Binarization OCR"
+                except Exception as cv_err:
+                    print("OpenCV OCR processing notice:", cv_err)
+
+            # 3. PIL (Pillow) Contrast Enhancement + PyTesseract OCR Pipeline
+            if (not extracted_text or len(extracted_text.strip()) < 10) and PIL_AVAILABLE:
+                image = Image.open(io.BytesIO(img_bytes))
+                image_gray = image.convert('L')
+                enhancer = ImageEnhance.Contrast(image_gray)
+                image_contrast = enhancer.enhance(2.0)
+
+                if PYTESSERACT_AVAILABLE:
+                    try:
+                        raw = pytesseract.image_to_string(image_contrast)
+                        if raw and len(raw.strip()) > 10:
+                            extracted_text = raw
+                            engine_used = "Python PyTesseract + PIL Image Enhancer OCR"
+                    except Exception as t_err:
+                        print("PyTesseract binary info:", t_err)
         except Exception as p_err:
             print("PIL Image processing info:", p_err)
 

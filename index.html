@@ -1808,9 +1808,14 @@
                 <div style="font-size: 0.8rem; color: #64748b; margin: 4px 0 10px 0;">
                   Upload X-Rays, Lab Reports, Prescriptions or Photos (PNG, JPG, PDF up to 10MB)
                 </div>
-                <button type="button" id="btn-browse-intake-files" class="action-btn primary" style="font-size: 0.85rem; padding: 8px 22px; width: auto; display: inline-flex; align-items: center; gap: 6px;">
-                  <span class="material-icons-outlined" style="font-size: 18px;">folder_open</span> Browse Files from Device
-                </button>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;">
+                  <button type="button" id="btn-browse-intake-files" class="action-btn primary" style="font-size: 0.85rem; padding: 8px 22px; width: auto; display: inline-flex; align-items: center; gap: 6px;">
+                    <span class="material-icons-outlined" style="font-size: 18px;">folder_open</span> Browse Files from Device
+                  </button>
+                  <button type="button" id="btn-scan-python-ocr" class="action-btn secondary" style="font-size: 0.85rem; padding: 8px 22px; width: auto; display: inline-flex; align-items: center; gap: 6px; background: rgba(15, 59, 95, 0.08); color: var(--primary-navy); border: 1.5px solid var(--primary-navy);" onclick="if(typeof triggerPythonReportOCR==='function') triggerPythonReportOCR();">
+                    <span class="material-icons-outlined" style="font-size: 18px; color: var(--health-teal);">document_scanner</span> 📄 Scan Report with Python OCR Engine
+                  </button>
+                </div>
               </div>
 
               <!-- List of Newly Uploaded Files for this Consultation -->
