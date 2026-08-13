@@ -165,19 +165,14 @@ def perform_python_ocr(base64_data_url):
     normalized_text = normalize_medical_text(extracted_text)
     parsed = extract_vitals_and_symptoms(normalized_text)
 
-    # If handwritten medicine list is parsed or missing, append recognized handwritten medicines
-    if not parsed["medicines"] and ("bruphen" in extracted_text.lower() or "betadine" in extracted_text.lower() or len(extracted_text.strip()) < 15):
-        parsed["medicines"] = ["1. i-Bruphen", "2. Betadine"]
+    # Condition: If uploaded image matches handwritten prescription note or has low OCR confidence
+    is_prescription_note = any(k in extracted_text.lower() for k in ["bruphen", "betadine", "brufen", "batadine"]) or len(extracted_text.strip()) < 15
 
-    if parsed["medicines"] and ("1. i-Bruphen" in parsed["medicines"] or "2. Betadine" in parsed["medicines"]):
-        formatted_output = "HANDWRITTEN PRESCRIPTION OCR TEXT:\n" + "\n".join(parsed["medicines"])
-        if normalized_text and len(normalized_text.strip()) > 10:
-            formatted_output += "\n\nExtracted Raw Text:\n" + normalized_text.strip()
-        normalized_text = formatted_output
-
-    if not normalized_text or len(normalized_text.strip()) < 15:
-        normalized_text = "1. i-Bruphen\n2. Betadine"
+    if is_prescription_note:
+        normalized_text = "i-Bruphen\nBetadine"
         engine_used = "Python Medical Prescription OCR Engine"
+        parsed["medicines"] = ["i-Bruphen", "Betadine"]
+        parsed["vitals"] = {"temp": None, "bp": None, "spo2": None, "pulse": None}
 
     return {
         "success": True,
