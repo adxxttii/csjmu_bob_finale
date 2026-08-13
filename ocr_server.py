@@ -31,18 +31,17 @@ def normalize_medical_text(text):
         return ""
     cleaned = text
 
-    # Fix common OCR mistakes in Blood Pressure (e.g. 120i80, 120|80, 120/80)
-    cleaned = re.sub(r'(\d{2,3})\s*[\|\/iI!l]\s*(\d{2,3})', r'\1/\2 mmHg', cleaned)
+    # Fix common OCR mistakes in Blood Pressure (e.g. 120i80, 120|80)
+    cleaned = re.sub(r'(\d{2,3})\s*[\|iI!l]\s*(\d{2,3})', r'\1/\2', cleaned)
 
     # Fix common OCR mistakes in Temperature (e.g. 1014F -> 101.4 F, 986F -> 98.6 F)
     cleaned = re.sub(r'(\d{2,3})(\d)\s*([°]?\s*[fFcC])', r'\1.\2 °\3', cleaned)
-    cleaned = re.sub(r'temp(?:erature)?\s*[:=]?\s*(\d{2,3}(?:\.\d)?)', r'Body Temp: \1 °F', cleaned, flags=re.IGNORECASE)
 
-    # Fix Oxygen Saturation (SpO2: 96%, 96o/o, 96/o)
-    cleaned = re.sub(r'(\d{2})\s*(?:%|o\/o|\/o|per|percent)', r'\1% SpO2', cleaned, flags=re.IGNORECASE)
+    # Fix Oxygen Saturation (SpO2: 96o/o, 96/o, 96per)
+    cleaned = re.sub(r'(\d{2})\s*(?:o\/o|\/o|per|percent)', r'\1%', cleaned, flags=re.IGNORECASE)
 
     # Fix Pulse / Heart Rate
-    cleaned = re.sub(r'(\d{2,3})\s*(?:bpm|b\/min|beats)', r'\1 BPM Pulse', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'(\d{2,3})\s*(?:b\/min|beats)', r'\1 BPM', cleaned, flags=re.IGNORECASE)
 
     # Medical Spell Correction
     spell_map = [
@@ -62,10 +61,10 @@ def normalize_medical_text(text):
 
 
 def extract_vitals_and_symptoms(text):
-    temp_match = re.search(r'(?:temp|temperature|fever|f)\s*[:=]?\s*(\d{2,3}(?:\.\d)?)\s*(?:°?f|°?c)?', text, re.IGNORECASE) or re.search(r'(\d{2,3}\.\d)\s*(?:°?f|°?c)', text, re.IGNORECASE)
-    bp_match = re.search(r'(?:bp|blood pressure)?\s*[:=]?\s*(\d{2,3}\s*\/\s*\d{2,3})', text, re.IGNORECASE) or re.search(r'(\d{2,3}\s*\/\s*\d{2,3})\s*mmHg', text, re.IGNORECASE)
-    spo2_match = re.search(r'(?:spo2|oxygen|o2|sat)?\s*[:=]?\s*(\d{2,3})\s*%', text, re.IGNORECASE) or re.search(r'(\d{2,3})\s*%', text)
-    pulse_match = re.search(r'(?:pulse|hr|heart rate)?\s*[:=]?\s*(\d{2,3})\s*(?:bpm)?', text, re.IGNORECASE)
+    temp_match = re.search(r'(?:temp|temperature|fever)\s*[:=]?\s*(\d{2,3}(?:\.\d)?)\s*(?:°?f|°?c)?', text, re.IGNORECASE) or re.search(r'(\d{2,3}\.\d)\s*(?:°?f|°?c)', text, re.IGNORECASE)
+    bp_match = re.search(r'(?:bp|blood pressure)?\s*[:=]?\s*(\d{2,3}\s*\/\s*\d{2,3})', text, re.IGNORECASE)
+    spo2_match = re.search(r'(?:spo2|oxygen|o2|sat)?\s*[:=]?\s*(\d{2,3})\s*%', text, re.IGNORECASE)
+    pulse_match = re.search(r'(?:pulse|hr|heart rate)\s*[:=]?\s*(\d{2,3})', text, re.IGNORECASE) or re.search(r'(\d{2,3})\s*bpm', text, re.IGNORECASE)
 
     symptoms_list = ['fever', 'cough', 'shortness of breath', 'chest pain', 'headache', 'vomiting', 'diarrhea', 'fatigue', 'joint pain', 'rash', 'hypertension', 'diabetes']
     found_symptoms = [s.upper() for s in symptoms_list if s in text.lower()]
