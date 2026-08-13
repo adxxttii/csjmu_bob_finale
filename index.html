@@ -153,6 +153,7 @@
         <li class="nav-item"><a href="#services" id="nav-services">Services</a></li>
         <li class="nav-item"><a href="#how-it-works" id="nav-how">How it Works</a></li>
         <li class="nav-item"><a href="#faq" id="nav-faq">FAQs</a></li>
+        <li class="nav-item"><a href="#" id="nav-profile" onclick="if(typeof showView==='function') showView('profile');" style="color: var(--health-teal); font-weight: 800; display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 132, 126, 0.1); padding: 4px 12px; border-radius: 16px;"><span class="material-icons-outlined" style="font-size: 18px;">account_box</span> Patient Profile</a></li>
       </ul>
       <div class="nav-right-actions" style="display: flex; align-items: center; gap: 10px;">
         <span class="desktop-only" style="font-size: 0.85rem; font-weight: 600;">Toll-Free: 1-800-555-0199</span>
@@ -178,22 +179,23 @@
         <button class="nav-login-btn" id="open-unified-login-btn">
           <span class="material-icons-outlined" style="font-size: 18px;">account_circle</span> Sign In
         </button>
-        <div id="user-profile-display" class="user-profile-badge"
-          style="display: none; align-items: center; gap: 10px; background: rgba(16, 132, 126, 0.08); border: 1px solid rgba(16, 132, 126, 0.25); padding: 4px 14px 4px 6px; border-radius: 30px;">
+        <!-- Logged In User Profile Badge (Prominent, High-Contrast & Larger) -->
+        <div id="user-profile-display" class="user-profile-badge" onclick="if(typeof showView==='function') showView('profile');"
+          style="display: none; align-items: center; gap: 12px; background: linear-gradient(135deg, var(--primary-navy-dark), var(--primary-navy)); border: 2px solid #38bdf8; padding: 6px 18px 6px 8px; border-radius: 35px; box-shadow: 0 4px 15px rgba(15, 59, 95, 0.35); cursor: pointer; transition: all 0.2s ease;">
           <div class="user-avatar-icon"
-            style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; display: flex; align-items: center; justify-content: center;">
-            <span class="material-icons-outlined" style="font-size: 18px;">person</span>
+            style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--health-teal), #0d5c56); color: white; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+            <span class="material-icons-outlined" style="font-size: 22px; color: white;">person</span>
           </div>
           <div style="text-align: left;">
             <div id="user-display-name"
-              style="font-weight: 700; font-size: 0.84rem; color: var(--primary-navy); line-height: 1.2;">User</div>
+              style="font-weight: 800; font-size: 0.95rem; color: #ffffff; line-height: 1.2; letter-spacing: 0.3px;">Patient Profile</div>
             <div id="user-display-role"
-              style="font-size: 0.65rem; color: var(--health-teal); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">
+              style="font-size: 0.68rem; color: #0f172a; background: #38bdf8; text-transform: uppercase; font-weight: 900; letter-spacing: 0.5px; padding: 1px 8px; border-radius: 10px; display: inline-block; margin-top: 2px;">
               Patient</div>
           </div>
-          <button id="header-logout-btn" class="header-logout-btn" title="Sign Out"
-            style="background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 4px;">
-            <span class="material-icons-outlined" style="font-size: 16px;">logout</span>
+          <button id="header-logout-btn" class="header-logout-btn" title="Sign Out" onclick="event.stopPropagation();"
+            style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 6px; transition: all 0.2s ease;">
+            <span class="material-icons-outlined" style="font-size: 18px;">logout</span>
           </button>
         </div>
       </div>
