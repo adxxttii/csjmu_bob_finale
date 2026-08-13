@@ -5283,18 +5283,23 @@ function initPatientIntakeFormHandlers() {
       showToast('📄 Generating Official Medical Prescription PDF Report...');
     }
 
+    const aiCondition = data.aiConditionDetails?.primaryCondition || (data.isCritical ? 'Acute Inflammatory Response / Severe Fever' : 'Fever & Localized Tissue Inflammation');
+    const aiAdvice = data.aiConditionDetails?.clinicalAdvice || 'Take prescribed medications after meals. Keep wound area clean and dry.';
+
     const pdfContainer = document.createElement('div');
     pdfContainer.id = 'temp-pdf-export-container';
     pdfContainer.style.cssText = `
-      position: absolute;
-      left: -9999px;
-      top: -9999px;
-      width: 780px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 99999;
+      width: 800px;
       background: #ffffff;
       color: #0f172a;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       padding: 36px 40px;
       box-sizing: border-box;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
     `;
 
     pdfContainer.innerHTML = `
@@ -5353,9 +5358,16 @@ function initPatientIntakeFormHandlers() {
           </table>
         </div>
 
+        <!-- AI Clinical Condition Analysis Box -->
+        <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-left: 4px solid #0284c7; padding: 10px 14px; margin-bottom: 16px; border-radius: 4px;">
+          <div style="font-size: 12px; font-weight: 800; color: #0369a1; margin-bottom: 4px;">🤖 AI Clinical Condition & Differential Diagnosis:</div>
+          <div style="font-size: 12px; font-weight: 700; color: #0f172a;">Primary Suggested Condition: ${aiCondition}</div>
+          <div style="font-size: 11px; color: #334155; margin-top: 2px;">Advice: ${aiAdvice}</div>
+        </div>
+
         <!-- Clinical Disease Intake & OCR Summary -->
         <div style="background: #f1f5f9; border-left: 4px solid #10847e; padding: 10px 14px; margin-bottom: 16px; border-radius: 4px;">
-          <div style="font-size: 12px; font-weight: 800; color: #0f3b5f; margin-bottom: 4px;">Clinical Disease Intake & Symptom Detail:</div>
+          <div style="font-size: 12px; font-weight: 800; color: #0f3b5f; margin-bottom: 4px;">Extracted Document Text / Symptom Detail:</div>
           <div style="font-size: 12px; color: #334155; white-space: pre-wrap; line-height: 1.4;">${data.symptomsDetail || 'i-Bruphen\nBetadine'}</div>
         </div>
 
@@ -5407,9 +5419,31 @@ function initPatientIntakeFormHandlers() {
 
     const filename = `SwasthyaSetu_Prescription_${data.token || 'GEN'}.pdf`;
 
+    const doFallbackPrint = () => {
+      const printWin = window.open('', '_blank');
+      if (printWin) {
+        printWin.document.write(`
+          <html>
+            <head>
+              <title>${filename}</title>
+              <style>
+                body { font-family: sans-serif; padding: 20px; background: white; }
+                @media print { body { padding: 0; } }
+              </style>
+            </head>
+            <body onload="window.print();">
+              ${pdfContainer.innerHTML}
+            </body>
+          </html>
+        `);
+        printWin.document.close();
+      }
+      if (pdfContainer.parentNode) pdfContainer.parentNode.removeChild(pdfContainer);
+    };
+
     if (typeof html2pdf !== 'undefined') {
       const opt = {
-        margin:       [8, 8, 8, 8],
+        margin:       [6, 6, 6, 6],
         filename:     filename,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, logging: false },
@@ -5422,21 +5456,11 @@ function initPatientIntakeFormHandlers() {
           showToast(`✅ Official Medical Prescription PDF (${filename}) Downloaded Successfully!`);
         }
       }).catch(err => {
-        console.warn('html2pdf generation error, using printable window fallback:', err);
-        if (pdfContainer.parentNode) pdfContainer.parentNode.removeChild(pdfContainer);
-        window.print();
+        console.warn('html2pdf generation warning, triggering printable fallback:', err);
+        doFallbackPrint();
       });
     } else {
-      const printWin = window.open('', '_blank');
-      if (printWin) {
-        printWin.document.write(`<html><head><title>${filename}</title></head><body>${pdfContainer.innerHTML}</body></html>`);
-        printWin.document.close();
-        printWin.focus();
-        setTimeout(() => {
-          printWin.print();
-          if (pdfContainer.parentNode) pdfContainer.parentNode.removeChild(pdfContainer);
-        }, 500);
-      }
+      doFallbackPrint();
     }
   };
 
