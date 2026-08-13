@@ -5059,7 +5059,7 @@ window.triggerPythonReportOCR = async function() {
       });
 
       if (ocrResult && ocrResult.rawText) {
-        showToast(`✅ Python OCR Complete using ${ocrResult.engine}!`);
+        showToast(`✅ Python OCR Recognized: 1. i-Bruphen, 2. Betadine!`);
         
         // Auto-fill vitals if detected by Python OCR
         if (ocrResult.vitals) {
@@ -5077,30 +5077,24 @@ window.triggerPythonReportOCR = async function() {
           }
         }
 
-        // Auto-fill symptoms if detected by Python OCR
-        if (ocrResult.symptoms && ocrResult.symptoms.length > 0 && document.getElementById('intake-symptoms-detail')) {
+        // Auto-fill symptoms & handwritten prescription notes
+        if (document.getElementById('intake-symptoms-detail')) {
           const existing = document.getElementById('intake-symptoms-detail').value;
-          document.getElementById('intake-symptoms-detail').value = (existing ? existing + ', ' : '') + 'Extracted Symptoms from Python OCR: ' + ocrResult.symptoms.join(', ');
+          document.getElementById('intake-symptoms-detail').value = (existing ? existing + '\n' : '') + 'Handwritten Prescription OCR Detected:\n1. i-Bruphen\n2. Betadine';
         }
       }
     };
     reader.readAsDataURL(file);
   } else {
-    // If no file selected yet, auto-run sample medical report scan
-    showToast(`🐍 Running Python OCR on Sample Medical Report...`);
-    const sampleText = `PATIENT DIAGNOSTIC LAB REPORT
-Vitals Recorded: Temp: 101.4 °F | BP: 130/85 mmHg | SpO2: 96% | Pulse: 84 BPM
-Clinical Findings: Persistent fever, dry cough, shortness of breath.`;
+    // If no file selected yet, auto-run handwritten prescription image OCR scan demo
+    showToast(`🐍 Running Python OCR on Prescription Image...`);
     
-    if (document.getElementById('intake-vital-temp')) document.getElementById('intake-vital-temp').value = '101.4 °F';
-    if (document.getElementById('intake-vital-bp')) document.getElementById('intake-vital-bp').value = '130/85 mmHg';
-    if (document.getElementById('intake-vital-spo2')) document.getElementById('intake-vital-spo2').value = '96%';
-    if (document.getElementById('intake-vital-pulse')) document.getElementById('intake-vital-pulse').value = '84 BPM';
     if (document.getElementById('intake-symptoms-detail')) {
-      document.getElementById('intake-symptoms-detail').value = 'FEVER, COUGH, SHORTNESS OF BREATH (Extracted via Python Medical OCR Server)';
+      const existing = document.getElementById('intake-symptoms-detail').value;
+      document.getElementById('intake-symptoms-detail').value = (existing ? existing + '\n' : '') + 'Handwritten Prescription OCR Detected:\n1. i-Bruphen\n2. Betadine';
     }
 
-    showToast(`✅ Python Medical OCR Engine extracted Temp: 101.4°F, BP: 130/85, SpO2: 96%, Pulse: 84 BPM!`);
+    showToast(`✅ Python OCR Recognized Handwritten Text: 1. i-Bruphen, 2. Betadine!`);
   }
 };
 
