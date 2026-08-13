@@ -2825,3 +2825,422 @@ body.high-contrast .faq-question {
 }
 
 
+
+/* =========================================================
+   VOICE ACCESSIBILITY SYSTEM — Intake Form
+   ========================================================= */
+
+/* Voice Mode Toggle Banner */
+.voice-mode-banner {
+  background: linear-gradient(135deg, #0f3b5f, #10847e);
+  border-radius: 12px;
+  padding: 16px 22px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  box-shadow: 0 4px 16px rgba(16,132,126,0.2);
+}
+
+.voice-mode-banner .vb-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.voice-mode-banner .vb-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.voice-mode-banner .vb-text h4 {
+  margin: 0 0 2px 0;
+  font-size: 0.98rem;
+  color: #fff;
+  font-weight: 800;
+}
+
+.voice-mode-banner .vb-text p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.4;
+}
+
+/* Voice Toggle Switch */
+.voice-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voice-toggle-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+
+.voice-switch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.voice-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.voice-switch-track {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.25);
+  border-radius: 28px;
+  transition: background 0.3s;
+  border: 1.5px solid rgba(255,255,255,0.3);
+}
+
+.voice-switch-track::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.voice-switch input:checked + .voice-switch-track {
+  background: #4ade80;
+  border-color: #4ade80;
+}
+
+.voice-switch input:checked + .voice-switch-track::after {
+  transform: translateX(24px);
+}
+
+/* Field-level voice mic button */
+.voice-field-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.voice-field-wrap > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.voice-field-wrap textarea {
+  flex: 1;
+}
+
+.voice-mic-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  background: #f8fafc;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.voice-mic-btn:hover {
+  border-color: var(--health-teal);
+  background: rgba(16,132,126,0.08);
+  color: var(--health-teal);
+}
+
+.voice-mic-btn.listening {
+  border-color: #ef4444;
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  animation: mic-pulse 1.2s infinite;
+}
+
+.voice-mic-btn.speaking {
+  border-color: #3b82f6;
+  background: rgba(59,130,246,0.1);
+  color: #3b82f6;
+  animation: speaker-wave 1s infinite alternate;
+}
+
+.voice-mic-btn[disabled] {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Pulse animation for active listening */
+@keyframes mic-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(239,68,68,0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0   rgba(239,68,68,0); }
+}
+
+@keyframes speaker-wave {
+  from { box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
+  to   { box-shadow: 0 0 0 8px rgba(59,130,246,0.0); }
+}
+
+/* Voice status toast inside form */
+.voice-status-strip {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 10px 16px;
+  margin-bottom: 18px;
+  font-size: 0.85rem;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.voice-status-strip.active {
+  display: flex;
+}
+
+.voice-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3b82f6;
+  flex-shrink: 0;
+  animation: mic-pulse 1s infinite;
+}
+
+/* "Play All Questions" button */
+.voice-play-all-btn {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-navy);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.voice-play-all-btn:hover {
+  background: var(--health-teal);
+}
+
+/* When voice mode is ON, show mic buttons */
+body.voice-mode-on .voice-mic-btn {
+  display: flex;
+}
+
+/* When voice mode is OFF, hide mic buttons */
+body:not(.voice-mode-on) .voice-mic-btn {
+  display: none;
+}
+
+/* When voice mode is ON, show play-all */
+body.voice-mode-on .voice-play-all-btn {
+  display: inline-flex;
+}
+
+/* Hide the voice-status-strip by default (shown via JS) */
+#intake-voice-status {
+  display: none;
+}
+
+body.voice-mode-on #intake-voice-status.active {
+  display: flex;
+}
+
+/* =========================================================================
+   🤖 AI / LLM PATIENT CONDITION SUGGESTION ENGINE STYLES
+   ========================================================================= */
+.ai-condition-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1.5px solid rgba(56, 189, 248, 0.3);
+  border-radius: 14px;
+  padding: 22px;
+  color: #f8fafc;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.ai-condition-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #34d399);
+}
+
+.ai-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 16px;
+}
+
+.ai-card-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-suggest-btn {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+  transition: all 0.2s ease;
+}
+
+.ai-suggest-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+}
+
+.ai-suggest-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
+}
+
+.ai-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-pill.critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.ai-pill.moderate {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+.ai-pill.stable {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.diagnosis-bar-item {
+  margin-bottom: 12px;
+}
+
+.diagnosis-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.diagnosis-bar-track {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.diagnosis-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ai-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: ai-spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes ai-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* OCR Text Extractor Styles */
+.ocr-badge {
+  background: rgba(56, 189, 248, 0.18);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ocr-badge.vital {
+  background: rgba(52, 211, 153, 0.18);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.ocr-badge.symptom {
+  background: rgba(251, 191, 36, 0.18);
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+

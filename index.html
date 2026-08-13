@@ -10,6 +10,9 @@
   <!-- Material Design Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 
+  <!-- Tesseract.js OCR Engine (v5 Browser Bundle) -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
   <!-- Firebase Web SDK (v10 Modular) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -145,6 +148,7 @@
     </ul>
     <div class="nav-right-actions" style="display: flex; align-items: center; gap: 10px;">
       <span class="desktop-only" style="font-size: 0.85rem; font-weight: 600;">Toll-Free: 1-800-555-0199</span>
+<<<<<<< HEAD
       
       <!-- Unified Auth Navbar Buttons -->
       <div id="nav-auth-buttons" style="display: flex; align-items: center; gap: 8px;">
@@ -158,6 +162,11 @@
       </div>
 
       <!-- Logged In User Profile Badge -->
+=======
+      <button class="nav-login-btn" id="open-unified-login-btn">
+        <span class="material-icons-outlined" style="font-size: 18px;">account_circle</span> Sign In
+      </button>
+>>>>>>> a2abd84 (feat: Add AI & Python OCR Medical Report Extractor and Patient Condition AI Engine)
       <div id="user-profile-display" class="user-profile-badge" style="display: none; align-items: center; gap: 10px; background: rgba(16, 132, 126, 0.08); border: 1px solid rgba(16, 132, 126, 0.25); padding: 4px 14px 4px 6px; border-radius: 30px;">
         <div class="user-avatar-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; display: flex; align-items: center; justify-content: center;">
           <span class="material-icons-outlined" style="font-size: 18px;">person</span>
@@ -1407,6 +1416,37 @@
 
     <!-- Main Container Card -->
     <div style="max-width: 1000px; margin: 30px auto 0 auto; padding: 0 15px;">
+
+      <!-- ♿ VOICE ACCESSIBILITY BANNER -->
+      <div class="voice-mode-banner" id="voice-mode-banner">
+        <div class="vb-left">
+          <div class="vb-icon">
+            <span class="material-icons-outlined" style="color: #fff; font-size: 26px;">record_voice_over</span>
+          </div>
+          <div class="vb-text">
+            <h4>🔊 Voice Accessibility Mode</h4>
+            <p>Can't read? Enable Voice Mode — each question will be read aloud in your selected language. Tap the 🎙 mic button to record your answer.</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <button type="button" id="voice-play-all-btn" class="voice-play-all-btn" title="Read all questions aloud from start">
+            <span class="material-icons-outlined" style="font-size: 18px;">play_circle</span> Read All Questions
+          </button>
+          <div class="voice-toggle-wrap">
+            <span class="voice-toggle-label">Voice Mode</span>
+            <label class="voice-switch" aria-label="Toggle Voice Accessibility Mode">
+              <input type="checkbox" id="voice-mode-toggle">
+              <span class="voice-switch-track"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Voice status strip (shown when speaking/listening) -->
+      <div class="voice-status-strip" id="intake-voice-status" role="status" aria-live="polite">
+        <span class="voice-status-dot"></span>
+        <span id="intake-voice-status-text">🎙 Listening…</span>
+      </div>
       
       <!-- Progress Bar -->
       <div style="background: white; border-radius: 12px; padding: 18px 24px; margin-bottom: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
@@ -1477,80 +1517,67 @@
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
             <div class="form-group">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Full Name *</label>
-                <div style="display: flex; gap: 6px;">
-                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_name');">🔊 Listen</button>
-                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-name" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-name');">
-                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak Name
-                  </button>
-                </div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Full Name *</label>
+              <div class="voice-field-wrap">
+                <input type="text" id="intake-patient-name" class="form-input" required placeholder="Enter full name">
+                <button type="button" class="voice-mic-btn" data-field="intake-patient-name" data-question-key="fullName" title="Speak your full name" aria-label="Record full name">
+                  <span class="material-icons-outlined" style="font-size: 20px;">mic</span>
+                </button>
               </div>
-              <input type="text" id="intake-patient-name" class="form-input" required placeholder="Enter or speak full name">
             </div>
 
             <div class="form-group">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Age (Years) *</label>
-                <div style="display: flex; gap: 6px;">
-                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_age');">🔊 Listen</button>
-                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-age" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-age');">
-                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak Age
-                  </button>
-                </div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Age (Years) *</label>
+              <div class="voice-field-wrap">
+                <input type="number" id="intake-patient-age" class="form-input" required placeholder="e.g. 34" min="1" max="115" value="34">
+                <button type="button" class="voice-mic-btn" data-field="intake-patient-age" data-question-key="age" title="Speak your age" aria-label="Record age">
+                  <span class="material-icons-outlined" style="font-size: 20px;">mic</span>
+                </button>
               </div>
-              <input type="number" id="intake-patient-age" class="form-input" required placeholder="e.g. 34" min="1" max="115" value="34">
             </div>
 
             <div class="form-group">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Gender *</label>
-                <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_gender');">🔊 Listen</button>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Gender *</label>
+              <div class="voice-field-wrap">
+                <select id="intake-patient-gender" class="form-input" required style="background: white;">
+                  <option value="Male">Male</option>
+                  <option value="Female" selected>Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                <button type="button" class="voice-mic-btn" data-field="intake-patient-gender" data-question-key="gender" title="Say Male, Female, or Other" aria-label="Record gender">
+                  <span class="material-icons-outlined" style="font-size: 20px;">mic</span>
+                </button>
               </div>
-              <select id="intake-patient-gender" class="form-input" required style="background: white;">
-                <option value="Male">Male</option>
-                <option value="Female" selected>Female</option>
-                <option value="Other">Other</option>
-              </select>
             </div>
 
             <div class="form-group">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Mobile Number *</label>
-                <div style="display: flex; gap: 6px;">
-                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_phone');">🔊 Listen</button>
-                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-phone" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-phone');">
-                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak Phone
-                  </button>
-                </div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">Mobile Number *</label>
+              <div class="voice-field-wrap">
+                <input type="tel" id="intake-patient-phone" class="form-input" required placeholder="+91 98765 43210" value="+91 98765 43210">
+                <button type="button" class="voice-mic-btn" data-field="intake-patient-phone" data-question-key="phone" title="Speak your mobile number" aria-label="Record phone number">
+                  <span class="material-icons-outlined" style="font-size: 20px;">mic</span>
+                </button>
               </div>
-              <input type="tel" id="intake-patient-phone" class="form-input" required placeholder="+91 98765 43210" value="+91 98765 43210">
             </div>
 
             <div class="form-group">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">State *</label>
-                <div style="display: flex; gap: 6px;">
-                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_state');">🔊 Listen</button>
-                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-state" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-state');">
-                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak State
-                  </button>
-                </div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">State *</label>
+              <div class="voice-field-wrap">
+                <input type="text" id="intake-patient-state" class="form-input" required value="Uttar Pradesh">
+                <button type="button" class="voice-mic-btn" data-field="intake-patient-state" data-question-key="state" title="Speak your state name" aria-label="Record state">
+                  <span class="material-icons-outlined" style="font-size: 20px;">mic</span>
+                </button>
               </div>
-              <input type="text" id="intake-patient-state" class="form-input" required value="Uttar Pradesh">
             </div>
 
             <div class="form-group">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">City / District</label>
-                <div style="display: flex; gap: 6px;">
-                  <button type="button" class="voice-listen-section-btn" style="padding: 2px 8px; font-size: 0.72rem;" onclick="if(typeof speakTextPrompt==='function') speakTextPrompt('field_city');">🔊 Listen</button>
-                  <button type="button" class="voice-mic-btn" id="btn-mic-intake-patient-city" onclick="if(typeof startVoiceDictation==='function') startVoiceDictation('intake-patient-city');">
-                    <span class="material-icons-outlined" style="font-size: 14px;">mic</span> 🎙️ Speak City
-                  </button>
-                </div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px; color: #334155;">City / District</label>
+              <div class="voice-field-wrap">
+                <input type="text" id="intake-patient-city" class="form-input" value="Kanpur Dehat">
+                <button type="button" class="voice-mic-btn" data-field="intake-patient-city" data-question-key="city" title="Speak your city or district name" aria-label="Record city">
+                  <span class="material-icons-outlined" style="font-size: 20px;">mic</span>
+                </button>
               </div>
-              <input type="text" id="intake-patient-city" class="form-input" value="Kanpur Dehat">
             </div>
           </div>
         </div>
@@ -1601,6 +1628,7 @@
             </div>
           </div>
 
+          <div class="form-group" style="margin-bottom: 16px;">
           <div class="form-group" style="margin-bottom: 16px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
               <label style="font-size: 0.82rem; font-weight: 700; color: #334155;">Detailed Disease Symptoms Description *</label>
@@ -1700,6 +1728,7 @@
               </div>
               <input type="text" id="intake-vital-pulse" class="form-input" placeholder="e.g. 84 bpm" value="84 bpm">
             </div>
+            </div>
           </div>
 
           <div class="form-group" style="margin-bottom: 12px;">
@@ -1715,6 +1744,42 @@
               <label style="font-weight: 500; font-size: 0.85rem; cursor: pointer;"><input type="checkbox" id="cond-allergy"> Drug Allergies (Penicillin/NSAIDs)</label>
             </div>
           </div>
+        </div>
+
+        <!-- 🤖 AI / LLM PATIENT CONDITION ASSESSOR & DIFFERENTIAL DIAGNOSIS CARD -->
+        <div class="ai-condition-card" id="ai-condition-eval-card">
+          <div class="ai-card-header">
+            <div class="ai-card-title">
+              <span class="material-icons-outlined" style="color: #38bdf8; font-size: 26px;">psychology</span>
+              <span>AI / LLM Patient Condition Assessor</span>
+              <span style="font-size: 0.7rem; background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 8px; border-radius: 10px; text-transform: uppercase;">Clinical AI</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <button type="button" id="btn-config-gemini-key" style="background: rgba(255,255,255,0.08); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 16px; font-size: 0.78rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <span class="material-icons-outlined" style="font-size: 15px; color: #38bdf8;">key</span> Gemini API Key
+              </button>
+
+              <button type="button" id="btn-run-ai-condition-eval" class="ai-suggest-btn">
+                <span class="material-icons-outlined" style="font-size: 20px;">auto_awesome</span>
+                <span>Suggest Patient Condition with AI</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="ai-condition-initial-notice" style="font-size: 0.85rem; color: #94a3b8; line-height: 1.5;">
+            Fill out your symptoms and vitals above, then click <strong>"Suggest Patient Condition with AI"</strong> to generate real-time differential diagnosis, severity risk flags, and specialist routing recommendations powered by AI / LLM.
+          </div>
+
+          <!-- AI Loading State -->
+          <div id="ai-condition-loading" style="display: none; padding: 18px 0; text-align: center;">
+            <div class="ai-spinner" style="width: 28px; height: 28px; margin-bottom: 8px;"></div>
+            <div style="font-weight: 700; font-size: 0.95rem; color: #38bdf8;">Evaluating clinical vitals, symptoms & history with LLM...</div>
+            <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 4px;">Analyzing symptom clusters, temperature/oxygen metrics & differential diagnosis</div>
+          </div>
+
+          <!-- AI Condition Results Output Box (Populated dynamically via JS) -->
+          <div id="ai-condition-result-content" style="display: none;"></div>
         </div>
 
         <!-- SECTION 4: Attach Diagnostic Reports & X-Rays -->
@@ -1737,8 +1802,9 @@
                 📁 Browse & Upload New Diagnostic Report, X-Ray or Wound Image:
               </label>
               
-              <div id="intake-file-dropzone" onclick="document.getElementById('intake-file-input').click();" style="border: 2px dashed var(--health-teal); background: rgba(16, 132, 126, 0.04); border-radius: 12px; padding: 22px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative;">
-                <input type="file" id="intake-file-input" multiple accept="image/*,.pdf,.doc,.docx" style="display: none;" onchange="if(typeof handleIntakeFileUpload==='function') handleIntakeFileUpload(this.files);">
+              <input type="file" id="intake-file-input" multiple accept="image/*,.pdf,.doc,.docx" style="display: none;">
+              
+              <div id="intake-file-dropzone" style="border: 2px dashed var(--health-teal); background: rgba(16, 132, 126, 0.04); border-radius: 12px; padding: 22px 16px; text-align: center; cursor: pointer; transition: all 0.2s ease; position: relative;">
                 <span class="material-icons-outlined" style="font-size: 42px; color: var(--health-teal); margin-bottom: 6px;">cloud_upload</span>
                 <div style="font-size: 0.95rem; font-weight: 800; color: var(--primary-navy);">
                   Click to Browse Files or Drag & Drop Here
@@ -1746,7 +1812,7 @@
                 <div style="font-size: 0.8rem; color: #64748b; margin: 4px 0 10px 0;">
                   Upload X-Rays, Lab Reports, Prescriptions or Photos (PNG, JPG, PDF up to 10MB)
                 </div>
-                <button type="button" class="action-btn primary" style="font-size: 0.85rem; padding: 8px 22px; width: auto; display: inline-flex; align-items: center; gap: 6px;" onclick="event.stopPropagation(); document.getElementById('intake-file-input').click();">
+                <button type="button" id="btn-browse-intake-files" class="action-btn primary" style="font-size: 0.85rem; padding: 8px 22px; width: auto; display: inline-flex; align-items: center; gap: 6px;">
                   <span class="material-icons-outlined" style="font-size: 18px;">folder_open</span> Browse Files from Device
                 </button>
               </div>
@@ -1765,6 +1831,74 @@
               <div id="intake-reports-selection-container" style="display: flex; flex-direction: column; gap: 10px;">
                 <!-- Dynamic Report Checkboxes Injected via JS -->
               </div>
+            </div>
+
+            <!-- Direct Upload New Image Input -->
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+              <span style="font-size: 0.82rem; color: var(--primary-navy); font-weight: 700;">Need to upload a new X-Ray image or lab scan right now?</span>
+              <label for="intake-direct-file-input" class="profile-btn primary" style="padding: 7px 18px; font-size: 0.82rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: var(--health-teal);">
+                <span class="material-icons-outlined" style="font-size: 18px;">cloud_upload</span> Upload Report Image Now
+              </label>
+              <input type="file" id="intake-direct-file-input" accept="image/*,.pdf" style="display: none;">
+            </div>
+
+            <!-- AI OCR Medical Report Extractor Card -->
+            <div id="ocr-scanner-card" style="margin-top: 18px; background: linear-gradient(135deg, #0f172a, #1e293b); border: 1.5px solid #38bdf8; border-radius: 12px; padding: 18px; color: #ffffff; box-shadow: 0 8px 24px rgba(56, 189, 248, 0.15);">
+              
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(56, 189, 248, 0.2); display: flex; align-items: center; justify-content: center; border: 1px solid #38bdf8;">
+                    <span class="material-icons-outlined text-teal" style="font-size: 22px; color: #38bdf8;">document_scanner</span>
+                  </div>
+                  <div>
+                    <h4 style="margin: 0; font-size: 1rem; color: #ffffff; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                      <span>📄 AI OCR Medical Report & Scan Extractor</span>
+                      <span style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 8px; border-radius: 12px; font-size: 0.72rem; font-weight: 700;">Tesseract AI v5</span>
+                    </h4>
+                    <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 2px;">
+                      Scan prescription photos, pathology lab reports & X-ray summaries to extract medical text & vitals.
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" id="btn-ocr-config-gemini" class="profile-btn secondary" style="font-size: 0.76rem; padding: 6px 14px; background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; display: inline-flex; align-items: center; gap: 5px;">
+                    <span class="material-icons-outlined" style="font-size: 16px;">vpn_key</span> 🔑 100% Accuracy AI Key
+                  </button>
+                  <button type="button" id="btn-trigger-ocr-scan" class="action-btn primary" style="width: auto; padding: 8px 20px; font-size: 0.85rem; background: linear-gradient(135deg, #0284c7, #0d9488); border-radius: 8px; display: inline-flex; align-items: center; gap: 6px;">
+                    <span class="material-icons-outlined" style="font-size: 18px;">manage_search</span>
+                    <span>Extract Text with OCR</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Live OCR Progress Indicator -->
+              <div id="ocr-progress-container" style="display: none; margin: 12px 0;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #38bdf8; font-weight: 700; margin-bottom: 4px;">
+                  <span id="ocr-status-text">Scanning image characters...</span>
+                  <span id="ocr-percent-text">0%</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                  <div id="ocr-progress-bar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #34d399); transition: width 0.2s ease;"></div>
+                </div>
+              </div>
+
+              <!-- OCR Result Box (Extracted Text & Recognized Vitals) -->
+              <div id="ocr-result-container" style="display: none; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 14px; border: 1px solid rgba(255,255,255,0.1); margin-top: 12px;">
+                <div style="font-size: 0.78rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                  <span>📝 Extracted Medical Document Text:</span>
+                  <button type="button" id="btn-autofill-from-ocr" style="background: rgba(52, 211, 153, 0.2); color: #34d399; border: 1px solid #34d399; padding: 4px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                    <span class="material-icons-outlined" style="font-size: 16px;">bolt</span> Auto-Fill Intake Form from OCR Text
+                  </button>
+                </div>
+                
+                <textarea id="ocr-extracted-text-area" rows="4" style="width: 100%; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #e2e8f0; font-family: monospace; font-size: 0.82rem; padding: 10px; resize: vertical;" placeholder="Extracted OCR text will appear here..."></textarea>
+                
+                <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;" id="ocr-recognized-vitals-badges">
+                  <!-- Dynamically populated OCR Vitals & Symptoms Badges -->
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -1787,6 +1921,43 @@
         </div>
         <h2 style="color: var(--primary-navy); margin: 0 0 6px 0;">OPD Consultation Registered Successfully!</h2>
         <p style="color: #64748b; margin: 0 0 24px 0; font-size: 0.95rem;">Your disease intake form and medical reports have been transmitted to the Doctor Workstation.</p>
+
+        <!-- 🤖 AI CLINICAL TRIAGE & PATIENT CONDITION EVALUATION BANNER -->
+        <div id="ai-triage-assessment-box" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border-radius: 14px; padding: 22px 24px; margin-bottom: 24px; text-align: left; box-shadow: 0 8px 25px rgba(0,0,0,0.15); border: 1.5px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+          <div style="position: absolute; top: -20px; right: -20px; width: 120px; height: 120px; background: rgba(56, 189, 248, 0.08); border-radius: 50%; pointer-events: none;"></div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="material-icons-outlined" style="color: var(--accent-saffron); font-size: 26px;">psychology</span>
+              <h3 style="margin: 0; font-size: 1.1rem; color: white; font-weight: 700; letter-spacing: 0.3px;">AI Triage & Patient Condition Assessment</h3>
+            </div>
+            
+            <!-- Dynamic Risk Level Badge -->
+            <div id="ai-risk-status-badge" style="padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">
+              <span class="material-icons-outlined" style="font-size: 16px;">warning</span>
+              <span>Evaluating Risk...</span>
+            </div>
+          </div>
+
+          <!-- Patient Condition Status Summary -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 14px;">
+            <div style="background: rgba(255,255,255,0.05); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Patient Condition Status</div>
+              <div id="ai-condition-category" style="font-size: 1.05rem; font-weight: 800; color: #f8fafc; margin-top: 3px;">Determining...</div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.05); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);">
+              <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Triage Queue Escalation</div>
+              <div id="ai-triage-priority" style="font-size: 1.05rem; font-weight: 800; color: #38bdf8; margin-top: 3px;">Priority Level 1</div>
+            </div>
+          </div>
+
+          <!-- AI Clinical Explanation & Next Steps -->
+          <div style="background: rgba(255,255,255,0.04); border-left: 4px solid #38bdf8; padding: 12px 16px; border-radius: 4px; font-size: 0.88rem; line-height: 1.5; color: #cbd5e1;" id="ai-triage-border-box">
+            <strong style="color: white; display: block; margin-bottom: 4px;" id="ai-recommendation-title">🤖 AI Clinical Recommendation:</strong>
+            <span id="ai-triage-explanation-text">Analyzing vitals and symptoms...</span>
+          </div>
+        </div>
 
         <div style="background: #f8fafc; border-radius: 12px; border: 1px solid #cbd5e1; max-width: 500px; margin: 0 auto 28px auto; padding: 20px;">
           <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 800;">Your OPD Token Number</div>
@@ -2693,7 +2864,7 @@
           <span class="material-icons-outlined" style="color: var(--health-teal);">lock</span>
           SwasthyaSetu Portal Login
         </h3>
-        <button class="close-modal" id="close-unified-login-btn" aria-label="Close modal" onclick="if(typeof closeUnifiedModal==='function'){ closeUnifiedModal(); }">&times;</button>
+        <button class="close-modal" id="close-unified-login-btn" aria-label="Close modal">&times;</button>
       </div>
       <div class="modal-body">
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px; text-align: center;">
@@ -3193,6 +3364,54 @@
         <button type="button" style="background: var(--health-teal); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(16, 132, 126, 0.3);" onclick="document.getElementById('doctor-handoff-modal').style.display='none'; if(document.getElementById('hwc-start-consult-btn')) document.getElementById('hwc-start-consult-btn').click();">
           <span class="material-icons-outlined">video_call</span> Transmit & Request Hub Doctor
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 12: Gemini API Key & AI LLM Model Settings Modal -->
+  <div class="modal-overlay" id="gemini-key-modal">
+    <div class="modal-container" style="max-width: 540px; background: #0f172a; color: white; border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 16px;" role="dialog" aria-modal="true" aria-labelledby="gemini-key-title">
+      <div class="modal-header" style="border-bottom: 1px solid rgba(255,255,255,0.12);">
+        <h3 id="gemini-key-title" style="color: white; display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.1rem;">
+          <span class="material-icons-outlined" style="color: #38bdf8;">psychology</span>
+          Configure Gemini AI / LLM Integration
+        </h3>
+        <button class="close-modal" id="close-gemini-key-modal" style="color: white;" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 22px;">
+        <p style="font-size: 0.88rem; color: #cbd5e1; margin-top: 0; line-height: 1.5;">
+          SwasthyaSetu uses Google Gemini 1.5/2.0 Flash to evaluate patient conditions, generate differential diagnoses, and detect clinical risk flags.
+        </p>
+
+        <div style="background: rgba(56, 189, 248, 0.08); border-left: 3px solid #38bdf8; padding: 12px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 0.82rem; color: #94a3b8;">
+          💡 <strong>Built-in Fallback:</strong> If no API key is provided, SwasthyaSetu automatically runs our high-accuracy built-in Medical Knowledge Graph LLM Inference Engine.
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label for="gemini-api-key-input" style="display: block; font-size: 0.82rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px;">
+            Google Gemini API Key (Optional):
+          </label>
+          <input type="password" id="gemini-api-key-input" class="form-input" placeholder="AIzaSy..." style="background: #1e293b; color: white; border: 1px solid #475569; border-radius: 8px; width: 100%; box-sizing: border-box;">
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label for="gemini-model-select" style="display: block; font-size: 0.82rem; font-weight: 700; color: #f8fafc; margin-bottom: 6px;">
+            Select LLM Model:
+          </label>
+          <select id="gemini-model-select" class="form-input" style="background: #1e293b; color: white; border: 1px solid #475569; border-radius: 8px; width: 100%;">
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fast Clinical Triage)</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Advanced Diagnostic Reasoning)</option>
+            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Case Review)</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+          <button type="button" id="btn-clear-gemini-key" class="action-btn secondary" style="padding: 8px 16px; font-size: 0.85rem; border-color: #475569; color: #cbd5e1;">Clear Key</button>
+          <button type="button" id="btn-save-gemini-key" class="ai-suggest-btn" style="padding: 8px 22px; font-size: 0.85rem;">Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
       </div>
     </div>
   </div>
