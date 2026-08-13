@@ -143,8 +143,21 @@
       <li class="nav-item"><a href="#how-it-works" id="nav-how">How it Works</a></li>
       <li class="nav-item"><a href="#faq" id="nav-faq">FAQs</a></li>
     </ul>
-    <div class="nav-right-actions" style="display: flex; align-items: center; gap: 12px;">
+    <div class="nav-right-actions" style="display: flex; align-items: center; gap: 10px;">
       <span class="desktop-only" style="font-size: 0.85rem; font-weight: 600;">Toll-Free: 1-800-555-0199</span>
+      
+      <!-- Unified Auth Navbar Buttons -->
+      <div id="nav-auth-buttons" style="display: flex; align-items: center; gap: 8px;">
+        <button id="nav-login-btn" type="button" onclick="if(typeof openUnifiedModal==='function') openUnifiedModal('patient', 'login');" style="background: rgba(15, 59, 95, 0.08); color: var(--primary-navy); border: 1.5px solid var(--primary-navy); padding: 7px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+          <span class="material-icons-outlined" style="font-size: 18px;">login</span> Sign In
+        </button>
+
+        <button id="nav-signup-btn" type="button" onclick="if(typeof openUnifiedModal==='function') openUnifiedModal('patient', 'register');" style="background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; border: none; padding: 7px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(15, 59, 95, 0.2); transition: all 0.2s ease;">
+          <span class="material-icons-outlined" style="font-size: 18px;">person_add</span> Sign Up
+        </button>
+      </div>
+
+      <!-- Logged In User Profile Badge -->
       <div id="user-profile-display" class="user-profile-badge" style="display: none; align-items: center; gap: 10px; background: rgba(16, 132, 126, 0.08); border: 1px solid rgba(16, 132, 126, 0.25); padding: 4px 14px 4px 6px; border-radius: 30px;">
         <div class="user-avatar-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; display: flex; align-items: center; justify-content: center;">
           <span class="material-icons-outlined" style="font-size: 18px;">person</span>
@@ -1833,12 +1846,26 @@
     </aside>
     
     <main class="hwc-main-content">
-      <!-- Header inside Main Content -->
-      <header class="hwc-workspace-header">
-        <h2>Clinical Workstation</h2>
-        <div class="health-worker-profile">
-          <span class="status-indicator online"></span>
-          <span>Active Clinic: Spoke-Station A</span>
+      <!-- Header inside Main Content with Offline/Poor-Network Status Bar -->
+      <header class="hwc-workspace-header" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 style="margin: 0; display: flex; align-items: center; gap: 8px;">
+            Clinical Workstation
+            <span style="font-size: 0.72rem; background: rgba(16, 132, 126, 0.15); color: var(--health-teal); padding: 2px 10px; border-radius: 12px; font-weight: 800;">AYUSHMAN BHARAT HWC SPOKE</span>
+          </h2>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">Spoke-Station A • Tele-OPD Diagnostic Hub</div>
+        </div>
+
+        <!-- 📴 7. Offline / Poor-Network Mode Switcher -->
+        <div style="display: flex; align-items: center; gap: 10px; background: white; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border-light); box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+          <div id="offline-mode-badge" style="display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 700; color: #10847e;">
+            <span class="material-icons-outlined" style="font-size: 18px; color: #22c55e;" id="offline-mode-icon">wifi</span>
+            <span id="offline-mode-status-text">Online Sync Active</span>
+          </div>
+          <button type="button" id="toggle-offline-mode-btn" onclick="if(typeof toggleHwcOfflineMode==='function') toggleHwcOfflineMode();" style="background: #f1f5f9; border: 1px solid #cbd5e1; color: var(--primary-navy); padding: 4px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease;">
+            Switch to Offline Mode 📴
+          </button>
+          <span id="offline-queue-count-badge" style="display: none; font-size: 0.72rem; background: #ef4444; color: white; padding: 2px 8px; border-radius: 10px; font-weight: 800;">0 Queued</span>
         </div>
       </header>
       
@@ -1892,7 +1919,14 @@
           
           <!-- Middle Column: Clinical Log & Vitals -->
           <div class="dashboard-card">
-            <h3>2. Record Vitals & Clinical Data</h3>
+            <!-- 📡 4. Device/Diagnostic Integration Auto-Capture Header -->
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <h3 style="margin: 0;">2. Record Vitals & Clinical Data</h3>
+              <button type="button" id="auto-capture-vitals-btn" onclick="if(typeof autoCaptureHwcVitals==='function') autoCaptureHwcVitals();" style="background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 3px 10px rgba(16, 132, 126, 0.25);">
+                <span class="material-icons-outlined" style="font-size: 16px;">bluetooth_searching</span> 📡 Connect Device / Auto Capture
+              </button>
+            </div>
+
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
               <div class="form-group">
                 <label for="hwc-temp">Temp (°F)</label>
@@ -1914,14 +1948,106 @@
               </div>
             </div>
             
-            <div class="form-group">
+            <!-- 🩺 3. Structured Clinical Examination Panel -->
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px; border-radius: 10px; margin-bottom: 16px;">
+              <h4 style="margin: 0 0 10px 0; font-size: 0.9rem; color: var(--primary-navy); display: flex; align-items: center; gap: 6px;">
+                <span class="material-icons-outlined text-teal" style="font-size: 18px;">health_and_safety</span>
+                Structured Injury & Trauma Examination
+              </h4>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.76rem; font-weight: 700; color: #475569;">Injury Type *</label>
+                  <select id="hwc-struct-injury-type" class="form-input" style="font-size: 0.82rem; padding: 6px 8px;">
+                    <option value="None">None / Internal Illness</option>
+                    <option value="Cut / Laceration" selected>Cut / Laceration</option>
+                    <option value="Thermal / Scald Burn">Thermal / Scald Burn</option>
+                    <option value="Fracture / Sprain">Suspected Fracture / Sprain</option>
+                    <option value="Puncture Wound">Puncture Wound</option>
+                    <option value="Abrasion / Graze">Abrasion / Superficial Graze</option>
+                    <option value="Contusion / Blunt Trauma">Contusion / Blunt Trauma</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.76rem; font-weight: 700; color: #475569;">Body Part / Anatomy *</label>
+                  <select id="hwc-struct-body-part" class="form-input" style="font-size: 0.82rem; padding: 6px 8px;">
+                    <option value="Head & Face">Head & Face</option>
+                    <option value="Right Arm / Forearm" selected>Right Arm / Forearm</option>
+                    <option value="Left Arm / Hand">Left Arm / Hand</option>
+                    <option value="Chest & Abdomen">Chest & Abdomen</option>
+                    <option value="Leg / Knee / Ankle">Leg / Knee / Ankle</option>
+                    <option value="Foot / Toes">Foot / Toes</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Pain Level (1-10)</label>
+                  <select id="hwc-struct-pain" class="form-input" style="font-size: 0.8rem; padding: 6px 6px;">
+                    <option value="1-3 Mild">1-3 Mild</option>
+                    <option value="4-6 Moderate" selected>4-6 Moderate</option>
+                    <option value="7-8 Severe">7-8 Severe</option>
+                    <option value="9-10 Critical">9-10 Critical</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Bleeding Status</label>
+                  <select id="hwc-struct-bleeding" class="form-input" style="font-size: 0.8rem; padding: 6px 6px;">
+                    <option value="None">None</option>
+                    <option value="Mild Oozing" selected>Mild Oozing</option>
+                    <option value="Active Pulsating">Active Pulsating</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Swelling / Edema</label>
+                  <select id="hwc-struct-swelling" class="form-input" style="font-size: 0.8rem; padding: 6px 6px;">
+                    <option value="None">None</option>
+                    <option value="Mild Edema" selected>Mild Edema</option>
+                    <option value="Severe Swelling">Severe Swelling</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Wound Depth</label>
+                  <select id="hwc-struct-depth" class="form-input" style="font-size: 0.8rem; padding: 6px 6px;">
+                    <option value="Superficial">Superficial</option>
+                    <option value="Subcutaneous" selected>Subcutaneous</option>
+                    <option value="Deep Muscle/Bone">Deep Muscle/Bone</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Burn Degree</label>
+                  <select id="hwc-struct-burn" class="form-input" style="font-size: 0.8rem; padding: 6px 6px;">
+                    <option value="N/A" selected>N/A</option>
+                    <option value="1st Degree">1st Degree</option>
+                    <option value="2nd Degree">2nd Degree</option>
+                    <option value="3rd Degree">3rd Degree</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                  <label style="font-size: 0.75rem; font-weight: 700; color: #475569;">Time Since Injury</label>
+                  <select id="hwc-struct-time" class="form-input" style="font-size: 0.8rem; padding: 6px 6px;">
+                    <option value="< 1 Hour">&lt; 1 Hour</option>
+                    <option value="1-6 Hours" selected>1-6 Hours</option>
+                    <option value="6-24 Hours">6-24 Hours</option>
+                    <option value="> 24 Hours">&gt; 24 Hours</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="display: none;">
               <label for="hwc-injuries">Recorded Injuries</label>
               <select id="hwc-injuries" class="form-input">
-                <option value="None">No Visible Injury / Trauma</option>
                 <option value="Minor Laceration">Minor Laceration / Abrasion</option>
-                <option value="Deep Wound">Deep Wound / Hemorrhage</option>
-                <option value="Suspected Fracture">Suspected Fracture / Sprain</option>
-                <option value="Thermal Burn">Thermal Burn / Scald</option>
               </select>
             </div>
 
@@ -1962,60 +2088,59 @@
               <div id="uploaded-files-list" class="uploaded-files-list"></div>
             </div>
 
-            <!-- 2B. AI Wound & Injury Assessment Card -->
-            <div class="form-group" id="wound-assessment-card" style="margin-top: 20px; background: #fffaf0; border: 1px solid #fbd38d; padding: 14px; border-radius: 8px;">
+            <!-- 🩹 1. AI Wound & Injury Assessment Card (Vision AI) -->
+            <div class="form-group" id="wound-assessment-card" style="margin-top: 20px; background: #fffaf0; border: 1.5px solid #fbd38d; padding: 16px; border-radius: 12px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.12);">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                <label style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--primary-navy); display: flex; align-items: center; gap: 6px;">
-                  <span class="material-icons-outlined" style="color: var(--accent-saffron);">camera_enhance</span>
-                  AI Wound & Injury Assessment
+                <label style="margin: 0; font-size: 0.98rem; font-weight: 800; color: var(--primary-navy); display: flex; align-items: center; gap: 6px;">
+                  <span class="material-icons-outlined" style="color: var(--accent-saffron); font-size: 22px;">camera_enhance</span>
+                  🩹 AI Wound & Injury Assessment (Vision AI)
                 </label>
-                <span style="font-size: 0.68rem; font-weight: 800; background: var(--accent-saffron); color: white; padding: 2px 6px; border-radius: 4px;">
-                  VISION LLM
+                <span style="font-size: 0.7rem; font-weight: 800; background: var(--accent-saffron); color: white; padding: 3px 8px; border-radius: 12px; text-transform: uppercase;">
+                  Vision LLM
                 </span>
               </div>
               
-              <div class="file-upload-zone" id="wound-upload-zone" style="padding: 14px; border: 2px dashed var(--accent-saffron); background: white; cursor: pointer; text-align: center;">
-                <span class="material-icons-outlined" style="font-size: 28px; color: var(--accent-saffron);">add_a_photo</span>
-                <p style="margin: 4px 0 0; font-size: 0.8rem; color: var(--text-dark); font-weight: 600;">Click or drag to upload / capture injury photo</p>
+              <div class="file-upload-zone" id="wound-upload-zone" style="padding: 16px; border: 2px dashed var(--accent-saffron); background: white; cursor: pointer; text-align: center; border-radius: 10px;">
+                <span class="material-icons-outlined" style="font-size: 32px; color: var(--accent-saffron);">add_a_photo</span>
+                <p style="margin: 4px 0 0; font-size: 0.85rem; color: var(--text-dark); font-weight: 700;">Click to upload or capture injury photo for Vision AI scan</p>
                 <input type="file" id="hwc-wound-file-input" accept="image/*" style="display:none">
               </div>
 
               <!-- Injury Image Preview Container -->
-              <div id="wound-image-preview-container" style="display: none; margin-top: 10px; text-align: center; position: relative;">
-                <img id="wound-image-preview" src="" alt="Injury Photo Preview" style="max-height: 160px; max-width: 100%; border-radius: 6px; border: 1px solid var(--border-light); object-fit: cover;">
-                <button type="button" id="remove-wound-image-btn" style="position: absolute; top: 4px; right: 8px; background: rgba(239,68,68,0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-weight: bold;">&times;</button>
+              <div id="wound-image-preview-container" style="display: none; margin-top: 12px; text-align: center; position: relative;">
+                <img id="wound-image-preview" src="" alt="Injury Photo Preview" style="max-height: 180px; max-width: 100%; border-radius: 8px; border: 2px solid var(--accent-saffron); object-fit: cover;">
+                <button type="button" id="remove-wound-image-btn" style="position: absolute; top: 6px; right: 10px; background: rgba(239,68,68,0.95); color: white; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-weight: bold; font-size: 16px;">&times;</button>
               </div>
 
-              <button type="button" id="analyze-wound-btn" class="form-submit" style="margin-top: 10px; background: linear-gradient(135deg, var(--accent-saffron), #e67e22); font-size: 0.85rem; padding: 10px;">
-                <span class="material-icons-outlined" style="vertical-align: middle;">psychology</span> Analyze Wound with Vision AI
+              <button type="button" id="analyze-wound-btn" onclick="if(typeof analyzeHwcWoundPhoto==='function') analyzeHwcWoundPhoto();" class="form-submit" style="margin-top: 12px; background: linear-gradient(135deg, var(--accent-saffron), #e67e22); font-size: 0.9rem; padding: 12px; font-weight: 800; box-shadow: 0 4px 12px rgba(230, 126, 34, 0.3);">
+                <span class="material-icons-outlined" style="vertical-align: middle;">psychology</span> 🩹 Scan & Analyze Injury with Vision AI
               </button>
 
               <!-- Structured Findings Result Output Box -->
-              <div id="wound-ai-results" style="display: none; margin-top: 12px; background: white; border: 1px solid #fed7aa; border-radius: 6px; padding: 12px;">
-                <!-- Mandatory Warning Banner -->
-                <div style="background: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444; color: #991b1b; padding: 6px 8px; border-radius: 4px; font-size: 0.74rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 4px;">
-                  <span class="material-icons-outlined" style="font-size: 15px;">gpp_maybe</span>
-                  AI-assisted — requires doctor verification
+              <div id="wound-ai-results" style="display: none; margin-top: 14px; background: white; border: 1.5px solid #fed7aa; border-radius: 8px; padding: 14px;">
+                <div style="background: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444; color: #991b1b; padding: 6px 10px; border-radius: 4px; font-size: 0.76rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 4px;">
+                  <span class="material-icons-outlined" style="font-size: 16px;">gpp_maybe</span>
+                  Vision AI Findings — Subject to Doctor Verification
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.78rem; margin-bottom: 6px;">
-                  <div><strong style="color: var(--text-muted);">Possible Injury:</strong><br><span id="wound-res-injury" style="font-weight: 700; color: var(--primary-navy);">Laceration with mild tissue erythema</span></div>
-                  <div><strong style="color: var(--text-muted);">Body Location:</strong><br><span id="wound-res-location" style="font-weight: 700;">Right Forearm (Distal Extremity)</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem; margin-bottom: 8px;">
+                  <div><strong style="color: var(--text-muted);">Injury Type:</strong><br><span id="wound-res-injury" style="font-weight: 800; color: var(--primary-navy);">Dermal Laceration</span></div>
+                  <div><strong style="color: var(--text-muted);">Anatomical Site:</strong><br><span id="wound-res-location" style="font-weight: 800; color: var(--primary-navy);">Right Forearm</span></div>
                 </div>
 
-                <div style="font-size: 0.78rem; margin-bottom: 6px;">
-                  <strong style="color: var(--text-muted);">Visible Findings:</strong><br>
-                  <span id="wound-res-findings" style="color: var(--text-dark);">3cm dermal tear, minimal active capillary bleeding, localized periwound edema</span>
+                <div style="font-size: 0.8rem; margin-bottom: 8px; background: #fffaf0; padding: 8px; border-radius: 6px;">
+                  <strong style="color: var(--text-muted);">Vision AI Visible Signs:</strong><br>
+                  <span id="wound-res-findings" style="color: var(--text-dark); font-weight: 600;">3.2cm dermal tissue tear, active capillary oozing, periwound erythema & edema.</span>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.78rem; margin-bottom: 6px;">
-                  <div><strong style="color: var(--text-muted);">Severity:</strong><br><span id="wound-res-severity" style="font-weight: 800; color: #b45309;">🟡 Moderate Severity</span></div>
-                  <div><strong style="color: var(--text-muted);">Infection Signs:</strong><br><span id="wound-res-infection" style="color: var(--text-dark);">No active purulent discharge</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem; margin-bottom: 8px;">
+                  <div><strong style="color: var(--text-muted);">Severity Grade:</strong><br><span id="wound-res-severity" style="font-weight: 900; color: #b45309;">🟡 Moderate Severity (Grade 2)</span></div>
+                  <div><strong style="color: var(--text-muted);">Infection Risk:</strong><br><span id="wound-res-infection" style="color: var(--text-dark); font-weight: 700;">Low (Clean wound margin)</span></div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.78rem;">
-                  <div><strong style="color: var(--text-muted);">Urgency:</strong><br><span id="wound-res-urgency" style="font-weight: 700; color: #c05621;">Urgent — Care within 6h</span></div>
-                  <div><strong style="color: var(--text-muted);">Confidence:</strong><br><span id="wound-res-confidence" style="font-weight: 700; color: var(--health-teal);">92% LLM Confidence</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem;">
+                  <div><strong style="color: var(--text-muted);">Urgency:</strong><br><span id="wound-res-urgency" style="font-weight: 800; color: #c05621;">Urgent Care (&lt; 6 Hours)</span></div>
+                  <div><strong style="color: var(--text-muted);">Confidence:</strong><br><span id="wound-res-confidence" style="font-weight: 800; color: var(--health-teal);">94% LLM Confidence</span></div>
                 </div>
               </div>
             </div>
@@ -2023,29 +2148,69 @@
           
           <!-- Right Column: AI Analysis & Consultation Trigger -->
           <div class="dashboard-card" style="display: flex; flex-direction: column;">
-            <h3>3. AI Decision Support</h3>
-            <button id="hwc-ai-analyze-btn" class="form-submit" style="background: var(--primary-navy-light);">
-              <span class="material-icons-outlined" style="vertical-align: middle;">psychology</span> Generate AI Summary
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <h3 style="margin: 0;">3. AI Decision Support & Triage</h3>
+              <span style="font-size: 0.72rem; background: rgba(245, 158, 11, 0.2); color: #b45309; padding: 2px 8px; border-radius: 10px; font-weight: 800;">
+                🧠 CLINICAL XAI
+              </span>
+            </div>
+
+            <button id="hwc-ai-analyze-btn" type="button" onclick="if(typeof generateHwcAiAnalysis==='function') generateHwcAiAnalysis();" class="form-submit" style="background: var(--primary-navy-light); font-size: 0.9rem; padding: 12px; font-weight: 800;">
+              <span class="material-icons-outlined" style="vertical-align: middle;">psychology</span> Generate AI Decision Support & Triage
             </button>
             
-            <div id="ai-analysis-output" class="ai-analysis-output" style="display:none; margin-top: 20px; flex-grow: 1;">
-              <div class="ai-risk-badge" id="ai-risk-badge">
-                <span class="material-icons-outlined">warning</span> <span id="ai-risk-text">EVALUATING</span>
-              </div>
+            <div id="ai-analysis-output" class="ai-analysis-output" style="display:none; margin-top: 16px; flex-grow: 1;">
               
+              <!-- 🚨 2. Emergency Triage Badge & Risk Rationale -->
+              <div id="emergency-triage-card" style="background: #fff5f5; border: 1.5px solid #feb2b2; padding: 14px; border-radius: 10px; margin-bottom: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <div style="font-size: 0.8rem; font-weight: 800; color: #991b1b; text-transform: uppercase; letter-spacing: 0.5px;">
+                    🚨 Emergency Risk Check Triage:
+                  </div>
+                  <div id="triage-level-pill" style="font-size: 0.82rem; font-weight: 900; background: #ef4444; color: white; padding: 4px 12px; border-radius: 12px;">
+                    🔴 CRITICAL
+                  </div>
+                </div>
+                <div id="triage-rationale-text" style="font-size: 0.84rem; font-weight: 700; color: #7f1d1d; line-height: 1.4;">
+                  HIGH RISK: Active bleeding laceration + Low SpO₂ (91%) + High Temp (102.1°F) → Immediate Hub Doctor Teleconsultation Recommended.
+                </div>
+              </div>
+
+              <!-- 🧠 5. Explainable AI (XAI) Breakdown -->
+              <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px 14px; border-radius: 8px; margin-bottom: 14px;">
+                <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary-navy); margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                  <span class="material-icons-outlined" style="font-size: 16px; color: var(--health-teal);">tips_and_updates</span>
+                  Explainable AI Rationale (Why this Risk Score?):
+                </div>
+                <ul id="xai-reasons-list" style="margin: 0; padding-left: 18px; font-size: 0.78rem; color: #334155; line-height: 1.5;">
+                  <li>🌡️ <strong>Temperature:</strong> 102.1°F (Fever elevation)</li>
+                  <li>🫁 <strong>Blood Oxygen:</strong> 91% SpO₂ (Hypoxia indicators)</li>
+                  <li>🩸 <strong>Injury Findings:</strong> Subcutaneous Laceration with Active Bleeding</li>
+                  <li>💓 <strong>Heart Rate:</strong> Tachycardia pulse elevation (108 BPM)</li>
+                </ul>
+              </div>
+
               <div class="ai-summary-box">
-                <strong>AI Patient Summary:</strong>
-                <p id="ai-summary-text"></p>
+                <strong>AI Patient Clinical Summary:</strong>
+                <p id="ai-summary-text" style="line-height: 1.5; font-size: 0.85rem; margin-top: 4px;"></p>
               </div>
               
-              <div class="form-group" style="margin-top: 15px;">
-                <label for="hwc-firstaid">First-Aid Actions & Intervention</label>
-                <textarea id="hwc-firstaid" class="form-input" rows="2" placeholder="Record immediate aid provided (e.g. ice pack, paracetamol)"></textarea>
+              <div class="form-group" style="margin-top: 14px;">
+                <label for="hwc-firstaid" style="font-size: 0.82rem; font-weight: 700;">First-Aid Actions & Interventions Administered</label>
+                <textarea id="hwc-firstaid" class="form-input" rows="2" placeholder="e.g., Sterile pressure bandage applied to right forearm, patient elevated, 1000mg Paracetamol administered."></textarea>
               </div>
+
+              <!-- 📋 6. Doctor Handoff Summary Button & Action -->
+              <div style="margin-top: 14px;">
+                <button type="button" id="generate-handoff-btn" onclick="if(typeof openDoctorHandoffModal==='function') openDoctorHandoffModal();" style="width: 100%; background: linear-gradient(135deg, #1e293b, #0f172a); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);">
+                  <span class="material-icons-outlined" style="font-size: 18px; color: #4ade80;">assignment_turned_in</span> 📋 Generate Doctor Handoff Summary Sheet
+                </button>
+              </div>
+
             </div>
-            
-            <button id="hwc-start-consult-btn" class="form-submit" style="margin-top:auto; background: var(--health-teal); display:none;">
-              <span class="material-icons-outlined" style="vertical-align: middle;">video_call</span> Request Doctor Consultation
+
+            <button id="hwc-start-consult-btn" class="form-submit" style="margin-top:14px; background: var(--health-teal); display:none; padding: 14px; font-size: 1rem; font-weight: 800;">
+              <span class="material-icons-outlined" style="vertical-align: middle;">video_call</span> Request Doctor Consultation from Spoke to Hub
             </button>
           </div>
         </div>
@@ -2535,24 +2700,50 @@
           Select your portal role to sign in:
         </p>
 
-        <!-- 3 Role Option Tabs -->
-        <div class="role-selector-tabs">
-          <button class="role-tab-btn active" data-role="doctor" id="role-tab-doctor">
-            <span class="material-icons-outlined">medical_information</span>
-            <span>Doctor</span>
-          </button>
-          <button class="role-tab-btn" data-role="patient" id="role-tab-patient">
-            <span class="material-icons-outlined">person</span>
+        <!-- 4 Role Option Tabs -->
+        <div class="role-selector-tabs" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+          <button class="role-tab-btn active" data-role="patient" id="role-tab-patient" style="font-size: 0.75rem; padding: 8px 4px;">
+            <span class="material-icons-outlined" style="font-size: 18px;">person</span>
             <span>Patient</span>
           </button>
-          <button class="role-tab-btn" data-role="hwc" id="role-tab-hwc">
-            <span class="material-icons-outlined">medical_services</span>
+          <button class="role-tab-btn" data-role="doctor" id="role-tab-doctor" style="font-size: 0.75rem; padding: 8px 4px;">
+            <span class="material-icons-outlined" style="font-size: 18px;">medical_information</span>
+            <span>Doctor</span>
+          </button>
+          <button class="role-tab-btn" data-role="hwc" id="role-tab-hwc" style="font-size: 0.75rem; padding: 8px 4px;">
+            <span class="material-icons-outlined" style="font-size: 18px;">medical_services</span>
             <span>Health Worker</span>
+          </button>
+          <button class="role-tab-btn" data-role="admin" id="role-tab-admin" style="font-size: 0.75rem; padding: 8px 4px;">
+            <span class="material-icons-outlined" style="font-size: 18px;">admin_panel_settings</span>
+            <span>Admin</span>
           </button>
         </div>
 
-        <!-- 1. Doctor Form Panel -->
-        <div class="role-form-panel active" id="panel-role-doctor">
+        <!-- 1. Patient Form Panel -->
+        <div class="role-form-panel active" id="panel-role-patient">
+          <div class="demo-account-box" style="border-color: var(--health-teal); background: rgba(16,132,126,0.08);">
+            <strong>⚡ Patient Tele-OPD Registration:</strong><br>
+            Mobile: <code>9876543210</code> | Instant OPD Consultation Access
+          </div>
+          <form id="unified-patient-form" onsubmit="event.preventDefault();">
+            <div class="form-group">
+              <label for="uni-pat-input">10-Digit Mobile Number or Email</label>
+              <input type="text" id="uni-pat-input" class="form-input" value="9876543210" placeholder="e.g. 9876543210" required>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+              <button type="button" id="submit-uni-pat-btn" class="form-submit" style="background: var(--health-teal); font-size: 0.95rem; font-weight: 800; padding: 12px;">
+                ⚡ Direct Register & Log In as Patient
+              </button>
+              <button type="button" id="open-otp-modal-btn" class="form-submit" style="background: #f1f5f9; color: var(--primary-navy); border: 1px solid var(--border-light); font-size: 0.83rem;">
+                📲 Request Real SMS OTP Code
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- 2. Doctor Form Panel -->
+        <div class="role-form-panel" id="panel-role-doctor">
           <div class="demo-account-box">
             <strong>Demo Doctor Account:</strong><br>
             Email: <code>doctor@medisetu.demo</code> | Pass: <code>Demo@123</code>
@@ -2566,36 +2757,14 @@
               <label for="uni-doc-pass">Password</label>
               <input type="password" id="uni-doc-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="button" id="submit-uni-doc-btn" class="form-submit" style="background: var(--primary-navy);">Login as Doctor</button>
-          </form>
-        </div>
-
-        <!-- 2. Patient Form Panel -->
-        <div class="role-form-panel" id="panel-role-patient">
-          <div class="demo-account-box" style="border-color: var(--health-teal); background: rgba(16,132,126,0.08);">
-            <strong>⚡ Direct Patient OPD Registration:</strong><br>
-            Mobile: <code>9876543210</code> | Instant 1-Click OPD Access (No OTP Required)
-          </div>
-          <form id="unified-patient-form" onsubmit="event.preventDefault();">
-            <div class="form-group">
-              <label for="uni-pat-input">10-Digit Mobile Number or Email</label>
-              <input type="text" id="uni-pat-input" class="form-input" value="9876543210" placeholder="e.g. 9876543210" required>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-              <button type="button" id="submit-uni-pat-btn" class="form-submit" style="background: var(--health-teal); font-size: 0.95rem; font-weight: 800; padding: 12px;">
-                ⚡ Direct Register & Log In (No OTP Needed)
-              </button>
-              <button type="button" id="open-otp-modal-btn" class="form-submit" style="background: #f1f5f9; color: var(--primary-navy); border: 1px solid var(--border-light); font-size: 0.83rem;">
-                📲 Request Real SMS OTP Code
-              </button>
-            </div>
+            <button type="button" id="submit-uni-doc-btn" class="form-submit" style="background: var(--primary-navy);">Login as Doctor Workstation</button>
           </form>
         </div>
 
         <!-- 3. Health Worker Form Panel -->
         <div class="role-form-panel" id="panel-role-hwc">
           <div class="demo-account-box" style="border-color: var(--health-teal); background: rgba(16,132,126,0.08);">
-            <strong>Demo Health Worker Account:</strong><br>
+            <strong>Demo Health Worker (CHO) Account:</strong><br>
             Email: <code>healthworker@medisetu.demo</code> | Pass: <code>Demo@123</code>
           </div>
           <form id="unified-hwc-form" onsubmit="event.preventDefault();">
@@ -2607,7 +2776,26 @@
               <label for="uni-hwc-pass">Password</label>
               <input type="password" id="uni-hwc-pass" class="form-input" value="Demo@123" required>
             </div>
-            <button type="button" id="submit-uni-hwc-btn" class="form-submit" style="background: var(--health-teal);">Login as Health Worker</button>
+            <button type="button" id="submit-uni-hwc-btn" class="form-submit" style="background: var(--health-teal);">Login as Health Worker Portal</button>
+          </form>
+        </div>
+
+        <!-- 4. Admin Form Panel -->
+        <div class="role-form-panel" id="panel-role-admin">
+          <div class="demo-account-box" style="border-color: #f59e0b; background: rgba(245, 158, 11, 0.08);">
+            <strong>Demo System Admin Account:</strong><br>
+            Email: <code>admin@medisetu.demo</code> | Pass: <code>Admin@123</code>
+          </div>
+          <form id="unified-admin-form" onsubmit="event.preventDefault();">
+            <div class="form-group">
+              <label for="uni-admin-email">Admin Email / Security ID</label>
+              <input type="text" id="uni-admin-email" class="form-input" value="admin@medisetu.demo" required>
+            </div>
+            <div class="form-group">
+              <label for="uni-admin-pass">Security Key / Password</label>
+              <input type="password" id="uni-admin-pass" class="form-input" value="Admin@123" required>
+            </div>
+            <button type="button" id="submit-uni-admin-btn" class="form-submit" style="background: linear-gradient(135deg, #1e293b, #0f172a);">Login as System Admin</button>
           </form>
         </div>
 
@@ -2978,6 +3166,33 @@
       </div>
       <div class="modal-body" style="text-align: center; padding: 20px;">
         <img id="lightbox-full-img" src="" alt="Full Resolution Clinical Image" style="max-width: 100%; max-height: 75vh; border-radius: 6px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2);">
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 11: 📋 Doctor Handoff Summary Modal (Spoke to Hub) -->
+  <div class="modal-overlay" id="doctor-handoff-modal" style="display: none; align-items: center; justify-content: center; z-index: 100000;">
+    <div class="modal-container" style="max-width: 680px; width: 92%; background: white; border-radius: 16px; border: 2px solid var(--health-teal); box-shadow: 0 20px 50px rgba(0,0,0,0.3); overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;">
+      <div style="background: linear-gradient(135deg, var(--primary-navy-dark), var(--primary-navy)); color: white; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="material-icons-outlined" style="color: #4ade80; font-size: 26px;">assignment_turned_in</span>
+          <div>
+            <h3 style="margin: 0; color: white; font-size: 1.1rem;">Spoke ➔ Hub Doctor Handoff Summary</h3>
+            <div style="font-size: 0.76rem; color: rgba(255,255,255,0.8);">Generated by SwasthyaSetu AB-HWC Spoke Tele-Clinic</div>
+          </div>
+        </div>
+        <button type="button" class="close-modal" onclick="document.getElementById('doctor-handoff-modal').style.display='none';" style="color: white; font-size: 24px; cursor: pointer; background: transparent; border: none;">&times;</button>
+      </div>
+
+      <div style="padding: 24px; overflow-y: auto; flex-grow: 1;" id="handoff-sheet-content">
+        <!-- Dynamically Populated via JS -->
+      </div>
+
+      <div style="background: #f8fafc; padding: 16px 24px; border-top: 1px solid #cbd5e1; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+        <button type="button" style="background: #cbd5e1; color: #334155; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer;" onclick="document.getElementById('doctor-handoff-modal').style.display='none';">Close Sheet</button>
+        <button type="button" style="background: var(--health-teal); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(16, 132, 126, 0.3);" onclick="document.getElementById('doctor-handoff-modal').style.display='none'; if(document.getElementById('hwc-start-consult-btn')) document.getElementById('hwc-start-consult-btn').click();">
+          <span class="material-icons-outlined">video_call</span> Transmit & Request Hub Doctor
+        </button>
       </div>
     </div>
   </div>

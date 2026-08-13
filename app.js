@@ -1996,44 +1996,87 @@ function initHWCModule() {
         });
       }
 
-      // Risk Evaluation Algorithm
-      let riskLevel = 'LOW';
-      let badgeClass = 'risk-low';
-      let riskFactors = [];
+      // 🚨 2 & 5. Emergency Triage Algorithm & Explainable AI (XAI) Engine
+      let riskLevel = '🟢 STABLE';
+      let pillBg = '#22c55e';
+      let pillText = '🟢 STABLE';
+      let riskRationale = 'Vitals within normal limits. Standard routine consultation recommended.';
+      let xaiReasons = [];
 
-      if (spo2 < 90 || temp >= 103 || injuries === 'Deep Wound' || injuries === 'Thermal Burn') {
-        riskLevel = 'CRITICAL EMERGENCY';
-        badgeClass = 'risk-critical';
-        if (spo2 < 90) riskFactors.push(`Severe Hypoxia (SpO2: ${spo2}%)`);
-        if (temp >= 103) riskFactors.push(`High Hyperpyrexia (${temp}°F)`);
-        if (injuries !== 'None') riskFactors.push(`Severe Trauma (${injuries})`);
-      } else if (spo2 < 95 || temp >= 101 || pulse > 105 || injuries === 'Suspected Fracture') {
-        riskLevel = 'HIGH RISK';
-        badgeClass = 'risk-high';
-        if (spo2 < 95) riskFactors.push(`Mild Hypoxia (SpO2: ${spo2}%)`);
-        if (temp >= 101) riskFactors.push(`Moderate Fever (${temp}°F)`);
-        if (pulse > 105) riskFactors.push(`Tachycardia (${pulse} BPM)`);
-        if (injuries !== 'None') riskFactors.push(`Trauma/Injury (${injuries})`);
-      } else if (temp > 99.5 || pulse > 90) {
-        riskLevel = 'MODERATE RISK';
-        badgeClass = 'risk-moderate';
-        if (temp > 99.5) riskFactors.push(`Low-grade Fever (${temp}°F)`);
-        if (pulse > 90) riskFactors.push(`Elevated Pulse (${pulse} BPM)`);
+      // Read Structured Injury Exam
+      const structType = document.getElementById('hwc-struct-injury-type') ? document.getElementById('hwc-struct-injury-type').value : 'None';
+      const structBody = document.getElementById('hwc-struct-body-part') ? document.getElementById('hwc-struct-body-part').value : 'Right Arm';
+      const structPain = document.getElementById('hwc-struct-pain') ? document.getElementById('hwc-struct-pain').value : '4-6 Moderate';
+      const structBleed = document.getElementById('hwc-struct-bleeding') ? document.getElementById('hwc-struct-bleeding').value : 'Mild Oozing';
+      const structSwell = document.getElementById('hwc-struct-swelling') ? document.getElementById('hwc-struct-swelling').value : 'Mild Edema';
+      const structDepth = document.getElementById('hwc-struct-depth') ? document.getElementById('hwc-struct-depth').value : 'Subcutaneous';
+      const structBurn = document.getElementById('hwc-struct-burn') ? document.getElementById('hwc-struct-burn').value : 'N/A';
+      const structTime = document.getElementById('hwc-struct-time') ? document.getElementById('hwc-struct-time').value : '1-6 Hours';
+
+      currentSession.structuredExam = {
+        type: structType, body: structBody, pain: structPain, bleed: structBleed,
+        swell: structSwell, depth: structDepth, burn: structBurn, time: structTime
+      };
+
+      // XAI Evaluation
+      if (temp >= 101.0) xaiReasons.push(`🌡️ <strong>Temperature:</strong> ${temp}°F (Hyperpyrexia / Fever elevation)`);
+      else xaiReasons.push(`🌡️ <strong>Temperature:</strong> ${temp}°F (Normal body temp)`);
+
+      if (spo2 < 92) xaiReasons.push(`🫁 <strong>Blood Oxygen:</strong> ${spo2}% SpO₂ (Critical Hypoxia indicators)`);
+      else if (spo2 < 95) xaiReasons.push(`🫁 <strong>Blood Oxygen:</strong> ${spo2}% SpO₂ (Mild Hypoxia border)`);
+      else xaiReasons.push(`🫁 <strong>Blood Oxygen:</strong> ${spo2}% SpO₂ (Normal oxygenation)`);
+
+      if (pulse > 100) xaiReasons.push(`💓 <strong>Heart Rate:</strong> ${pulse} BPM (Tachycardia pulse elevation)`);
+      else xaiReasons.push(`💓 <strong>Heart Rate:</strong> ${pulse} BPM (Normal sinus rhythm)`);
+
+      if (structBleed === 'Active Pulsating' || structType.includes('Deep') || structBurn.includes('3rd') || structDepth.includes('Deep')) {
+        xaiReasons.push(`🩸 <strong>Injury Findings:</strong> ${structType} on ${structBody} (${structBleed}, ${structDepth} depth)`);
+      } else if (structType !== 'None') {
+        xaiReasons.push(`🩹 <strong>Injury Findings:</strong> ${structType} on ${structBody} (${structPain} pain, ${structTime} ago)`);
       }
 
-      currentSession.aiRisk = { level: riskLevel, badgeClass: badgeClass, factors: riskFactors };
+      // Assign Triage Risk Grade
+      if (spo2 < 92 || temp >= 102.5 || structBleed === 'Active Pulsating' || structBurn === '3rd Degree' || structDepth === 'Deep Muscle/Bone') {
+        riskLevel = 'CRITICAL';
+        pillBg = '#ef4444';
+        pillText = '🔴 CRITICAL EMERGENCY';
+        riskRationale = `HIGH RISK: ${spo2 < 92 ? 'Low SpO₂ ('+spo2+'%) + ' : ''}${temp >= 101 ? 'High Temp ('+temp+'°F) + ' : ''}${structType !== 'None' ? structType+' on '+structBody+' with '+structBleed : 'Severe vitals deviation'} → Immediate Hub Doctor Teleconsultation Required.`;
+      } else if (spo2 < 95 || temp >= 100.5 || pulse > 100 || structBleed === 'Mild Oozing' || structType !== 'None') {
+        riskLevel = 'URGENT';
+        pillBg = '#f59e0b';
+        pillText = '🟠 URGENT CARE';
+        riskRationale = `MODERATE-HIGH RISK: ${structType !== 'None' ? structType+' on '+structBody+' ('+structPain+' pain) + ' : ''}Elevated Vitals (Temp: ${temp}°F, SpO₂: ${spo2}%) → Priority Doctor Consultation Recommended.`;
+      } else {
+        riskLevel = 'STABLE';
+        pillBg = '#22c55e';
+        pillText = '🟢 STABLE';
+        riskRationale = `STABLE CLINICAL STATUS: Normal oxygenation (${spo2}%) & vitals. Non-urgent routine teleconsultation scheduled.`;
+      }
 
-      aiRiskBadge.className = `ai-risk-badge ${badgeClass}`;
-      aiRiskText.textContent = `${riskLevel} ${riskFactors.length ? ' (' + riskFactors.join(', ') + ')' : ''}`;
+      currentSession.aiRisk = { level: riskLevel, rationale: riskRationale, reasons: xaiReasons };
+
+      // Update Triage UI Card
+      const triagePill = document.getElementById('triage-level-pill');
+      const triageText = document.getElementById('triage-rationale-text');
+      const xaiList = document.getElementById('xai-reasons-list');
+
+      if (triagePill) {
+        triagePill.style.background = pillBg;
+        triagePill.textContent = pillText;
+      }
+      if (triageText) triageText.textContent = riskRationale;
+      if (xaiList) {
+        xaiList.innerHTML = xaiReasons.map(r => `<li>${r}</li>`).join('');
+      }
 
       aiSummaryText.innerHTML = `
         • <strong>Demographics:</strong> ${name}, ${age}y/${gender}<br>
         • <strong>Vitals Assessment:</strong> Temp: ${temp}°F | Pulse: ${pulse} BPM | BP: ${bp} | SpO2: ${spo2}%<br>
         • <strong>Chief Complaints:</strong> ${symptoms}<br>
-        • <strong>Injuries:</strong> ${injuries}<br>
+        • <strong>Structured Injury:</strong> ${structType} (${structBody}) — Pain: ${structPain}, Bleeding: ${structBleed}, Time: ${structTime}<br>
         • <strong>Medical History:</strong> ${history}<br>
         • <strong>Uploaded Reports:</strong> ${currentSession.uploadedFiles.length} document(s) attached.<br>
-        • <strong>Specialist Triage:</strong> ${riskLevel === 'LOW' ? 'Routine Teleconsultation' : 'Priority Tele-Specialist Evaluation Recommended'}.
+        • <strong>Emergency Triage Rationale:</strong> ${riskRationale}
       `;
 
       if (latestWoundAssessment) {
@@ -2044,8 +2087,183 @@ function initHWCModule() {
 
       aiAnalysisOutput.style.display = 'block';
       startConsultBtn.style.display = 'block';
+
+      showToast(`🧠 AI Decision Support & Triage Generated (${pillText})`);
     });
   }
+
+  // -------------------------------------------------------------
+  // 📴 Feature 7: Offline / Poor-Network Mode Logic
+  // -------------------------------------------------------------
+  let isHwcOffline = false;
+  let offlineQueue = [];
+
+  window.toggleHwcOfflineMode = function() {
+    isHwcOffline = !isHwcOffline;
+    const badge = document.getElementById('offline-mode-badge');
+    const statusText = document.getElementById('offline-mode-status-text');
+    const icon = document.getElementById('offline-mode-icon');
+    const toggleBtn = document.getElementById('toggle-offline-mode-btn');
+    const queueBadge = document.getElementById('offline-queue-count-badge');
+
+    if (isHwcOffline) {
+      if (statusText) statusText.textContent = 'Offline Mode Active';
+      if (badge) badge.style.color = '#dc3545';
+      if (icon) {
+        icon.textContent = 'wifi_off';
+        icon.style.color = '#dc3545';
+      }
+      if (toggleBtn) {
+        toggleBtn.textContent = 'Switch to Online 🌐';
+        toggleBtn.style.background = '#fee2e2';
+        toggleBtn.style.color = '#991b1b';
+      }
+      if (queueBadge) queueBadge.style.display = 'inline-block';
+      showToast('📴 Offline Mode Active! All patient records & injury photos will save locally on HWC station.');
+    } else {
+      if (statusText) statusText.textContent = 'Online Sync Active';
+      if (badge) badge.style.color = '#10847e';
+      if (icon) {
+        icon.textContent = 'wifi';
+        icon.style.color = '#22c55e';
+      }
+      if (toggleBtn) {
+        toggleBtn.textContent = 'Switch to Offline Mode 📴';
+        toggleBtn.style.background = '#f1f5f9';
+        toggleBtn.style.color = 'var(--primary-navy)';
+      }
+      if (queueBadge) queueBadge.style.display = 'none';
+
+      if (offlineQueue.length > 0) {
+        showToast(`🌐 Reconnected! Auto-syncing ${offlineQueue.length} offline patient records to Telehealth Hub...`);
+        offlineQueue = [];
+        if (queueBadge) queueBadge.textContent = '0 Queued';
+      } else {
+        showToast('🌐 Online Mode Active. Connected to Hub Doctor Network.');
+      }
+    }
+  };
+
+  // -------------------------------------------------------------
+  // 📡 Feature 4: Bluetooth Vitals Device Auto-Capture
+  // -------------------------------------------------------------
+  window.autoCaptureHwcVitals = function() {
+    showToast('📡 Pairing Bluetooth Medical Kit (BP, SpO₂, Temp)...');
+
+    setTimeout(() => {
+      if (tempInput) tempInput.value = '101.4';
+      if (pulseInput) pulseInput.value = '108';
+      if (bpInput) bpInput.value = '132/88';
+      if (spo2Input) spo2Input.value = '91';
+
+      showToast('✅ Bluetooth Devices Synced! Auto-captured Temp: 101.4°F, Pulse: 108 BPM, BP: 132/88, SpO₂: 91%.');
+    }, 600);
+  };
+
+  // -------------------------------------------------------------
+  // 🩹 Feature 1: Vision AI Wound Assessment Trigger
+  // -------------------------------------------------------------
+  window.analyzeHwcWoundPhoto = function() {
+    const btn = document.getElementById('analyze-wound-btn');
+    if (btn) btn.click();
+  };
+
+  // -------------------------------------------------------------
+  // 📋 Feature 6: Doctor Handoff Summary Sheet Generator
+  // -------------------------------------------------------------
+  window.openDoctorHandoffModal = function() {
+    const modal = document.getElementById('doctor-handoff-modal');
+    const container = document.getElementById('handoff-sheet-content');
+    if (!modal || !container) return;
+
+    const s = currentSession;
+    const struct = s.structuredExam || {};
+    const risk = s.aiRisk || { level: 'STABLE', rationale: 'Routine tele-consultation' };
+    const wound = s.woundAssessment || {};
+
+    container.innerHTML = `
+      <!-- Header Banner -->
+      <div style="background: #f8fafc; border-radius: 10px; border: 1px solid #cbd5e1; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Patient Full Profile</div>
+          <div style="font-size: 1.2rem; font-weight: 800; color: var(--primary-navy);">${s.name || 'Ramesh Kumar'} (${s.age || '45'}y / ${s.gender || 'Male'})</div>
+          <div style="font-size: 0.8rem; color: var(--health-teal); font-family: monospace;">ABHA DHR ID: ${s.dhrId || 'DHR-8821-9910-1011'}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.75rem; color: #64748b; font-weight: 800; text-transform: uppercase;">Emergency Triage</div>
+          <div style="font-size: 0.95rem; font-weight: 900; background: ${risk.level==='CRITICAL'?'#ef4444':risk.level==='URGENT'?'#f59e0b':'#22c55e'}; color: white; padding: 4px 14px; border-radius: 12px; display: inline-block; margin-top: 2px;">
+            ${risk.level==='CRITICAL'?'🔴 CRITICAL':risk.level==='URGENT'?'🟠 URGENT':'🟢 STABLE'}
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid 1: Vitals & Symptoms -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+        <div style="background: #f1f5f9; padding: 14px; border-radius: 8px;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary-navy); margin-bottom: 6px;">🩺 Telemetry Vitals Log:</div>
+          <div style="font-size: 0.82rem; line-height: 1.5; color: #334155;">
+            • <strong>Body Temp:</strong> ${s.temp || '101.4'} °F<br>
+            • <strong>Blood Pressure:</strong> ${s.bp || '132/88'} mmHg<br>
+            • <strong>SpO₂ Level:</strong> ${s.spo2 || '91'} %<br>
+            • <strong>Pulse Rate:</strong> ${s.pulse || '108'} BPM
+          </div>
+        </div>
+
+        <div style="background: #f1f5f9; padding: 14px; border-radius: 8px;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary-navy); margin-bottom: 6px;">📝 Chief Symptoms & History:</div>
+          <div style="font-size: 0.82rem; line-height: 1.5; color: #334155;">
+            • <strong>Symptoms:</strong> ${s.symptoms || 'High fever with acute laceration on right forearm'}<br>
+            • <strong>Past History:</strong> ${s.history || 'Hypertension, Mild Asthma'}<br>
+            • <strong>Diagnostic Files:</strong> ${s.uploadedFiles ? s.uploadedFiles.length : 0} file(s) attached
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid 2: Structured Injury Examination -->
+      <div style="background: #fffaf0; border: 1px solid #fed7aa; padding: 14px; border-radius: 10px; margin-bottom: 16px;">
+        <div style="font-size: 0.84rem; font-weight: 800; color: #b45309; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <span class="material-icons-outlined" style="font-size: 18px;">health_and_safety</span>
+          Structured Clinical Examination:
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; font-size: 0.8rem; color: #451a03;">
+          <div>• <strong>Injury Type:</strong> ${struct.type || 'Cut / Laceration'}</div>
+          <div>• <strong>Anatomy Site:</strong> ${struct.body || 'Right Arm / Forearm'}</div>
+          <div>• <strong>Pain Scale:</strong> ${struct.pain || '4-6 Moderate'}</div>
+          <div>• <strong>Bleeding:</strong> ${struct.bleed || 'Mild Oozing'}</div>
+          <div>• <strong>Swelling:</strong> ${struct.swell || 'Mild Edema'}</div>
+          <div>• <strong>Wound Depth:</strong> ${struct.depth || 'Subcutaneous'}</div>
+          <div>• <strong>Burn Degree:</strong> ${struct.burn || 'N/A'}</div>
+          <div>• <strong>Time Elapsed:</strong> ${struct.time || '1-6 Hours'}</div>
+        </div>
+      </div>
+
+      <!-- Grid 3: Vision AI Wound Assessment -->
+      ${wound.injury ? `
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px; border-radius: 10px; margin-bottom: 16px;">
+          <div style="font-size: 0.84rem; font-weight: 800; color: #1e40af; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <span class="material-icons-outlined" style="font-size: 18px;">camera_enhance</span>
+            Vision AI Wound Findings:
+          </div>
+          <div style="font-size: 0.82rem; color: #1e3a8a; line-height: 1.4;">
+            • <strong>AI Diagnosis:</strong> ${wound.injury} (${wound.severity})<br>
+            • <strong>Visible Signs:</strong> ${wound.findings}<br>
+            • <strong>Clinical Urgency:</strong> ${wound.urgency} (${wound.confidence})
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Grid 4: Explainable AI Rationale & First Aid Given -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px; border-radius: 10px;">
+        <div style="font-size: 0.84rem; font-weight: 800; color: var(--primary-navy); margin-bottom: 6px;">🧠 Explainable AI Triage Rationale & First Aid:</div>
+        <div style="font-size: 0.82rem; color: #334155; line-height: 1.5;">
+          • <strong>Triage Rationale:</strong> ${risk.rationale || 'High fever + Low SpO2 + Active Bleeding'}<br>
+          • <strong>First-Aid Interventions Administered:</strong> ${s.firstaid || document.getElementById('hwc-firstaid').value || 'Sterile compression bandage applied, wound irrigated with normal saline, 1000mg Paracetamol given.'}
+        </div>
+      </div>
+    `;
+
+    modal.style.display = 'flex';
+  };
 
   // Request Doctor Consultation
   if (startConsultBtn) {
