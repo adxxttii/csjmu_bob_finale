@@ -297,6 +297,35 @@
         </button>
       </div>
     </section>
+
+    <!-- Doctor Specialist Hub Service Card -->
+    <section class="service-card doctor" aria-labelledby="doc-service-title" style="border-top: 6px solid var(--primary-navy);">
+      <div class="service-badge" style="background: rgba(15, 59, 95, 0.1); color: var(--primary-navy);">Specialist Workstation</div>
+      <h3 class="service-title" id="doc-service-title">SwasthyaSetu Doctor Workstation</h3>
+      <p class="service-desc">Dedicated clinical portal for certified medical specialists to manage tele-OPD queues, inspect vitals & Vision AI wound scans, and generate digital e-prescriptions.</p>
+      <ul class="service-features">
+        <li>
+          <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l5-5z"></path></svg>
+          Real-Time Patient Consultation Queue
+        </li>
+        <li>
+          <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l5-5z"></path></svg>
+          Vision AI Wound Review & Medical History
+        </li>
+        <li>
+          <svg fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l5-5z"></path></svg>
+          Digitally Signed e-Prescriptions Generator
+        </li>
+      </ul>
+      <div class="service-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="action-btn primary" onclick="if(typeof openUnifiedModal==='function') openUnifiedModal('doctor', 'login');" style="background: var(--primary-navy);">
+          <span class="material-icons-outlined">login</span> Doctor Sign In
+        </button>
+        <button class="action-btn secondary" onclick="if(typeof openUnifiedModal==='function') openUnifiedModal('doctor', 'register');" style="border: 1.5px solid var(--primary-navy); color: var(--primary-navy);">
+          <span class="material-icons-outlined">person_add</span> Doctor Register
+        </button>
+      </div>
+    </section>
   </main>
 
 
