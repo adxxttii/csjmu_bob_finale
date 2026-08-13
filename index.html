@@ -145,17 +145,17 @@
         <li class="nav-item"><a href="#services" id="nav-services">Services</a></li>
         <li class="nav-item"><a href="#how-it-works" id="nav-how">How it Works</a></li>
         <li class="nav-item"><a href="#faq" id="nav-faq">FAQs</a></li>
-        <li class="nav-item"><a href="#" id="nav-profile" onclick="if(typeof showView==='function') showView('profile');" style="color: var(--health-teal); font-weight: 800; display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 132, 126, 0.1); padding: 4px 12px; border-radius: 16px;"><span class="material-icons-outlined" style="font-size: 18px;">account_box</span> Patient Profile</a></li>
       </ul>
-      <div class="nav-right-actions" style="display: flex; align-items: center; gap: 10px;">
+      <div class="nav-right-actions" style="display: flex; align-items: center; gap: 12px;">
         <span class="desktop-only" style="font-size: 0.85rem; font-weight: 600;">Toll-Free: 1-800-555-0199</span>
 
-      
-      <!-- Unified Auth Navbar Buttons -->
-      <div id="nav-auth-buttons" style="display: flex; align-items: center; gap: 8px;">
-        <button id="nav-login-btn" type="button" onclick="if(typeof openUnifiedModal==='function') openUnifiedModal('patient', 'login');" style="background: rgba(15, 59, 95, 0.08); color: var(--primary-navy); border: 1.5px solid var(--primary-navy); padding: 7px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
-          <span class="material-icons-outlined" style="font-size: 18px;">login</span> Sign In
-        </button>
+        <!-- Sign Up Button beside Toll-Free -->
+        <div id="nav-auth-buttons" style="display: flex; align-items: center;">
+          <button id="nav-signup-btn" type="button" onclick="if(typeof openUnifiedModal==='function') openUnifiedModal('patient', 'register');" style="background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; border: none; padding: 8px 22px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(15, 59, 95, 0.25); transition: all 0.2s ease;">
+            <span class="material-icons-outlined" style="font-size: 18px;">person_add</span> Sign Up
+          </button>
+        </div>
+
         <!-- Logged In User Profile Badge (Prominent, High-Contrast & Larger) -->
         <div id="user-profile-display" class="user-profile-badge" onclick="if(typeof showView==='function') showView('profile');"
           style="display: none; align-items: center; gap: 12px; background: linear-gradient(135deg, var(--primary-navy-dark), var(--primary-navy)); border: 2px solid #38bdf8; padding: 6px 18px 6px 8px; border-radius: 35px; box-shadow: 0 4px 15px rgba(15, 59, 95, 0.35); cursor: pointer; transition: all 0.2s ease;">
@@ -177,32 +177,6 @@
         </div>
       </div>
     </nav>
-
-        <button id="nav-signup-btn" type="button" onclick="if(typeof openUnifiedModal==='function') openUnifiedModal('patient', 'register');" style="background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; border: none; padding: 7px 18px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(15, 59, 95, 0.2); transition: all 0.2s ease;">
-          <span class="material-icons-outlined" style="font-size: 18px;">person_add</span> Sign Up
-        </button>
-      </div>
-
-      <!-- Logged In User Profile Badge -->
-
-      <button class="nav-login-btn" id="open-unified-login-btn">
-        <span class="material-icons-outlined" style="font-size: 18px;">account_circle</span> Sign In
-      </button>
-
-      <div id="user-profile-display" class="user-profile-badge" style="display: none; align-items: center; gap: 10px; background: rgba(16, 132, 126, 0.08); border: 1px solid rgba(16, 132, 126, 0.25); padding: 4px 14px 4px 6px; border-radius: 30px;">
-        <div class="user-avatar-icon" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-navy), var(--health-teal)); color: white; display: flex; align-items: center; justify-content: center;">
-          <span class="material-icons-outlined" style="font-size: 18px;">person</span>
-        </div>
-        <div style="text-align: left;">
-          <div id="user-display-name" style="font-weight: 700; font-size: 0.84rem; color: var(--primary-navy); line-height: 1.2;">User</div>
-          <div id="user-display-role" style="font-size: 0.65rem; color: var(--health-teal); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Patient</div>
-        </div>
-        <button id="header-logout-btn" class="header-logout-btn" title="Sign Out" style="background: rgba(220, 53, 69, 0.1); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.25); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 4px;">
-          <span class="material-icons-outlined" style="font-size: 16px;">logout</span>
-        </button>
-      </div>
-    </div>
-  </nav>
 
   <!-- News Ticker -->
   <div class="ticker-container" aria-label="Latest Updates News Ticker">
@@ -3431,9 +3405,6 @@
           <button type="button" id="btn-clear-gemini-key" class="action-btn secondary" style="padding: 8px 16px; font-size: 0.85rem; border-color: #475569; color: #cbd5e1;">Clear Key</button>
           <button type="button" id="btn-save-gemini-key" class="ai-suggest-btn" style="padding: 8px 22px; font-size: 0.85rem;">Save Settings</button>
         </div>
-      </div>
-    </div>
-  </div>
       </div>
     </div>
   </div>
