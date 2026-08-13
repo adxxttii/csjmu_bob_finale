@@ -2,7 +2,37 @@
 
 A high-fidelity, premium, and fully interactive frontend implementation of the **SwasthyaSetu** digital telehealth platform.
 
-This project is built using modern web design principles (Harmonious HSL palettes, glassmorphism, responsive grids, and micro-animations) and features a fully functional **teleconsultation simulator** to provide a realistic experience of modern digital healthcare.
+> ⚠️ **DEMO / PROTOTYPE DATA DISCLAIMER:** This repository represents a high-fidelity demonstration prototype. All credentials, health worker names, and simulated diagnostic scans are provided strictly for evaluation purposes.
+
+---
+
+## 🔄 End-to-End System Loop Architecture
+
+```text
+PATIENT
+   ↓
+RURAL HWC SPOKE
+   ↓
+Vitals + Symptoms + Image
+   ↓
+🤖 AI ANALYSIS (Vision LLM & Clinical Triage)
+   ↓
+🚨 RISK TRIAGE (Critical / Urgent / Stable)
+   ↓
+👩‍⚕️ HEALTH WORKER (CHO Anita Devi)
+   ↓
+📋 CLINICAL HANDOFF SUMMARY
+   ↓
+👨‍⚕️ SPECIALIST PHYSICIAN (Dr. Rajesh Kumar)
+   ↓
+🎥 TELE-CONSULTATION
+   ↓
+💊 PRESCRIPTION / 🏥 REFERRAL
+   ↓
+📅 FOLLOW-UP CARE TRACKING
+   ↓
+DIGITAL HEALTH RECORD (ABDM Sync)
+```
 
 ---
 
@@ -46,7 +76,32 @@ This project is built using modern web design principles (Harmonious HSL palette
 - **Structure:** Semantic HTML5
 - **Style:** Vanilla CSS3 (Custom Variables, Flexbox/Grid, Glassmorphic overlays, keyframe animations)
 - **Logic:** Vanilla ES6+ Javascript (Web Audio API, Media Capture and Streams API, local state manager)
+- **AI / LLM:** Google Gemini 2.0 Flash (REST API via `gemini-llm.js`) — live multimodal reasoning
 - **Assets:** Vector SVGs & generated PNG illustrations
+
+---
+
+## 🤖 LLM Integration (Gemini 2.0 Flash)
+
+All previously hardcoded/simulated AI features are now powered by **Google Gemini 2.0 Flash** at runtime.
+
+| Feature | Where | LLM Role |
+|---|---|---|
+| **OPD Doctor Chat** | Patient Portal | Gemini generates Dr. Rajesh Kumar's opening greeting and replies to every patient message |
+| **Patient Send Message** | Consultation modal | Gemini produces contextual doctor replies based on full conversation history |
+| **OPD e-Prescription** | Download button | Gemini generates diagnosis + medicines + advice based on patient symptoms |
+| **HWC AI Triage** | Health Worker Portal | Gemini evaluates vitals + structured exam → CRITICAL / URGENT / STABLE triage + XAI reasons |
+| **Wound Vision Analysis** | HWC Injury Upload | Gemini Vision (multimodal) analyzes uploaded injury photo + injury type → clinical wound report |
+| **HWC Doctor Chat** | Spoke-to-Hub consult | Gemini generates specialist doctor replies + streaming clinical prescription notes |
+
+### Setup (API Key Required)
+
+1. Get a free API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Open the app, click the **⚙️ Configure AI / Gemini Key** button (top bar).
+3. Paste your API key, select your preferred model, and click **Save Settings**.
+4. The key is stored in `localStorage` — no server required.
+
+> **Fallback:** All AI features gracefully fall back to hardcoded rule-based responses if no API key is set or if the API is unavailable.
 
 ---
 
