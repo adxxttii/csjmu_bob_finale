@@ -5067,6 +5067,26 @@ window.triggerPythonReportOCR = async function() {
   }
 };
 
+// Global Teleconsultation Slot Selection Helper
+window.selectTeleSlot = function(btnElement, slotTime) {
+  const allBtns = document.querySelectorAll('.tele-slot-btn');
+  allBtns.forEach(b => b.classList.remove('active'));
+  if (btnElement) btnElement.classList.add('active');
+  
+  if (typeof showToast === 'function') {
+    showToast(`📅 Teleconsultation scheduled for ${slotTime}! Doctor notified.`);
+  }
+
+  const waitTimeEl = document.getElementById('conf-wait-time');
+  if (waitTimeEl) {
+    if (slotTime.includes('Instant')) {
+      waitTimeEl.textContent = '~ 1 Minute (Instant Call Ready)';
+    } else {
+      waitTimeEl.textContent = slotTime;
+    }
+  }
+};
+
 function initPatientIntakeFormHandlers() {
   // Attach Start Consultation click handlers across all Hero Slide buttons & Services Tab buttons
   const slideAndServiceButtons = document.querySelectorAll('.slide-btn, .service-card .action-btn, #open-register-btn, .service-actions button, .profile-btn.primary');

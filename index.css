@@ -3243,4 +3243,40 @@ body.voice-mode-on #intake-voice-status.active {
   border-color: rgba(251, 191, 36, 0.4);
 }
 
+/* Responsive Submit Button & Teleconsultation Scheduling Slots */
+#submit-disease-intake-btn {
+  transition: all 0.25s ease;
+}
+
+#submit-disease-intake-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(15, 59, 95, 0.4) !important;
+}
+
+.tele-slot-btn {
+  transition: all 0.2s ease;
+}
+
+.tele-slot-btn.active, .tele-slot-btn:hover {
+  border-color: var(--health-teal) !important;
+  background: rgba(16, 132, 126, 0.12) !important;
+  color: var(--primary-navy) !important;
+  box-shadow: 0 2px 8px rgba(16, 132, 126, 0.2);
+}
+
+@media (max-width: 768px) {
+  #submit-disease-intake-btn, #intake-cancel-btn {
+    width: 100% !important;
+    padding: 14px 18px !important;
+    font-size: 0.92rem !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+
+  #conf-download-pdf-btn, #conf-launch-video-btn, #conf-return-profile-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
 
