@@ -1973,6 +1973,9 @@
         </div>
 
         <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+          <button id="conf-download-pdf-btn" type="button" class="form-submit" style="width: auto; padding: 12px 28px; background: linear-gradient(135deg, var(--primary-navy), #0f172a); font-size: 0.95rem; border: 1.5px solid #38bdf8; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(15, 59, 95, 0.3);" onclick="if(typeof generateAndDownloadPrescriptionPDF==='function') generateAndDownloadPrescriptionPDF();">
+            <span class="material-icons-outlined" style="color: #38bdf8;">picture_as_pdf</span> 📄 Download Official Medical Prescription PDF
+          </button>
           <button id="conf-launch-video-btn" type="button" class="form-submit" style="width: auto; padding: 12px 30px; background: var(--health-teal); font-size: 1rem;">
             <span class="material-icons-outlined">videocam</span> Launch Teleconsultation Call
           </button>
@@ -3413,6 +3416,10 @@
       </div>
     </div>
   </div>
+
+  <!-- html2pdf.js and jsPDF SDK for Medical Prescription PDF Generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <!-- Supabase JS SDK v2 -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

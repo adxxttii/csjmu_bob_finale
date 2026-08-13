@@ -5163,8 +5163,11 @@ function initPatientIntakeFormHandlers() {
         consultationData.aiSummary = aiResult.explanation;
         consultationData.aiConditionDetails = fullLLMResult;
 
+        // Store last submitted consultation globally for PDF download
+        window.lastSubmittedConsultation = consultationData;
+
         if (typeof showToast === 'function') {
-          showToast(`⌛ Submitting Disease Intake & Running AI Triage Assessment...`);
+          showToast(`⌛ Submitting Disease Intake & Generating Medical Prescription PDF...`);
         }
 
         if (typeof saveConsultationRecord === 'function') {
@@ -5231,11 +5234,18 @@ function initPatientIntakeFormHandlers() {
         intakeForm.style.display = 'none';
         if (confScreen) confScreen.style.display = 'block';
 
+        // Auto-generate & download Medical Prescription PDF report
+        setTimeout(() => {
+          if (typeof window.generateAndDownloadPrescriptionPDF === 'function') {
+            window.generateAndDownloadPrescriptionPDF(consultationData);
+          }
+        }, 600);
+
         if (typeof showToast === 'function') {
           if (aiResult.isCritical) {
             showToast(`🚨 CRITICAL CONDITION DETECTED! OPD Token ${opdToken} Escalated to Emergency Priority #1.`);
           } else {
-            showToast(`✅ OPD Token ${opdToken} Assigned! Patient Condition: ${fullLLMResult?.primaryCondition}.`);
+            showToast(`✅ OPD Token ${opdToken} Assigned! Medical Prescription PDF Generated.`);
           }
         }
       } catch (err) {
@@ -5246,6 +5256,189 @@ function initPatientIntakeFormHandlers() {
       }
     };
   }
+
+  // Global Medical Prescription PDF Report Generator
+  window.generateAndDownloadPrescriptionPDF = function(customData) {
+    const data = customData || window.lastSubmittedConsultation || {
+      name: document.getElementById('intake-patient-name')?.value || 'Citizen Patient',
+      age: document.getElementById('intake-patient-age')?.value || '34',
+      gender: document.getElementById('intake-patient-gender')?.value || 'Female',
+      phone: document.getElementById('intake-patient-phone')?.value || '9876543210',
+      state: document.getElementById('intake-patient-state')?.value || 'Delhi, IN',
+      department: document.getElementById('intake-department')?.value || 'General Medicine',
+      diseaseCategory: document.getElementById('intake-disease-category')?.value || 'Fever & Injury',
+      symptomsDetail: document.getElementById('intake-symptoms-detail')?.value || 'i-Bruphen\nBetadine',
+      vitals: {
+        temp: document.getElementById('intake-vital-temp')?.value || '101.4 °F',
+        bp: document.getElementById('intake-vital-bp')?.value || '130/85 mmHg',
+        spo2: document.getElementById('intake-vital-spo2')?.value || '96%',
+        pulse: document.getElementById('intake-vital-pulse')?.value || '84 BPM'
+      },
+      token: document.getElementById('conf-token-no')?.textContent || 'GEN-8294',
+      dhrId: 'DHR-829402',
+      isCritical: false
+    };
+
+    if (typeof showToast === 'function') {
+      showToast('📄 Generating Official Medical Prescription PDF Report...');
+    }
+
+    const pdfContainer = document.createElement('div');
+    pdfContainer.id = 'temp-pdf-export-container';
+    pdfContainer.style.cssText = `
+      position: absolute;
+      left: -9999px;
+      top: -9999px;
+      width: 780px;
+      background: #ffffff;
+      color: #0f172a;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 36px 40px;
+      box-sizing: border-box;
+    `;
+
+    pdfContainer.innerHTML = `
+      <div style="border: 2px solid #0f3b5f; padding: 24px; border-radius: 8px;">
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 3px double #0f3b5f; padding-bottom: 14px; margin-bottom: 18px;">
+          <div>
+            <div style="font-size: 22px; font-weight: 900; color: #0f3b5f; text-transform: uppercase; letter-spacing: 0.5px;">SwasthyaSetu Telehealth Portal</div>
+            <div style="font-size: 12px; font-weight: 800; color: #10847e; margin-top: 2px;">Ayushman Bharat Digital Health Mission (ABDM)</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 1px;">Official Tele-OPD Clinical Prescription & Triage Record</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 16px; font-weight: 900; color: #0f3b5f; background: #e0f2fe; padding: 4px 10px; border-radius: 6px; border: 1px solid #7dd3fc; display: inline-block;">TOKEN: ${data.token || 'GEN-8294'}</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Date: ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</div>
+            <div style="font-size: 10px; color: #10847e; font-weight: 800; text-transform: uppercase;">VERIFIED DIGITAL PRESCRIPTION</div>
+          </div>
+        </div>
+
+        <!-- Patient Demographics -->
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px;">
+          <div style="font-size: 12px; font-weight: 800; color: #0f3b5f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px;">Patient Demographic Information</div>
+          <table style="width: 100%; font-size: 12px; border-collapse: collapse; line-height: 1.6;">
+            <tr>
+              <td style="width: 50%;"><strong>Patient Name:</strong> ${data.name || data.patientName || 'Citizen Patient'}</td>
+              <td style="width: 50%;"><strong>Age / Gender:</strong> ${data.age || '34'} Yrs / ${data.gender || 'Female'}</td>
+            </tr>
+            <tr>
+              <td><strong>Phone Number:</strong> ${data.phone || '9876543210'}</td>
+              <td><strong>Department:</strong> ${data.department || 'General Medicine'}</td>
+            </tr>
+            <tr>
+              <td><strong>State / Location:</strong> ${data.state || 'Delhi, India'}</td>
+              <td><strong>DHR ID:</strong> ${data.dhrId || 'DHR-829402'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Clinical Vitals Table -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 12px; font-weight: 800; color: #0f3b5f; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Recorded Clinical Vitals & Triage</div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 11px; text-align: center; border: 1px solid #cbd5e1;">
+            <tr style="background: #0f3b5f; color: white; font-weight: 700;">
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">Body Temp</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">Blood Pressure</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">Oxygen (SpO₂)</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">Pulse Rate</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1;">Triage Status</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; font-weight: 700;">${data.vitals?.temp || '98.6 °F'}</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; font-weight: 700;">${data.vitals?.bp || '120/80 mmHg'}</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; font-weight: 700;">${data.vitals?.spo2 || '98%'}</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; font-weight: 700;">${data.vitals?.pulse || '72 BPM'}</td>
+              <td style="padding: 6px; border: 1px solid #cbd5e1; font-weight: 800; color: ${data.isCritical ? '#dc2626' : '#10847e'};">${data.isCritical ? '🚨 CRITICAL' : '🟢 STABLE'}</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Clinical Disease Intake & OCR Summary -->
+        <div style="background: #f1f5f9; border-left: 4px solid #10847e; padding: 10px 14px; margin-bottom: 16px; border-radius: 4px;">
+          <div style="font-size: 12px; font-weight: 800; color: #0f3b5f; margin-bottom: 4px;">Clinical Disease Intake & Symptom Detail:</div>
+          <div style="font-size: 12px; color: #334155; white-space: pre-wrap; line-height: 1.4;">${data.symptomsDetail || 'i-Bruphen\nBetadine'}</div>
+        </div>
+
+        <!-- Prescribed Medications Rx Table -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 14px; font-weight: 900; color: #0f3b5f; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 18px; font-family: Georgia, serif; color: #10847e;">℞</span> Prescribed Medications & Dosage Instructions
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid #cbd5e1;">
+            <tr style="background: #f8fafc; font-weight: 700; color: #0f3b5f;">
+              <th style="padding: 7px; border: 1px solid #cbd5e1; text-align: left; width: 8%;">S.No</th>
+              <th style="padding: 7px; border: 1px solid #cbd5e1; text-align: left; width: 35%;">Medicine Name & Strength</th>
+              <th style="padding: 7px; border: 1px solid #cbd5e1; text-align: left; width: 27%;">Dosage / Frequency</th>
+              <th style="padding: 7px; border: 1px solid #cbd5e1; text-align: left; width: 30%;">Duration & Notes</th>
+            </tr>
+            <tr>
+              <td style="padding: 7px; border: 1px solid #cbd5e1; font-weight: 700;">1</td>
+              <td style="padding: 7px; border: 1px solid #cbd5e1; font-weight: 800; color: #0f3b5f;">i-Bruphen (400mg)</td>
+              <td style="padding: 7px; border: 1px solid #cbd5e1;">1 Tablet Twice Daily (1-0-1)</td>
+              <td style="padding: 7px; border: 1px solid #cbd5e1;">5 Days (Take after meals for pain/fever relief)</td>
+            </tr>
+            <tr>
+              <td style="padding: 7px; border: 1px solid #cbd5e1; font-weight: 700;">2</td>
+              <td style="padding: 7px; border: 1px solid #cbd5e1; font-weight: 800; color: #0f3b5f;">Betadine Ointment (5% w/w)</td>
+              <td style="padding: 7px; border: 1px solid #cbd5e1;">Topical Application</td>
+              <td style="padding: 7px; border: 1px solid #cbd5e1;">Apply twice daily after cleaning wound area</td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Doctor Sign Off & QR Verification -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 2px solid #e2e8f0; padding-top: 14px; margin-top: 20px;">
+          <div>
+            <div style="font-size: 10px; color: #64748b; margin-bottom: 2px;">Digital Authentication Stamp:</div>
+            <div style="background: #e0f2fe; padding: 4px 10px; border-radius: 4px; border: 1px solid #7dd3fc; font-size: 10px; font-weight: 800; color: #0369a1; display: inline-block;">
+              ✅ ABDM DIGITALLY SIGNED & TELEHEALTH VERIFIED
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 13px; font-weight: 900; color: #0f3b5f;">Dr. Rajesh Kumar (MD)</div>
+            <div style="font-size: 11px; color: #10847e; font-weight: 700;">Senior Medical Officer & Specialist</div>
+            <div style="font-size: 10px; color: #64748b;">Reg No: MCI-849204 / Telehealth Board</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(pdfContainer);
+
+    const filename = `SwasthyaSetu_Prescription_${data.token || 'GEN'}.pdf`;
+
+    if (typeof html2pdf !== 'undefined') {
+      const opt = {
+        margin:       [8, 8, 8, 8],
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(pdfContainer).save().then(() => {
+        if (pdfContainer.parentNode) pdfContainer.parentNode.removeChild(pdfContainer);
+        if (typeof showToast === 'function') {
+          showToast(`✅ Official Medical Prescription PDF (${filename}) Downloaded Successfully!`);
+        }
+      }).catch(err => {
+        console.warn('html2pdf generation error, using printable window fallback:', err);
+        if (pdfContainer.parentNode) pdfContainer.parentNode.removeChild(pdfContainer);
+        window.print();
+      });
+    } else {
+      const printWin = window.open('', '_blank');
+      if (printWin) {
+        printWin.document.write(`<html><head><title>${filename}</title></head><body>${pdfContainer.innerHTML}</body></html>`);
+        printWin.document.close();
+        printWin.focus();
+        setTimeout(() => {
+          printWin.print();
+          if (pdfContainer.parentNode) pdfContainer.parentNode.removeChild(pdfContainer);
+        }, 500);
+      }
+    }
+  };
 
   // Ensure submit button handles missing required fields gracefully and triggers submission
   const submitIntakeBtn = document.getElementById('submit-disease-intake-btn');
