@@ -396,11 +396,13 @@ window.showView = function(viewName) {
 
 // Top-Level Open Patient Disease Intake View Helper
 window.openPatientDiseaseIntakeView = function() {
+  console.log('🚀 Opening Patient Disease Intake View...');
   const user = (typeof currentUser !== 'undefined' ? currentUser : null) || (typeof getCurrentUser === 'function' ? getCurrentUser() : null) || JSON.parse(localStorage.getItem('swasthya_current_user') || 'null');
   
   const intakeUserBadge = document.getElementById('intake-user-badge');
   const intakeName = document.getElementById('intake-patient-name');
   const intakePhone = document.getElementById('intake-patient-phone');
+  const intakeReportsContainer = document.getElementById('intake-reports-selection-container');
   const form = document.getElementById('patient-disease-intake-form');
   const confScreen = document.getElementById('intake-confirmation-screen');
 
@@ -417,7 +419,43 @@ window.openPatientDiseaseIntakeView = function() {
   if (form) form.style.display = 'block';
   if (confScreen) confScreen.style.display = 'none';
 
-  window.showView('intake');
+  // Populate user's uploaded X-Rays / Reports as attachable checkboxes
+  if (intakeReportsContainer) {
+    intakeReportsContainer.innerHTML = '';
+    try {
+      const stored = JSON.parse(localStorage.getItem('swasthya_uploaded_reports') || '[]');
+      if (stored.length === 0) {
+        intakeReportsContainer.innerHTML = `
+          <div style="font-size: 0.82rem; color: #64748b; font-style: italic;">No uploaded X-Rays or lab reports found. You can upload diagnostic scans anytime in your Patient Portal gallery.</div>
+        `;
+      } else {
+        stored.forEach(rep => {
+          const itemDiv = document.createElement('div');
+          itemDiv.style.cssText = `display: flex; align-items: center; justify-content: space-between; background: white; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.88rem;`;
+          itemDiv.innerHTML = `
+            <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; color: var(--primary-navy);">
+              <input type="checkbox" class="intake-attached-report-cb" value="${rep.title} (${rep.fileName})" checked style="width: 16px; height: 16px; accent-color: var(--health-teal);">
+              <span class="material-icons-outlined" style="font-size: 20px; color: var(--health-teal);">description</span>
+              <span>${rep.title}</span>
+            </label>
+            <span style="font-size: 0.74rem; color: #64748b; font-weight: 700; background: #e2e8f0; padding: 2px 8px; border-radius: 10px;">${rep.categoryLabel || rep.category}</span>
+          `;
+          intakeReportsContainer.appendChild(itemDiv);
+        });
+      }
+    } catch (e) {
+      intakeReportsContainer.innerHTML = `<div style="font-size: 0.82rem; color: #64748b;">Ready for clinical consultation intake.</div>`;
+    }
+  }
+
+  if (typeof window.showView === 'function') {
+    window.showView('intake');
+  } else {
+    const landingView = document.getElementById('landing-view');
+    const intakeView = document.getElementById('patient-disease-intake-view');
+    if (landingView) landingView.style.display = 'none';
+    if (intakeView) intakeView.style.display = 'block';
+  }
 };
 
 // Top-Level Global Open Unified Modal Helper
@@ -5012,14 +5050,16 @@ function initPatientIntakeFormHandlers() {
   
   slideAndServiceButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const user = currentUser || (typeof getCurrentUser === 'function' ? getCurrentUser() : null) || JSON.parse(localStorage.getItem('swasthya_current_user') || 'null');
-      
       const btnText = (btn.textContent || '').trim();
 
-      // If patient is logged in or clicking slide/service button to start consultation
-      if (user || btn.classList.contains('slide-btn') || btn.id === 'open-register-btn' || btnText.includes('Book OPD') || btnText.includes('Start Consultation')) {
-        e.preventDefault();
-        openPatientDiseaseIntakeView();
+      // Skip Doctor or Health Worker specific sign in / registration buttons
+      if (btnText.includes('Doctor Sign In') || btnText.includes('Doctor Register') || btnText.includes('Health Worker') || btnText.includes('Launch Health Worker')) {
+        return;
+      }
+
+      e.preventDefault();
+      if (typeof window.openPatientDiseaseIntakeView === 'function') {
+        window.openPatientDiseaseIntakeView();
       }
     });
   });
