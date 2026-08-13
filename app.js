@@ -4060,10 +4060,13 @@ function initPatientReportUploadSystem() {
           </div>
           <div style="display: flex; align-items: center; gap: 6px; margin-top: 12px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
             ${isImage && item.dataUrl ? `<button class="profile-btn primary" style="flex: 1; padding: 4px 8px; font-size: 0.74rem;" onclick="openReportLightbox('${item.title}', '${item.dataUrl}')">
-              <span class="material-icons-outlined" style="font-size: 14px;">visibility</span> View Scan
+              <span class="material-icons-outlined" style="font-size: 14px;">visibility</span> View
             </button>` : `<button class="profile-btn primary" style="flex: 1; padding: 4px 8px; font-size: 0.74rem;" onclick="alert('Viewing document: ${item.fileName}')">
               <span class="material-icons-outlined" style="font-size: 14px;">description</span> View Doc
             </button>`}
+            <button class="profile-btn primary" style="padding: 4px 8px; font-size: 0.74rem; background: #0284c7;" onclick="processSingleReportOCR('${item.dataUrl || ''}', '${item.title}')" title="Extract text & vitals with OCR">
+              <span class="material-icons-outlined" style="font-size: 14px;">manage_search</span> OCR
+            </button>
             <button style="background: rgba(220,53,69,0.1); color: #dc3545; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.74rem; font-weight: 700;" onclick="deleteReportRecord('${item.id}')" title="Delete file">
               <span class="material-icons-outlined" style="font-size: 14px;">delete</span>
             </button>
@@ -4105,7 +4108,15 @@ function initPatientReportUploadSystem() {
 
         currentReports.unshift(newReport);
         saveStoredReports(currentReports);
+        renderGallery();
         showToast(`✓ Uploaded ${file.name} to Patient Medical Archive!`);
+
+        // Automatically trigger OCR text & vitals extraction on uploaded image
+        setTimeout(() => {
+          if (typeof window.processSingleReportOCR === 'function') {
+            window.processSingleReportOCR(e.target.result, newReport.title);
+          }
+        }, 150);
       };
 
       reader.readAsDataURL(file);
