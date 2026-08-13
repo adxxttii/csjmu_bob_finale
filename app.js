@@ -319,7 +319,7 @@ function startVoiceDictation(targetInputId) {
 
   const recognition = new SpeechRecognition();
   recognition.lang = selectedLang;
-  recognition.interimResults = true;
+  recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
   if (btnElem) {
@@ -335,7 +335,7 @@ function startVoiceDictation(targetInputId) {
     try {
       recognition.start();
     } catch (err) {}
-  }, 1000);
+  }, 4500);
 
   recognition.onresult = (event) => {
     let transcript = '';
